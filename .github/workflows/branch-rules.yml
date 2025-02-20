@@ -1,0 +1,34 @@
+# .github/workflows/branch-rules.yml
+name: Branch Rules Check
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+
+jobs:
+  check-branch-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request
+            const body = pr.body || ''
+            const sourceBranch = pr.head.ref
+            
+            let errors = []
+            
+            // 1. Verificar formato de rama simplificado
+            const branchFormat = /^(feature|bugfix|hotfix|release)\/[a-z0-9-]+$/
+            
+            if (!branchFormat.test(sourceBranch)) {
+              errors.push('El nombre de la rama debe seguir el formato: tipo/descripcion-en-minusculas\nEjemplos válidos:\n- feature/login-page\n- bugfix/fix-header\n- hotfix/error-404\n- release/version-1')
+            }
+            
+            // 2. Verificar que el PR tenga una descripción
+            if (!body.trim()) {
+              errors.push('El PR debe incluir una descripción de los cambios')
+            }
+            
+            if (errors.length > 0) {
+              core.setFailed(errors.join('\n\n'))
+            }
