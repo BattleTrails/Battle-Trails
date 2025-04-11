@@ -1,15 +1,20 @@
-
-import './App.css'
-import "./index.css"
-import TestTailwind from "./components/TestTailwind/TestTailwind.tsx";
-
-function App() {
+import {useRoutes} from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import Home from "./pages/HomePage";
 
 
-  return (
-      <TestTailwind/>
+const App = () => {
+    return useRoutes([
+        {
+            path: "/",
+            element: <MainLayout/>,
+            children: [
+                {index: true, element: <Home/>},
+                /*{ path: "about", element: <About /> }*/
+            ],
+        },
+    ]);
+};
 
-  )
-}
+export default App;
 
-export default App
