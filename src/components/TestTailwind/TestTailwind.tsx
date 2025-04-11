@@ -1,7 +1,9 @@
 
 
 const TestTailwind = () => {
-return <div className="p-10">TestTailwind</div>;
+return(
+    <button className="btn">Default</button>
+    )
 };
 
 export default TestTailwind;
