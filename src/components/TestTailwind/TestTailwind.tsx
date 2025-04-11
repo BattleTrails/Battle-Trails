@@ -1,8 +1,9 @@
 
 
 const TestTailwind = () => {
-return
-    <button className="btn">Default</button>;
+return(
+    <button className="btn">Default</button>
+    )
 };
 
 export default TestTailwind;
