@@ -1,0 +1,688 @@
+{
+  "users": [
+    {
+      "id": "user0",
+      "name": "Usuario 0",
+      "email": "user0@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/0.jpg",
+      "bio": "Aventura hist\u00f3rica #0",
+      "savedPosts": [
+        "post2",
+        "post4",
+        "post8"
+      ]
+    },
+    {
+      "id": "user1",
+      "name": "Usuario 1",
+      "email": "user1@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/1.jpg",
+      "bio": "Aventura hist\u00f3rica #1",
+      "savedPosts": [
+        "post8",
+        "post3",
+        "post1"
+      ]
+    },
+    {
+      "id": "user2",
+      "name": "Usuario 2",
+      "email": "user2@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/2.jpg",
+      "bio": "Aventura hist\u00f3rica #2",
+      "savedPosts": [
+        "post6",
+        "post1",
+        "post3"
+      ]
+    },
+    {
+      "id": "user3",
+      "name": "Usuario 3",
+      "email": "user3@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/3.jpg",
+      "bio": "Aventura hist\u00f3rica #3",
+      "savedPosts": [
+        "post8",
+        "post2",
+        "post6"
+      ]
+    },
+    {
+      "id": "user4",
+      "name": "Usuario 4",
+      "email": "user4@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/4.jpg",
+      "bio": "Aventura hist\u00f3rica #4",
+      "savedPosts": [
+        "post4",
+        "post1",
+        "post7"
+      ]
+    },
+    {
+      "id": "user5",
+      "name": "Usuario 5",
+      "email": "user5@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/5.jpg",
+      "bio": "Aventura hist\u00f3rica #5",
+      "savedPosts": [
+        "post9",
+        "post5",
+        "post1"
+      ]
+    },
+    {
+      "id": "user6",
+      "name": "Usuario 6",
+      "email": "user6@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/6.jpg",
+      "bio": "Aventura hist\u00f3rica #6",
+      "savedPosts": [
+        "post2",
+        "post0",
+        "post7"
+      ]
+    },
+    {
+      "id": "user7",
+      "name": "Usuario 7",
+      "email": "user7@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/7.jpg",
+      "bio": "Aventura hist\u00f3rica #7",
+      "savedPosts": [
+        "post1",
+        "post6",
+        "post0"
+      ]
+    },
+    {
+      "id": "user8",
+      "name": "Usuario 8",
+      "email": "user8@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/8.jpg",
+      "bio": "Aventura hist\u00f3rica #8",
+      "savedPosts": [
+        "post8",
+        "post6",
+        "post4"
+      ]
+    },
+    {
+      "id": "user9",
+      "name": "Usuario 9",
+      "email": "user9@example.com",
+      "profilePicture": "https://randomuser.me/api/portraits/men/9.jpg",
+      "bio": "Aventura hist\u00f3rica #9",
+      "savedPosts": [
+        "post3",
+        "post5",
+        "post7"
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "id": "post0",
+      "userId": "user8",
+      "title": "Ruta hist\u00f3rica #0",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 0.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 47.165673,
+        "lng": -4.32884
+      },
+      "createdAt": "2023-07-18T00:00:00",
+      "likes": 35,
+      "likedBy": [
+        "user7"
+      ]
+    },
+    {
+      "id": "post1",
+      "userId": "user9",
+      "title": "Ruta hist\u00f3rica #1",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 1.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 40.486769,
+        "lng": 2.651295
+      },
+      "createdAt": "2023-06-28T00:00:00",
+      "likes": 47,
+      "likedBy": [
+        "user5",
+        "user9",
+        "user7",
+        "user2",
+        "user5"
+      ]
+    },
+    {
+      "id": "post2",
+      "userId": "user5",
+      "title": "Ruta hist\u00f3rica #2",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 2.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 47.855582,
+        "lng": 2.911969
+      },
+      "createdAt": "2023-04-15T00:00:00",
+      "likes": 40,
+      "likedBy": [
+        "user9",
+        "user8"
+      ]
+    },
+    {
+      "id": "post3",
+      "userId": "user7",
+      "title": "Ruta hist\u00f3rica #3",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 3.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 45.253087,
+        "lng": 1.165805
+      },
+      "createdAt": "2024-11-06T00:00:00",
+      "likes": 73,
+      "likedBy": [
+        "user3",
+        "user6",
+        "user9"
+      ]
+    },
+    {
+      "id": "post4",
+      "userId": "user5",
+      "title": "Ruta hist\u00f3rica #4",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 4.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 48.899962,
+        "lng": -0.388502
+      },
+      "createdAt": "2023-07-07T00:00:00",
+      "likes": 65,
+      "likedBy": [
+        "user0",
+        "user4"
+      ]
+    },
+    {
+      "id": "post5",
+      "userId": "user1",
+      "title": "Ruta hist\u00f3rica #5",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 5.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 44.913636,
+        "lng": -2.662966
+      },
+      "createdAt": "2024-01-01T00:00:00",
+      "likes": 81,
+      "likedBy": [
+        "user9",
+        "user8",
+        "user5"
+      ]
+    },
+    {
+      "id": "post6",
+      "userId": "user7",
+      "title": "Ruta hist\u00f3rica #6",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 6.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 49.515107,
+        "lng": 3.243744
+      },
+      "createdAt": "2023-04-08T00:00:00",
+      "likes": 3,
+      "likedBy": [
+        "user8",
+        "user8",
+        "user4"
+      ]
+    },
+    {
+      "id": "post7",
+      "userId": "user1",
+      "title": "Ruta hist\u00f3rica #7",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 7.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 43.913374,
+        "lng": -2.745495
+      },
+      "createdAt": "2023-10-12T00:00:00",
+      "likes": 14,
+      "likedBy": [
+        "user8"
+      ]
+    },
+    {
+      "id": "post8",
+      "userId": "user4",
+      "title": "Ruta hist\u00f3rica #8",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 8.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 46.37952,
+        "lng": 4.151218
+      },
+      "createdAt": "2024-07-16T00:00:00",
+      "likes": 86,
+      "likedBy": [
+        "user4",
+        "user8",
+        "user6",
+        "user8"
+      ]
+    },
+    {
+      "id": "post9",
+      "userId": "user2",
+      "title": "Ruta hist\u00f3rica #9",
+      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 9.",
+      "images": [
+        "https://placehold.co/600x400?text=Imagen+1",
+        "https://placehold.co/600x400?text=Imagen+2",
+        "https://placehold.co/600x400?text=Imagen+3"
+      ],
+      "location": {
+        "lat": 41.867833,
+        "lng": -1.528823
+      },
+      "createdAt": "2023-10-19T00:00:00",
+      "likes": 96,
+      "likedBy": [
+        "user9",
+        "user6",
+        "user8",
+        "user4"
+      ]
+    }
+  ],
+  "comments": [
+    {
+      "id": "comment0",
+      "postId": "post8",
+      "userId": "user8",
+      "text": "Comentario de ejemplo 0",
+      "createdAt": "2024-05-18T00:00:00"
+    },
+    {
+      "id": "comment1",
+      "postId": "post7",
+      "userId": "user1",
+      "text": "Comentario de ejemplo 1",
+      "createdAt": "2024-08-18T00:00:00"
+    },
+    {
+      "id": "comment2",
+      "postId": "post4",
+      "userId": "user3",
+      "text": "Comentario de ejemplo 2",
+      "createdAt": "2024-10-16T00:00:00"
+    },
+    {
+      "id": "comment3",
+      "postId": "post9",
+      "userId": "user0",
+      "text": "Comentario de ejemplo 3",
+      "createdAt": "2024-08-13T00:00:00"
+    },
+    {
+      "id": "comment4",
+      "postId": "post6",
+      "userId": "user4",
+      "text": "Comentario de ejemplo 4",
+      "createdAt": "2023-07-15T00:00:00"
+    },
+    {
+      "id": "comment5",
+      "postId": "post1",
+      "userId": "user6",
+      "text": "Comentario de ejemplo 5",
+      "createdAt": "2024-06-07T00:00:00"
+    },
+    {
+      "id": "comment6",
+      "postId": "post1",
+      "userId": "user6",
+      "text": "Comentario de ejemplo 6",
+      "createdAt": "2023-10-06T00:00:00"
+    },
+    {
+      "id": "comment7",
+      "postId": "post6",
+      "userId": "user4",
+      "text": "Comentario de ejemplo 7",
+      "createdAt": "2023-12-23T00:00:00"
+    },
+    {
+      "id": "comment8",
+      "postId": "post3",
+      "userId": "user4",
+      "text": "Comentario de ejemplo 8",
+      "createdAt": "2023-06-12T00:00:00"
+    },
+    {
+      "id": "comment9",
+      "postId": "post4",
+      "userId": "user9",
+      "text": "Comentario de ejemplo 9",
+      "createdAt": "2023-12-05T00:00:00"
+    }
+  ],
+  "routes": [
+    {
+      "id": "route0",
+      "postId": "post0",
+      "waypoints": [
+        {
+          "lat": 40.16952,
+          "lng": 2.304114
+        },
+        {
+          "lat": 45.005736,
+          "lng": 4.363861
+        },
+        {
+          "lat": 49.842876,
+          "lng": 3.97352
+        },
+        {
+          "lat": 41.942436,
+          "lng": -0.267885
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route1",
+      "postId": "post1",
+      "waypoints": [
+        {
+          "lat": 41.274404,
+          "lng": -1.780533
+        },
+        {
+          "lat": 46.156348,
+          "lng": -4.835983
+        },
+        {
+          "lat": 45.480668,
+          "lng": 4.916622
+        },
+        {
+          "lat": 43.014143,
+          "lng": -2.837036
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route2",
+      "postId": "post2",
+      "waypoints": [
+        {
+          "lat": 46.823041,
+          "lng": 4.124839
+        },
+        {
+          "lat": 40.934518,
+          "lng": 0.473829
+        },
+        {
+          "lat": 43.969587,
+          "lng": 1.818459
+        },
+        {
+          "lat": 48.848401,
+          "lng": -1.796507
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route3",
+      "postId": "post3",
+      "waypoints": [
+        {
+          "lat": 42.571612,
+          "lng": -2.681186
+        },
+        {
+          "lat": 44.794827,
+          "lng": 3.7294
+        },
+        {
+          "lat": 41.578684,
+          "lng": -4.436273
+        },
+        {
+          "lat": 41.275084,
+          "lng": -0.828695
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route4",
+      "postId": "post4",
+      "waypoints": [
+        {
+          "lat": 49.677633,
+          "lng": -0.239608
+        },
+        {
+          "lat": 40.36455,
+          "lng": -1.972143
+        },
+        {
+          "lat": 48.912558,
+          "lng": 2.322544
+        },
+        {
+          "lat": 43.162941,
+          "lng": 1.773472
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route5",
+      "postId": "post5",
+      "waypoints": [
+        {
+          "lat": 49.966903,
+          "lng": 2.413292
+        },
+        {
+          "lat": 41.621054,
+          "lng": 1.299997
+        },
+        {
+          "lat": 42.659243,
+          "lng": -3.718432
+        },
+        {
+          "lat": 49.337833,
+          "lng": -2.329485
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route6",
+      "postId": "post6",
+      "waypoints": [
+        {
+          "lat": 48.748128,
+          "lng": 1.178593
+        },
+        {
+          "lat": 42.827384,
+          "lng": -2.311857
+        },
+        {
+          "lat": 41.344021,
+          "lng": -3.275907
+        },
+        {
+          "lat": 43.201855,
+          "lng": 4.090748
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route7",
+      "postId": "post7",
+      "waypoints": [
+        {
+          "lat": 46.189061,
+          "lng": -1.403188
+        },
+        {
+          "lat": 46.060298,
+          "lng": 1.281122
+        },
+        {
+          "lat": 48.356071,
+          "lng": 0.589318
+        },
+        {
+          "lat": 42.510108,
+          "lng": -2.349458
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route8",
+      "postId": "post8",
+      "waypoints": [
+        {
+          "lat": 42.914717,
+          "lng": 4.037144
+        },
+        {
+          "lat": 43.421639,
+          "lng": -4.300828
+        },
+        {
+          "lat": 46.176692,
+          "lng": 2.96279
+        },
+        {
+          "lat": 47.07067,
+          "lng": -3.29052
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    },
+    {
+      "id": "route9",
+      "postId": "post9",
+      "waypoints": [
+        {
+          "lat": 48.732336,
+          "lng": -2.865558
+        },
+        {
+          "lat": 46.439634,
+          "lng": 3.823744
+        },
+        {
+          "lat": 47.03467,
+          "lng": -4.382907
+        },
+        {
+          "lat": 46.515637,
+          "lng": -3.787435
+        }
+      ],
+      "images": [
+        "https://placehold.co/400x300?text=Waypoint+1",
+        "https://placehold.co/400x300?text=Waypoint+2",
+        "https://placehold.co/400x300?text=Waypoint+3"
+      ]
+    }
+  ]
+}
