@@ -1,2 +1,57 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+
+@plugin "daisyui/theme" {
+    name: BTtheme;
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    /* BASE */
+    --color-base-100: #FFFFFF;
+    --color-base-200: #F5F5F5;
+    --color-base-300: #EAEAEA;
+    --color-base-content: #2C2C2E;
+
+    /* PRIMARY – fondo estructural */
+    --color-primary: #1C2D34;
+    --color-primary-200: #324B55;
+    --color-primary-300: #121E23;
+    --color-primary-content: #FFFFFF;
+
+    /* SECONDARY – color destacado (CTA, tags, etc.) */
+    --color-secondary: #D4AF37;
+    --color-secondary-200: #E6C968;
+    --color-secondary-300: #A18629;
+    --color-secondary-content: #1C2D34;
+
+    /* ACCENT – blanco, para contraste o fondo alterno */
+    --color-accent: #FFFFFF;
+    --color-accent-200: #F5F5F5;
+    --color-accent-300: #EAEAEA;
+    --color-accent-content: #2C2C2E;
+
+    /* NEUTRAL – textos, bordes, etc. */
+    --color-neutral: #2C2C2E;
+    --color-neutral-200: #444446;
+    --color-neutral-300: #1B1B1C;
+    --color-neutral-content: #FFFFFF;
+
+    /* border radius */
+    --radius-selector: 10px;
+    --radius-field: 10px;
+    --radius-box: 10px;
+
+
+    /* base sizes */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+
+    /* border size */
+    --border: 1px;
+
+    /* effects */
+    --depth: 1;
+    --noise: 0;
+}

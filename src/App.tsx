@@ -3,10 +3,6 @@ import Home from "@pages/HomePage";
 import Test from "@pages/TestPage";
 import MainLayout from "@layouts/MainLayout";
 
-
-
-
-
 const App = () => {
     return useRoutes([
         {
