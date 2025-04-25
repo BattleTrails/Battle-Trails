@@ -1,4 +1,5 @@
 import Header from "@layouts/Header/Header";
+import FilterBar from "@components/home/FilterBar/FilterBar";
 
 const TestPage = () => {
     return (
@@ -11,6 +12,8 @@ const TestPage = () => {
             <div className="flex-col">
                 Header with search bar:
                 <Header/>
+                Filter Bar with buttons:
+                <FilterBar/>
             </div>
         </div>
 
