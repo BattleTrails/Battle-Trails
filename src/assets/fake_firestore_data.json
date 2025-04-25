@@ -122,26 +122,7 @@
     }
   ],
   "posts": [
-    {
-      "id": "post0",
-      "userId": "user8",
-      "title": "Ruta hist\u00f3rica #0",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 0.",
-      "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
-      ],
-      "location": {
-        "lat": 47.165673,
-        "lng": -4.32884
-      },
-      "createdAt": "2023-07-18T00:00:00",
-      "likes": 35,
-      "likedBy": [
-        "user7"
-      ]
-    },
+
     {
       "id": "post1",
       "userId": "user9",
