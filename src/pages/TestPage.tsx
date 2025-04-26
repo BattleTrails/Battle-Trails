@@ -1,6 +1,6 @@
 import Header from "@layouts/Header/Header";
 import FilterBar from "@components/home/FilterBar/FilterBar";
-import Card from "@components/Card/Card";
+import Card from "@components/home/Card/Card";
 import data from "@/assets/fake_firestore_data.json";
 
 const TestPage = () => {
@@ -17,26 +17,20 @@ const TestPage = () => {
             <div className="flex-col gap-6 px-6">
                 <div className="mb-4">
                     <p className="mb-2 font-semibold">Header with search bar:</p>
-                    <Header />
+                    <Header/>
                 </div>
 
                 <div className="mb-4">
                     <p className="mb-2 font-semibold">Filter Bar with buttons:</p>
-                    <FilterBar />
+                    <FilterBar/>
                 </div>
 
                 <div className="mb-4">
                     <p className="mb-2 font-semibold">Grid de Cards:</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
                         {posts.map((post) => (
-                            <Card
-                                key={post.id}
-                                title={post.title}
-                                description={post.description}
-                                imageUrl={post.images[0] ?? "https://placehold.co/600x400?text=Sin+imagen"}
-                                views={Math.floor(Math.random() * 300)} // temporal: simula visitas
-                                likes={post.likes}
-                            />
+                            <Card key={post.id} post={post}/>
+
                         ))}
                     </div>
                 </div>
