@@ -9,7 +9,8 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -22,8 +23,9 @@
       "@components/*": ["components/*"],
       "@pages/*": ["pages/*"],
       "@types/*": ["types/*"],
-      "@layouts/*": ["layouts/*"],
-    }
+      "@layouts/*": ["layouts/*"]
+    },
+    "types": []
   },
   "include": ["src"]
 }
