@@ -14,7 +14,10 @@ const Header = () => {
             </div>
 
             <div className="flex justify-end basis-1/4 gap-4">
-                <button className="btn text-accent bg-primary border-0 shadow-none focus:shadow-none hover:shadow-none">Publica una ruta</button>
+                <button
+                    className="btn text-accent bg-primary border-0 shadow-none focus:shadow-none hover:shadow-none">Publica
+                    una ruta
+                </button>
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
 
