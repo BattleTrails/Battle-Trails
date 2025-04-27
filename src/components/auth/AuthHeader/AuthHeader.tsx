@@ -1,22 +1,35 @@
+import { Handshake, Shield } from "lucide-react";
 import iconslogo from "@assets/iconslogo.svg"
-import {Handshake} from "lucide-react"
 
-const AuthHeader = () => {
+interface AuthHeaderProps {
+    mode: "login" | "register";
+}
+
+const AuthHeader = ({ mode }: AuthHeaderProps) => {
     return (
-        <div className="flex flex-col justify-center items-center pt-8 text-center gap-8">
-            <img src={iconslogo} alt="Logo"/>
+        <div className="flex flex-col justify-center pt-8 text-center gap-8">
+            {/* Logo */}
+            <img src={iconslogo} alt="Logo" className="m-auto" />
 
-            <div className="flex items-end justify-center text-[20px] gap-3">
-                <div className="w-[120px] text-right">
-                    <p>Bienvenido!</p>
+            {/* Título + Icono */}
+            <div className="flex items-end justify-center gap-3 text-[20px]">
+                <div className="w-[140px] text-right">
+                    <p>{mode === "login" ? "Hola de nuevo!" : "Bienvenido!"}</p>
                 </div>
-                <Handshake color="#D4AF37" className="w-6 h-6" />
-                <div className="w-[120px] text-left">
-                    <p>Registrate</p>
+
+                {/* Icono dinámico */}
+                {mode === "login" ? (
+                    <Handshake color="#D4AF37" className="w-6 h-6" />
+                ) : (
+                    <Shield color="#D4AF37" className="w-6 h-7" />
+                )}
+
+                {/* Texto derecho */}
+                <div className="w-[140px] text-left">
+                    <p>{mode === "login" ? "Inicia sesión" : "Regístrate"}</p>
                 </div>
             </div>
         </div>
-
     );
 };
 
