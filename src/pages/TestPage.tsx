@@ -2,19 +2,20 @@ import Header from "@layouts/Header/Header";
 import FilterBar from "@components/home/FilterBar/FilterBar";
 import Card from "@components/home/Card/Card";
 import data from "@/assets/fake_firestore_data.json";
+import AuthForm from "@components/auth/AuthForm/AuthForm.tsx";
 
 const TestPage = () => {
     const posts = data.posts;
 
     return (
-        <div className="flex-col">
+        <div className="flex flex-col text-center">
             <div className="text-center p-6">
                 <h1 className="text-3xl font-bold text-secondary">Página de Testeo de Componentes</h1>
                 <p className="mt-2 text-lg">Esta página será dedicada al testeo de componentes en periodo de
                     maquetación</p>
             </div>
 
-            <div className="flex-col gap-6 px-6">
+            <div className="flex-col gap-6 px-6  ">
                 <div className="mb-4">
                     <p className="mb-2 font-semibold">Header with search bar:</p>
                     <Header/>
@@ -33,6 +34,10 @@ const TestPage = () => {
 
                         ))}
                     </div>
+                </div>
+                <div className=" flex flex-col  items-center justify-center ">
+                    <p className="mb-2 font-semibold">Login/SignUp:</p>
+                    <AuthForm/>
                 </div>
             </div>
         </div>
