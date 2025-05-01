@@ -1,9 +1,19 @@
+import Card from "@components/home/Card/Card.tsx";
+import data from "@assets/fake_firestore_data.json";
+import FilterBar from "@components/home/FilterBar/FilterBar.tsx";
+
 const HomePage = () => {
+    const posts = data.posts;
     return (
-        <div className="text-center p-6">
-            <h1 className="text-3xl font-bold text-primary">Bienvenido a Battle Trails</h1>
-            <p className="mt-2 text-lg">Explora rutas y sitios históricos</p>
+        <div className="flex flex-col gap-14 p-6">
+            <FilterBar/>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+                {posts.map((post) => (
+                    <Card key={post.id} post={post}/>
+                ))}
+            </div>
         </div>
+
     );
 };
 
