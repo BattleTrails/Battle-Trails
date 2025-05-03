@@ -54,7 +54,7 @@ const SearchBox = () => {
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     className={`
-                        pl-11 pr-8 rounded-full bg-white/20 text-white placeholder-white/60 outline-none border 
+                        pl-11 pr-8 rounded-full bg-white/20 text-white placeholder-white/60 outline-none border text-sm font-light
                         placeholder:top-[-1px] placeholder:relative 
                         ${sharedTransition}
                         ${isExpanded

@@ -3,6 +3,7 @@ import AuthHeader from "@components/auth/AuthHeader/AuthHeader.tsx";
 import AuthImputs from "@components/auth/AuthImputs/AuthImputs.tsx";
 import OAuthButton from "@components/auth/OAuthButton/OAuthButton.tsx";
 import AuthButton from "@components/auth/AuthButton/AuthButton.tsx";
+import {CircleArrowDown} from "lucide-react";
 
 const texts = {
     login: {
@@ -30,9 +31,9 @@ const AuthForm = () => {
 
             {/* Separador */}
             <div className="flex items-center gap-4 w-[350px] my-6">
-                <div className="flex-1 h-px bg-white" />
-                <span className="text-sm text-white">o continúa con</span>
-                <div className="flex-1 h-px bg-white" />
+                <div className="flex-1 h-[1px] bg-white" />
+                <CircleArrowDown size={28} strokeWidth={1} />
+                <div className="flex-1 h-[1px] bg-white" />
             </div>
 
             <OAuthButton />
