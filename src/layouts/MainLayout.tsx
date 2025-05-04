@@ -1,5 +1,8 @@
 import {Outlet} from "react-router-dom";
 import Header from "@layouts/Header/Header.tsx";
+import Footer from "@layouts/Footer/Footer.tsx";
+
+
 
 
 const MainLayout = () => {
@@ -9,7 +12,7 @@ const MainLayout = () => {
             <main className="flex-1 p-4">
                 <Outlet/> {/* Renderiza las páginas */}
             </main>
-            {/*<footer/>*/}
+            <Footer/>
         </div>
     );
 };
