@@ -1,25 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-// Importar imágenes automáticamente
-const images = import.meta.glob("../assets/authimgs/*.png", { eager: true });
-const imageUrls = Object.values(images as Record<string, { default: string }>)
-    .map((mod) => mod.default);
+const images = import.meta.glob("../assets/authimgs/*.webp", { eager: true });
+const imageUrls = Object.values(images as Record<string, { default: string }>).map((mod) => mod.default);
 
 export const useBackgroundImage = () => {
-    const imageRef = useRef<string>(
-        imageUrls[Math.floor(Math.random() * imageUrls.length)]
-    );
+    const image = useMemo(() => {
+        return imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    }, []);
 
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
+        if (!image) return;
         const preload = new Image();
-        preload.src = imageRef.current;
-        preload.onload = () => setIsLoaded(true);
-    }, []);
+        preload.src = image;
+        if (preload.complete) {
+            setIsLoaded(true);
+        } else {
+            preload.onload = () => setIsLoaded(true);
+        }
+    }, [image]);
 
     return {
-        image: imageRef.current,
+        image,
         isLoaded,
     };
 };
