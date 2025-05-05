@@ -6,8 +6,9 @@ const Card = ({post}: { post: Post }) => {
     const {title, description, images, likes, likedBy} = post;
 
     return (
-        <div className="card bg-base-100 w-96 rounded-field border border-neutral/20">
-            <figure>
+        <div className="card bg-base-100 w-full max-w-sm rounded-field border border-neutral/20">
+
+        <figure>
                 <img
                     src={images.length > 0 ? images[0] : "/placeholder.jpg"}
                     alt={title}

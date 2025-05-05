@@ -51,8 +51,9 @@ const FilterBar = () => {
     };
 
     return (
-        <div className="bg-base-100 rounded-full m-auto p-2 shadow flex justify-center gap-4 w-fit">
-            {FILTERS.map(({key, label, icon: Icon}) => {
+        <div className="bg-base-100 rounded-4xl mx-auto px-2 py-3 shadow flex flex-wrap justify-center gap-3 max-w-full">
+
+        {FILTERS.map(({key, label, icon: Icon}) => {
                 const isActive = selectedFilters.includes(key);
 
                 return (
