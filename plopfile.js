@@ -1,12 +1,11 @@
 import fs from "fs";
 import path from "path";
-import {fileURLToPath} from "url";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default function (plop) {
-    // 1. Detectar dinámicamente todas las carpetas dentro de src/components/
     const componentsDir = path.resolve(__dirname, "src", "components");
     const folders = fs.readdirSync(componentsDir).filter((file) => {
         const fullPath = path.join(componentsDir, file);
@@ -31,17 +30,17 @@ export default function (plop) {
         actions: [
             {
                 type: "add",
-                path: "src/components/{{folder}}/{{pascalCase name}}/{{pascalCase name}}.tsx",
+                path: "src/components/{{folder}}/{{kebabCase name}}/{{kebabCase name}}.tsx",
                 templateFile: "templates/Component.tsx.hbs",
             },
             {
                 type: "add",
-                path: "src/components/{{folder}}/{{pascalCase name}}/{{pascalCase name}}.module.css",
+                path: "src/components/{{folder}}/{{kebabCase name}}/{{kebabCase name}}.module.css",
                 templateFile: "templates/styles.module.css.hbs",
             },
             {
                 type: "add",
-                path: "src/components/{{folder}}/{{pascalCase name}}/index.ts",
+                path: "src/components/{{folder}}/{{kebabCase name}}/index.ts",
                 templateFile: "templates/index.ts.hbs",
             },
         ],
@@ -59,7 +58,7 @@ export default function (plop) {
         actions: [
             {
                 type: "add",
-                path: "src/pages/{{pascalCase name}}Page.tsx",
+                path: "src/pages/{{kebabCase name}}-page.tsx",
                 templateFile: "templates/Page.tsx.hbs",
             },
         ],
