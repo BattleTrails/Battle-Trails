@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import SearchBox from "@components/ui/SearchBox/SearchBox";
+import SearchBox from "@components/ui/search-box/search-box .tsx";
 import logo from "@assets/btlogo_full.svg";
 
 const Header = () => {

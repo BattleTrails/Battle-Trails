@@ -1,5 +1,5 @@
 import {Outlet} from "react-router-dom";
-import Header from "@layouts/Header/Header.tsx";
+import Header from "@layouts/header/header.tsx";
 import Footer from "@layouts/Footer/Footer.tsx";
 
 

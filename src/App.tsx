@@ -1,9 +1,9 @@
 import {useRoutes} from "react-router-dom";
-import Home from "@pages/HomePage";
-import Test from "@pages/TestPage";
-import MainLayout from "@layouts/MainLayout";
-import AuthLayout from "@layouts/AuthLayout.tsx";
-import AuthPage from "@pages/AuthPage.tsx";
+import Home from "@pages/home-page.tsx";
+import Test from "@pages/test-page.tsx";
+import MainLayout from "@layouts/main-layout.tsx";
+import AuthLayout from "@layouts/auth-layout.tsx";
+import AuthPage from "@pages/auth-page.tsx";
 
 const App = () => {
     return useRoutes([
