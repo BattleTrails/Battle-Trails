@@ -1,5 +1,5 @@
 import {useBackgroundImage} from "@hooks/useBackgroundImage";
-import AuthForm from "@components/auth/AuthForm/AuthForm";
+import AuthForm from "@components/auth/auth-form/auth-form.tsx";
 
 const AuthPage = () => {
     const {image, isLoaded} = useBackgroundImage();

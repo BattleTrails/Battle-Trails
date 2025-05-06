@@ -1,8 +1,8 @@
 import { useState } from "react";
-import AuthHeader from "@components/auth/AuthHeader/AuthHeader.tsx";
-import AuthImputs from "@components/auth/AuthImputs/AuthImputs.tsx";
-import OAuthButton from "@components/auth/OAuthButton/OAuthButton.tsx";
-import AuthButton from "@components/auth/AuthButton/AuthButton.tsx";
+import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
+import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
+import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
+import AuthButton from "@components/auth/auth-button/auth-button.tsx";
 import {CircleArrowDown} from "lucide-react";
 
 const texts = {

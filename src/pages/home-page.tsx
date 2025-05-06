@@ -1,6 +1,6 @@
-import Card from "@components/home/Card/Card.tsx";
+import Card from "@components/home/card/card.tsx";
 import data from "@assets/fake_firestore_data.json";
-import FilterBar from "@components/home/FilterBar/FilterBar.tsx";
+import FilterBar from "@components/home/filter-bar/filter-bar.tsx";
 
 const HomePage = () => {
     const posts = data.posts;
