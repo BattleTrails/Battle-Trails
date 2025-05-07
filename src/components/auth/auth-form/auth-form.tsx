@@ -9,6 +9,7 @@ import {CircleArrowDown} from "lucide-react";
 import {loginWithEmail, registerWithEmail} from "@/services/auth-service";
 import { FirebaseError } from "firebase/app";
 import {AuthMode} from "@/types";
+import {useNavigate} from "react-router-dom";
 
 const texts = {
     login: {
@@ -26,6 +27,7 @@ const AuthForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const navigate = useNavigate();
     const [mode, setMode] = useState<AuthMode>("login");
 
 
@@ -41,6 +43,7 @@ const AuthForm = () => {
             }
 
             console.log("Auth success");
+            navigate("/");
             // Aquí podrías redirigir o cerrar modal
         } catch (err) {
             if (err instanceof FirebaseError) {
