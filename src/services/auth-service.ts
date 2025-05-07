@@ -1,4 +1,4 @@
-// src/services/authService.ts
+// src/services/auth-service.ts
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -7,6 +7,7 @@ import {
     signOut,
     onAuthStateChanged,
     User,
+    sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "@config/firebaseConfig.ts";
 
@@ -35,4 +36,8 @@ export const logout = () => {
 // Escuchar el cambio de usuario autenticado (para Zustand, etc.)
 export const onAuthChange = (callback: (user: User | null) => void) => {
     return onAuthStateChanged(auth, callback);
+};
+
+export const resetPassword = (email: string) => {
+    return sendPasswordResetEmail(auth, email);
 };

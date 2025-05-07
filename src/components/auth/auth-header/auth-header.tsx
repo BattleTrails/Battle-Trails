@@ -1,16 +1,31 @@
-import { Shield } from "lucide-react";
+import {ChevronLeft, Shield } from "lucide-react";
 import iconslogo from "@assets/iconslogo.svg"
 import  hello from "@assets/login.svg";
+import { useNavigate } from "react-router-dom";
 
 interface AuthHeaderProps {
     mode: "login" | "register";
 }
 
 const AuthHeader = ({ mode }: AuthHeaderProps) => {
+    const navigate = useNavigate();
     return (
-        <div className="flex flex-col justify-center pt-8 text-center gap-8">
+        <div className="flex flex-col justify-center   gap-7">
+
+            <div className="flex justify-start w-full">
+                <button
+                    onClick={() => navigate("/")}
+                    className=" cursor-pointer  text-white hover:text-accent transition-colors duration-300 flex  gap-1 "
+                    aria-label="Volver a la página principal"
+                >
+                    <ChevronLeft size={20} strokeWidth={1.5} />
+                    <span className="text-sm hidden sm:inline">Volver</span>
+                </button>
+            </div>
             {/* Logo */}
-            <img src={iconslogo} alt="Logo" className="m-auto" />
+            <div className="flex justify-center w-full">
+                <img src={iconslogo} alt="Logo" />
+            </div>
 
             {/* Título + Icono */}
             <div className="flex items-end justify-center gap-3 text-[20px]">

@@ -1,6 +1,7 @@
 import {Mail, Lock} from "lucide-react";
 import {AuthInputsProps} from "@/types";
 import {JSX} from "react";
+import AuthResetPasword from "@components/auth/auth-reset-pasword/auth-reset-pasword.tsx";
 
 
 const AuthInputs = ({email, password, setEmail, setPassword}: AuthInputsProps): JSX.Element => {
@@ -33,8 +34,8 @@ const AuthInputs = ({email, password, setEmail, setPassword}: AuthInputsProps): 
                         value={password} onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <p className="text-sm text-left text-accent/70 cursor-pointer hover:text-accent w-fit">¿Olvidaste la
-                    contraseña?</p>
+                <AuthResetPasword/>
+
             </div>
 
 

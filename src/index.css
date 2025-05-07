@@ -5,6 +5,12 @@
 html {
     font-family: 'SF Pro Text';
 }
+/*para eliminar el scroll en modals*/
+@layer base {
+    :where(:root:has(.modal-open,.modal[open],.modal:target,.modal-toggle:checked,.drawer:not(.drawer-open)>.drawer-toggle:checked)) {
+        scrollbar-gutter: auto !important; /* Quitamos el stable */
+    }
+}
 
 
 @plugin "daisyui/theme" {
