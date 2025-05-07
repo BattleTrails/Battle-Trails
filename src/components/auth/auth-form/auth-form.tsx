@@ -1,9 +1,14 @@
 import { useState } from "react";
+
 import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
 import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
 import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@components/auth/auth-button/auth-button.tsx";
 import {CircleArrowDown} from "lucide-react";
+
+import {loginWithEmail, registerWithEmail} from "@/services/auth-service";
+import { FirebaseError } from "firebase/app";
+import {AuthMode} from "@/types";
 
 const texts = {
     login: {
@@ -17,17 +22,47 @@ const texts = {
 };
 
 const AuthForm = () => {
-    const [mode, setMode] = useState<"login" | "register">("login");
+    const [loading, setLoading] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [mode, setMode] = useState<AuthMode>("login");
+
 
     const toggleMode = () => setMode(mode === "login" ? "register" : "login");
+    const handleSubmit = async () => {
+        setLoading(true);
+
+        try {
+            if (mode === "login") {
+                await loginWithEmail(email, password);
+            } else {
+                await registerWithEmail(email, password);
+            }
+
+            console.log("Auth success");
+            // Aquí podrías redirigir o cerrar modal
+        } catch (err) {
+            if (err instanceof FirebaseError) {
+                console.error("❌ Firebase error:", err.code, err.message,);
+            } else {
+                console.error("❌ Error desconocido:", err);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
 
     return (
         <div className="flex flex-col w-[600px] h-[800px] p-5 items-center gap-7 rounded-field bg-primary/75 text-white">
             <AuthHeader mode={mode} />
 
-            <AuthImputs />
+            <AuthImputs  email={email} setEmail={setEmail} password={password} setPassword={setPassword}/>
 
-            <AuthButton text={texts[mode].button} />
+            <AuthButton text={texts[mode].button} onClick={handleSubmit} loading={loading} />
+
 
             {/* Separador */}
             <div className="flex items-center gap-4 w-[350px] my-6">
