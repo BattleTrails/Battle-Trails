@@ -64,6 +64,7 @@ const AuthForm = () => {
 
             <div className="flex flex-col items-center gap-7 flex-1 justify-center">
                 <AuthImputs
+                    mode={mode}
                     email={email}
                     setEmail={setEmail}
                     password={password}

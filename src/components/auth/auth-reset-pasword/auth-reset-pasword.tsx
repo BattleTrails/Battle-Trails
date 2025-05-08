@@ -1,11 +1,18 @@
 import {useRef, useState} from "react";
 import {resetPassword} from "@/services/auth-service.ts";
 import {FirebaseError} from "firebase/app";
+import {AuthMode} from "@/types";
 
-const AuthResetPasword = () => {
+interface Props {
+    mode:AuthMode;
+}
+
+const AuthResetPasword = ({mode}:Props) => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const dialogRef = useRef<HTMLDialogElement>(null);
+
+
 
     const openModal = () => {
         setMessage("")
@@ -32,12 +39,16 @@ const AuthResetPasword = () => {
     };
     return (
         <>
+
             <button
-                className="text-sm text-left text-accent/70 hover:text-accent w-fit cursor-pointer"
+                className={`text-sm text-left text-accent/70 hover:text-accent w-fit cursor-pointer
+                ${mode === "login" ? "" : "invisible pointer-events-none"}`}
                 onClick={openModal}
             >
                 ¿Olvidaste tu contraseña?
             </button>
+
+
 
             <dialog ref={dialogRef} className="modal">
 
@@ -52,7 +63,7 @@ const AuthResetPasword = () => {
                     <input
                         type="email"
                         placeholder="Tu correo electronico"
-                        className="input text-neutral input-bordered w-full mb-4"
+                        className="input text-neutral input-bordered w-full mb-4 focus:ring-2 focus:ring-secondary"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />

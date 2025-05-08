@@ -1,6 +1,6 @@
-import {ChevronLeft, Shield } from "lucide-react";
-import iconslogo from "@assets/iconslogo.svg"
-import  hello from "@assets/login.svg";
+import { ChevronLeft, Shield } from "lucide-react";
+import iconslogo from "@assets/iconslogo.svg";
+import hello from "@assets/login.svg";
 import { useNavigate } from "react-router-dom";
 
 interface AuthHeaderProps {
@@ -9,41 +9,61 @@ interface AuthHeaderProps {
 
 const AuthHeader = ({ mode }: AuthHeaderProps) => {
     const navigate = useNavigate();
-    return (
-        <div className="flex flex-col justify-center   gap-7">
 
-            <div className="flex justify-start w-full">
+    return (
+        <div className="flex flex-col justify-center gap-8">
+            {/* Botón Volver */}
+            <div className="flex w-full">
                 <button
                     onClick={() => navigate("/")}
-                    className=" cursor-pointer  text-white hover:text-accent transition-colors duration-300 flex  gap-1 "
+                    className="flex items-center text-accent/70 hover:text-accent transition-colors duration-300"
                     aria-label="Volver a la página principal"
                 >
-                    <ChevronLeft size={20} strokeWidth={1.5} />
-                    <span className="text-sm hidden sm:inline">Volver</span>
+                    <ChevronLeft size={24} strokeWidth={1.5} />
+                    <span className="ml-2 text-sm sm:inline">Volver</span>
                 </button>
             </div>
-            {/* Logo */}
+
+            {/* Logo reducido */}
             <div className="flex justify-center w-full">
-                <img src={iconslogo} alt="Logo" />
+                <img
+                    src={iconslogo}
+                    alt="Logo Battle Trails"
+                    className="w-10 h-auto"
+                />
             </div>
 
-            {/* Título + Icono */}
-            <div className="flex items-end justify-center gap-3 text-[20px]">
-                <div className="w-[150px] text-right">
-                    <p>{mode === "login" ? "Hola de nuevo!" : "Bienvenido!"}</p>
-                </div>
-
-                {/* Icono dinámico */}
+            {/* Contenido dinámico con animación */}
+            <div
+                key={mode} // forzar remount y reiniciar animación en cambio de mode
+                style={{ animation: "fadeIn 0.4s ease-in-out" }}
+                className="flex items-center justify-center gap-4"
+            >
                 {mode === "login" ? (
-                    <img src={hello} className="w-6 h-8" />
-                ) : (
-                    <Shield color="#D4AF37" className="w-6 h-8" />
-                )}
+                    <div className="flex items-center justify-center gap-4">
+                        <p className="text-2xl sm:text-3xl">Hola de nuevo!</p>
 
-                {/* Texto derecho */}
-                <div className="w-[150px] text-left">
-                    <p>{mode === "login" ? "Inicia sesión" : "Regístrate"}</p>
-                </div>
+                        <img
+                            src={hello}
+                            alt="Icono de saludo"
+                            className="w-8 h-8 sm:w-10 sm:h-10"
+                        />
+
+                        <p className="text-2xl sm:text-3xl font-bold text-accent">
+                            Inicia sesión
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                        <Shield
+                            className="w-8 h-8 sm:w-10 sm:h-10"
+                            color="#D4AF37"
+                        />
+                        <p className="text-2xl sm:text-3xl font-bold text-accent">
+                            Regístrate
+                        </p>
+                    </>
+                )}
             </div>
         </div>
     );
