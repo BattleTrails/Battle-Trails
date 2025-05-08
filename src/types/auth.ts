@@ -12,3 +12,8 @@ export type AuthButtonProps = {
     onClick: () => void;
     loading?: boolean;
 };
+export type AuthAlertProps = {
+    message: string;
+    onClose: () => void;
+}
+

@@ -4,10 +4,10 @@ import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
 import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
 import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@components/auth/auth-button/auth-button.tsx";
-import {ChevronLeft,CircleArrowDown} from "lucide-react";
+import {CircleArrowDown} from "lucide-react";
 
-import {loginWithEmail, registerWithEmail} from "@/services/auth-service";
-import { FirebaseError } from "firebase/app";
+import { useAuth } from "@context/auth-context.tsx";
+
 import {AuthMode} from "@/types";
 import {useNavigate} from "react-router-dom";
 
@@ -29,32 +29,28 @@ const AuthForm = () => {
 
     const navigate = useNavigate();
     const [mode, setMode] = useState<AuthMode>("login");
+    const { login, register } = useAuth();
 
 
     const toggleMode = () => setMode(mode === "login" ? "register" : "login");
     const handleSubmit = async () => {
         setLoading(true);
+        let success = false;
 
-        try {
-            if (mode === "login") {
-                await loginWithEmail(email, password);
-            } else {
-                await registerWithEmail(email, password);
-            }
-
-            console.log("Auth success");
-            navigate("/");
-            // Aquí podrías redirigir o cerrar modal
-        } catch (err) {
-            if (err instanceof FirebaseError) {
-                console.error("❌ Firebase error:", err.code, err.message,);
-            } else {
-                console.error("❌ Error desconocido:", err);
-            }
-        } finally {
-            setLoading(false);
+        if (mode === "login") {
+            success = await login(email, password);
+        } else {
+            success = await register(email, password);
         }
+
+        if (success) {
+            navigate("/");
+        }
+
+        setLoading(false);
     };
+
+
 
 
 

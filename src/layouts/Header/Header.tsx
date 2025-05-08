@@ -3,12 +3,12 @@ import {useNavigate} from "react-router-dom";
 import SearchBox from "@components/ui/search-box/search-box .tsx";
 import logo from "@assets/btlogo_full.svg";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthHandler } from "@hooks/useAuthHandler.ts";
 import { logout } from "@/services/auth-service";
 
 
 const Header = () => {
-    const { user, loading } = useAuth();
+    const { user, loading } = useAuthHandler();
 
     const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Header = () => {
         await logout();
         navigate("/"); // o simplemente recarga la vista
     };
-    console.log("👤 Usuario actual:", user);
+
 
     const goToAuth = () => {
         navigate("/auth");

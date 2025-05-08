@@ -25,7 +25,8 @@
       "@types/*": ["types/*"],
       "@layouts/*": ["layouts/*"],
       "@hooks/*": ["hooks/*"],
-      "@config/*": ["config/*"]
+      "@config/*": ["config/*"],
+      "@context/*": ["context/*"]
     },
     "types": []
   },
