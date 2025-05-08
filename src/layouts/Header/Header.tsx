@@ -1,9 +1,22 @@
 import {useNavigate} from "react-router-dom";
+
 import SearchBox from "@components/ui/search-box/search-box .tsx";
 import logo from "@assets/btlogo_full.svg";
 
+import { useAuthHandler } from "@hooks/useAuthHandler.ts";
+import { logout } from "@/services/auth-service";
+
+
 const Header = () => {
+    const { user, loading } = useAuthHandler();
+
     const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate("/"); // o simplemente recarga la vista
+    };
+
 
     const goToAuth = () => {
         navigate("/auth");
@@ -34,14 +47,31 @@ const Header = () => {
                             />
                         </div>
                     </div>
-                    <ul
-                        tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 rounded-field z-1 mt-3 w-52 p-2 shadow"
-                    >
-                        <li><a onClick={goToAuth}>Iniciar Sesion</a></li>
-                        <li><a>Perfil</a></li>
-                        <li><a>Cerrar Sesion</a></li>
-                    </ul>
+                    {!loading && (
+                        <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-1 mt-3 w-fit min-w-[140px] p-2 gap-1 shadow">
+                            {user ? (
+                                <>
+                                    <li className="pointer-events-none hover:bg-transparent">
+                                        <span className="text-sm text-neutral whitespace-nowrap">{user.email}</span>
+                                    </li>
+                                    <li><a>Perfil</a></li>
+                                    <li>
+                                        <button onClick={handleLogout} className="w-full text-left">
+                                            Cerrar sesión
+                                        </button>
+                                    </li>
+                                </>
+                            ) : (
+                                <li>
+                                    <button onClick={goToAuth} className="w-full text-left">
+                                        Iniciar sesión
+                                    </button>
+                                </li>
+
+                            )}
+                        </ul>
+                    )}
+
                 </div>
             </div>
         </div>

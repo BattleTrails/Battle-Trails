@@ -24,7 +24,9 @@
       "@pages/*": ["pages/*"],
       "@types/*": ["types/*"],
       "@layouts/*": ["layouts/*"],
-        "@hooks/*": ["hooks/*"],
+      "@hooks/*": ["hooks/*"],
+      "@config/*": ["config/*"],
+      "@context/*": ["context/*"]
     },
     "types": []
   },
