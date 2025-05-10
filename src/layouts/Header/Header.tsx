@@ -1,43 +1,85 @@
 import {useNavigate} from "react-router-dom";
 
-import SearchBox from "@components/ui/search-box/search-box .tsx";
+
 import logo from "@assets/btlogo_full.svg";
+import logo2 from "@assets/Logo-sm.svg";
 
-import { useAuthHandler } from "@hooks/useAuthHandler.ts";
-import { logout } from "@/services/auth-service";
-
+import {useAuthHandler} from "@hooks/useAuthHandler.ts";
+import {logout} from "@/services/auth-service";
+import {CircleFadingPlus} from "lucide-react";
+import SearchBox from "@components/ui/search-box/search-box .tsx";
 
 const Header = () => {
-    const { user, loading } = useAuthHandler();
-
+    const {user, loading} = useAuthHandler();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         await logout();
-        navigate("/"); // o simplemente recarga la vista
+        navigate("/");
     };
-
 
     const goToAuth = () => {
         navigate("/auth");
     };
 
-    return (
-        <div className="fixed top-0 left-0 w-full z-50 py-5 bg-primary shadow-sm flex justify-between items-center px-4">
+    const goToNewRoute = () => {
+        /*navigate("/ruta/nueva");*/
+    };
 
-            <div className="flex items-center basis-1/4 cursor-pointer" onClick={() => navigate("/")}>
-                <img src={logo} alt="logo" className=""/>
+    return (
+        <div
+            className="fixed top-0 left-0 w-full z-50 bg-primary shadow-sm flex justify-between items-center px-4 py-4 md:py-5 lg:py-6 h-[70px] md:h-[80px] lg:h-[100px]">
+            {/* Logo */}
+            {/*<div className="flex items-center basis-1/4 cursor-pointer" onClick={() => navigate("/")}>
+                <img src={logo} alt="logo" className="hidden md:block h-10" />
+                <img src={logo2} alt="logo" className="block md:hidden h-8" />
+            </div>*/}
+            <div className="flex items-center  cursor-pointer" onClick={() => navigate("/")}>
+                <img src={logo} alt="logo" className="hidden sm:block h-10"/>
+                <img src={logo2} alt="logo" className="block sm:hidden h-8"/>
             </div>
 
-            <div className="flex justify-center basis-1/2">
+            {/* SearchBox */}
+            <div className="absolute left-1/2 -translate-x-1/2">
                 <SearchBox/>
             </div>
 
-            <div className="flex justify-end basis-1/4 gap-4">
-                <button className="btn text-accent bg-primary border-0 shadow-none focus:shadow-none hover:shadow-none">
-                    Publica una ruta
-                </button>
+            {/* Botón y Avatar */}
+            <div className="flex justify-end  items-center gap-4">
+                {/* Solo visible en md+ */}
+                {/*<div className="hidden md:flex">
+                    <button
+                        onClick={() => {
+                            if (user) {
+                                goToNewRoute();
+                            } else {
+                                goToAuth();
+                            }
+                        }}
+                        className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
+                    >
+                        <CircleFadingPlus />
+                        <p>Añade tu ruta</p>
+                    </button>
+                </div>*/}
+                <div className="hidden sm:flex">
+                    <button
+                        onClick={() => {
+                            if (user) {
+                                goToNewRoute();
+                            } else {
+                                goToAuth();
+                            }
+                        }}
+                        className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
+                    >
+                        <CircleFadingPlus/>
+                        <p>Añade tu ruta</p>
+                    </button>
+                </div>
 
+
+                {/* Dropdown */}
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                         <div className="w-10 rounded-full">
@@ -47,8 +89,43 @@ const Header = () => {
                             />
                         </div>
                     </div>
+
                     {!loading && (
-                        <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-1 mt-3 w-fit min-w-[140px] p-2 gap-1 shadow">
+                        <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
+
+                            {/* Botón visible siempre (solo mobile) */}
+                            {/*<li className="md:hidden">
+                                <button
+                                    onClick={() => {
+                                        if (user) {
+                                            goToNewRoute();
+                                        } else {
+                                            goToAuth();
+                                        }
+                                    }}
+                                    className="w-full text-left flex gap-2 items-center"
+                                >
+                                    <CircleFadingPlus size={18} />
+                                    Añade tu ruta
+                                </button>
+                            </li>*/}
+                            <div className="hidden sm:flex">
+                                <button
+                                    onClick={() => {
+                                        if (user) {
+                                            goToNewRoute();
+                                        } else {
+                                            goToAuth();
+                                        }
+                                    }}
+                                    className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
+                                >
+                                    <CircleFadingPlus/>
+                                    <p>Añade tu ruta</p>
+                                </button>
+                            </div>
+
+                            {/* Condicional de contenido restante */}
                             {user ? (
                                 <>
                                     <li className="pointer-events-none hover:bg-transparent">
@@ -67,11 +144,9 @@ const Header = () => {
                                         Iniciar sesión
                                     </button>
                                 </li>
-
                             )}
                         </ul>
                     )}
-
                 </div>
             </div>
         </div>
