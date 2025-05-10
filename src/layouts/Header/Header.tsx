@@ -31,14 +31,15 @@ const Header = () => {
             <div className="flex items-center justify-between w-full">
                 {/* Logo */}
                 <div
-                    className={`flex items-center cursor-pointer
+                    className={`flex items-center cursor-pointer justify-start w-[64px] sm:w-auto
                     ${searchOpen ? "opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto" : "opacity-100"}
                     transition-opacity duration-300`}
                     onClick={() => navigate("/")}
                 >
-                    <img src={logo} alt="logo" className="hidden min-[701px]:block h-10"/>
-                    <img src={logo2} alt="logo" className="block min-[701px]:hidden h-8"/>
+                    <img src={logo} alt="logo" className="hidden min-[701px]:block h-10" />
+                    <img src={logo2} alt="logo" className="block min-[701px]:hidden h-8" />
                 </div>
+
 
 
                 {/* SearchBox */}
@@ -48,7 +49,7 @@ const Header = () => {
 
                 {/* Botón + Avatar */}
                 <div
-                    className={`flex items-center gap-4
+                    className={`flex items-center justify-end gap-4 w-[64px] sm:w-auto
                     ${searchOpen ? "opacity-0 pointer-events-none sm:opacity-100 sm:pointer-events-auto" : "opacity-100"}
                     transition-opacity duration-300`}
                 >
