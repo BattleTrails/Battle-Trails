@@ -7,7 +7,7 @@ import logo2 from "@assets/Logo-sm.svg";
 import {useAuthHandler} from "@hooks/useAuthHandler.ts";
 import {logout} from "@/services/auth-service";
 import {CircleFadingPlus} from "lucide-react";
-import SearchBox from "@components/ui/search-box/search-box .tsx";
+import SearchBox from "@components/ui/search-box/search-box.tsx";
 
 
 const Header = () => {
