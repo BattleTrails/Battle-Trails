@@ -67,9 +67,9 @@ const SearchBox = ({onFocusChange}: Props) => {
                         placeholder:top-[-1px] placeholder:relative 
                         ${sharedTransition}
                         ${isExpanded
-                        ? "w-64 h-10 bg-white text-secondary placeholder-secondary border-secondary shadow-lg"
+                        ? "w-72 h-10 bg-white text-secondary placeholder-secondary border-secondary shadow-lg"
                         : "w-8 h-8 border-transparent cursor-pointer"}
-                        focus:w-64 hover:w-64
+                        focus:w-72 hover:w-72
                     `}
                 />
             </div>
