@@ -1,7 +1,11 @@
 import {Search} from "lucide-react";
 import {useEffect, useState} from "react";
 
-const SearchBox = () => {
+type Props = {
+    onFocusChange?: (value: boolean) => void;
+};
+
+const SearchBox = ({onFocusChange}: Props) => {
     const [isFocused, setIsFocused] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [showPlaceholder, setShowPlaceholder] = useState(false);
@@ -19,6 +23,11 @@ const SearchBox = () => {
             setShowPlaceholder(false);
         }
         return () => clearTimeout(timeout);
+    }, [isExpanded]);
+
+    // ✅ Comunica el estado al padre
+    useEffect(() => {
+        onFocusChange?.(isExpanded);
     }, [isExpanded]);
 
     return (
@@ -58,9 +67,9 @@ const SearchBox = () => {
                         placeholder:top-[-1px] placeholder:relative 
                         ${sharedTransition}
                         ${isExpanded
-                        ? "w-64 h-10 bg-white text-secondary placeholder-secondary border-secondary shadow-lg"
+                        ? "w-72 h-10 bg-white text-secondary placeholder-secondary border-secondary shadow-lg"
                         : "w-8 h-8 border-transparent cursor-pointer"}
-                        focus:w-64 hover:w-64
+                        focus:w-72 hover:w-72
                     `}
                 />
             </div>
