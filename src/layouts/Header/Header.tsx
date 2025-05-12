@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Logo from "@layouts/Header/logo"
-import SearchBarWrapper from "@layouts/Header/search-bar-wrapper.tsx";
-import UserActions from "@layouts/Header/user-actions.tsx";
-
-
+import Logo from "@layouts/header/logo.tsx";
+import SearchBarWrapper from "@layouts/header/search-bar-wrapper.tsx";
+import UserActions from "@layouts/header/user-actions.tsx";
 
 
 const Header = () => {
