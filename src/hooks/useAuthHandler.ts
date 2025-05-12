@@ -12,7 +12,7 @@ import {auth} from "@config/firebaseConfig"; // tu path original
 
 export const useAuthHandler = () => {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true); // 👈 lo mantenemos para Header
+    const [loading, setLoading] = useState(true); // 👈 lo mantenemos para header
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {

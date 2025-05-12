@@ -10,7 +10,7 @@ const Header = () => {
     const [searchOpen, setSearchOpen] = useState(false);
 
     return (
-        <div className="fixed flex items-center top-0 left-0 w-full z-50 bg-primary shadow-sm h-[70px] md:h-[80px] lg:h-[90px] px-4 py-4 md:py-5 lg:py-6">
+        <div className="fixed flex items-center top-0 left-0 w-full z-50 bg-primary shadow-sm h-[70px] md:h-[70px] lg:h-[90px] px-4 py-4 md:py-5 lg:py-6">
             <div className="relative flex items-center w-full h-full">
                 <Logo searchOpen={searchOpen} onClick={() => navigate("/")} />
                 <SearchBarWrapper setSearchOpen={setSearchOpen} />
