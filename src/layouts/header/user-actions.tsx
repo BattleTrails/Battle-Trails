@@ -8,7 +8,7 @@ import {
     CLASS_MIN_BP_WIDTH,
     CLASS_HIDE_BELOW_BP_OPACITY,
     CLASS_OPACITY_TOGGLE,
-    CLASS_BELOW_BP_HIDDEN
+    CLASS_BELOW_BP_HIDDEN, CLASS_MIN_BP_HIDDEN
 } from "@layouts/header/headerBreakpoints";
 
 const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
@@ -59,15 +59,11 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
                 {!loading && (
                     <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
                         {/* Botón mobile visible solo por debajo del breakpoint */}
-                        <div className="flex min-[701px]:hidden">
-                            <button
-                                onClick={() => (user ? goToNewRoute() : goToAuth())}
-                                className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
-                            >
-                                <CircleFadingPlus />
-                                <p>Añade tu ruta</p>
+                        <li className={`flex ${CLASS_MIN_BP_HIDDEN}`}>
+                            <button onClick={() => (user ? goToNewRoute() : goToAuth())} className="w-full text-left text-secondary">
+                                Añade tu ruta
                             </button>
-                        </div>
+                        </li>
                         {user ? (
                             <>
                                 <li className="pointer-events-none hover:bg-transparent">
