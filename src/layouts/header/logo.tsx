@@ -1,16 +1,26 @@
 import logo from "@assets/btlogo_full.svg";
 import logo2 from "@assets/Logo-sm.svg";
 
-const Logo = ({ searchOpen, onClick }: { searchOpen: boolean, onClick: () => void }) => {
+import {
+    CLASS_BELOW_BP_WIDTH,
+    CLASS_MIN_BP_WIDTH,
+    CLASS_HIDE_BELOW_BP_OPACITY,
+    CLASS_OPACITY_TOGGLE,
+    CLASS_LOGO_LARGE,
+    CLASS_LOGO_SMALL
+} from "@layouts/header/headerBreakpoints";
+
+const Logo = ({ searchOpen, onClick }: { searchOpen: boolean; onClick: () => void }) => {
     return (
         <div
-            className={`flex items-center cursor-pointer justify-start min-w-[64px] min-[701px]:min-w-[120px]
-            ${searchOpen ? "opacity-0 pointer-events-none min-[701px]:opacity-100 min-[701px]:pointer-events-auto" : "opacity-100"}
-            transition-opacity duration-300`}
+            className={`flex items-center cursor-pointer justify-start 
+        ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH} 
+        ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"} 
+        ${CLASS_OPACITY_TOGGLE}`}
             onClick={onClick}
         >
-            <img src={logo} alt="logo" className="hidden min-[701px]:block h-10" />
-            <img src={logo2} alt="logo" className="block min-[701px]:hidden h-8" />
+            <img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`} />
+            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`} />
         </div>
     );
 };

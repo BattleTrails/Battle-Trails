@@ -3,25 +3,34 @@ import { logout } from "@/services/auth-service";
 import { useNavigate } from "react-router-dom";
 import { CircleFadingPlus } from "lucide-react";
 
+import {
+    CLASS_BELOW_BP_WIDTH,
+    CLASS_MIN_BP_WIDTH,
+    CLASS_HIDE_BELOW_BP_OPACITY,
+    CLASS_OPACITY_TOGGLE,
+    CLASS_BELOW_BP_HIDDEN
+} from "@layouts/header/headerBreakpoints";
+
 const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
     const { user, loading } = useAuthHandler();
     const navigate = useNavigate();
 
     const goToAuth = () => navigate("/auth");
-    const goToNewRoute = () => {
-        /* navigate("/ruta/nueva"); */
-    };
-
+    const goToNewRoute = () => { /* navigate("/ruta/nueva"); */ };
     const handleLogout = async () => {
         await logout();
         navigate("/");
     };
 
     return (
-        <div className={`flex items-center justify-end min-w-[64px] min-[701px]:min-w-[120px] 
-            ${searchOpen ? "opacity-0 pointer-events-none min-[701px]:opacity-100 min-[701px]:pointer-events-auto" : "opacity-100"}
-            transition-opacity duration-300 ml-auto`}>
-            <div className="hidden min-[701px]:flex">
+        <div
+            className={`flex items-center justify-end ml-auto
+        ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH}
+        ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"}
+        ${CLASS_OPACITY_TOGGLE}`}
+        >
+            {/* Botón visible desde el breakpoint */}
+            <div className={CLASS_BELOW_BP_HIDDEN}>
                 <button
                     onClick={() => (user ? goToNewRoute() : goToAuth())}
                     className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
@@ -31,8 +40,13 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
                 </button>
             </div>
 
+            {/* Dropdown del avatar */}
             <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className=" btn-ghost btn-circle avatar  border-0 shadow-none focus:shadow-none hover:shadow-none!p-0">
+                <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn-ghost btn-circle avatar border-0 shadow-none focus:shadow-none hover:shadow-none !p-0"
+                >
                     <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer ml-auto">
                         <img
                             alt="user avatar"
@@ -44,6 +58,7 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
 
                 {!loading && (
                     <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
+                        {/* Botón mobile visible solo por debajo del breakpoint */}
                         <div className="flex min-[701px]:hidden">
                             <button
                                 onClick={() => (user ? goToNewRoute() : goToAuth())}
@@ -74,7 +89,6 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
                         )}
                     </ul>
                 )}
-
             </div>
         </div>
     );
