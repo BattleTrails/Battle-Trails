@@ -1,7 +1,7 @@
-import { useAuthHandler } from "@hooks/useAuthHandler";
-import { logout } from "@/services/auth-service";
-import { useNavigate } from "react-router-dom";
-import { CircleFadingPlus } from "lucide-react";
+import {useAuthHandler} from "@hooks/useAuthHandler.ts";
+import {logout} from "@/services/auth-service.ts";
+import {useNavigate} from "react-router-dom";
+import {CircleFadingPlus} from "lucide-react";
 
 import {
     CLASS_BELOW_BP_WIDTH,
@@ -9,14 +9,15 @@ import {
     CLASS_HIDE_BELOW_BP_OPACITY,
     CLASS_OPACITY_TOGGLE,
     CLASS_BELOW_BP_HIDDEN, CLASS_MIN_BP_HIDDEN
-} from "@layouts/header/headerBreakpoints";
+} from "@layouts/header/header-breakpoints/headerBreakpoints.ts";
 
-const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
-    const { user, loading } = useAuthHandler();
+const HeaderUserActions = ({searchOpen}: { searchOpen: boolean }) => {
+    const {user, loading} = useAuthHandler();
     const navigate = useNavigate();
 
     const goToAuth = () => navigate("/auth");
-    const goToNewRoute = () => { /* navigate("/ruta/nueva"); */ };
+    const goToNewRoute = () => { /* navigate("/ruta/nueva"); */
+    };
     const handleLogout = async () => {
         await logout();
         navigate("/");
@@ -25,9 +26,9 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
     return (
         <div
             className={`flex items-center justify-end ml-auto
-        ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH}
-        ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"}
-        ${CLASS_OPACITY_TOGGLE}`}
+                        ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH}
+                        ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"}
+                        ${CLASS_OPACITY_TOGGLE}`}
         >
             {/* Botón visible desde el breakpoint */}
             <div className={CLASS_BELOW_BP_HIDDEN}>
@@ -35,7 +36,7 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
                     onClick={() => (user ? goToNewRoute() : goToAuth())}
                     className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"
                 >
-                    <CircleFadingPlus />
+                    <CircleFadingPlus/>
                     <p>Añade tu ruta</p>
                 </button>
             </div>
@@ -60,7 +61,8 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
                     <ul className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
                         {/* Botón mobile visible solo por debajo del breakpoint */}
                         <li className={`flex ${CLASS_MIN_BP_HIDDEN}`}>
-                            <button onClick={() => (user ? goToNewRoute() : goToAuth())} className="w-full text-left text-secondary">
+                            <button onClick={() => (user ? goToNewRoute() : goToAuth())}
+                                    className="w-full text-left text-secondary">
                                 Añade tu ruta
                             </button>
                         </li>
@@ -90,4 +92,4 @@ const UserActions = ({ searchOpen }: { searchOpen: boolean }) => {
     );
 };
 
-export default UserActions;
+export default HeaderUserActions;

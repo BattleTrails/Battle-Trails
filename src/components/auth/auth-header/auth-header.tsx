@@ -1,13 +1,13 @@
-import { ChevronLeft, Shield } from "lucide-react";
+import {ChevronLeft, Shield} from "lucide-react";
 import iconslogo from "@assets/iconslogo.svg";
 import hello from "@assets/login.svg";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 interface AuthHeaderProps {
     mode: "login" | "register";
 }
 
-const AuthHeader = ({ mode }: AuthHeaderProps) => {
+const AuthHeader = ({mode}: AuthHeaderProps) => {
     const navigate = useNavigate();
 
     return (
@@ -19,16 +19,16 @@ const AuthHeader = ({ mode }: AuthHeaderProps) => {
                     className="flex items-center text-accent/70 hover:text-accent transition-colors duration-300"
                     aria-label="Volver a la página principal"
                 >
-                    <ChevronLeft size={24} strokeWidth={1.5} />
+                    <ChevronLeft size={24} strokeWidth={1.5}/>
                     <span className="ml-2 text-sm sm:inline">Volver</span>
                 </button>
             </div>
 
-            {/* Logo reducido */}
+            {/* HeaderLogo reducido */}
             <div className="flex justify-center w-full">
                 <img
                     src={iconslogo}
-                    alt="Logo Battle Trails"
+                    alt="HeaderLogo Battle Trails"
                     className="w-10 h-auto"
                 />
             </div>
@@ -36,7 +36,7 @@ const AuthHeader = ({ mode }: AuthHeaderProps) => {
             {/* Contenido dinámico con animación */}
             <div
                 key={mode} // forzar remount y reiniciar animación en cambio de mode
-                style={{ animation: "fadeIn 0.4s ease-in-out" }}
+                style={{animation: "fadeIn 0.4s ease-in-out"}}
                 className="flex items-center justify-center gap-4"
             >
                 {mode === "login" ? (

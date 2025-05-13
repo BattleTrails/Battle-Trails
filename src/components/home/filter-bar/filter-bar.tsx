@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
     Flame,
     LocateFixed,
@@ -7,11 +7,11 @@ import {
 } from "lucide-react";
 
 const FILTERS = [
-    { key: "populares", label: "Populares", icon: Flame },
-    { key: "cercanos", label: "Cercanos", icon: LocateFixed },
+    {key: "populares", label: "Populares", icon: Flame},
+    {key: "cercanos", label: "Cercanos", icon: LocateFixed},
     /*{ key: "explorados", label: "Más explorados", icon: Compass },*/
-    { key: "vistos", label: "Más vistos", icon: Eye },
-    { key: "descubre", label: "Joyas Ocultas", icon: Gem },
+    {key: "vistos", label: "Más vistos", icon: Eye},
+    {key: "descubre", label: "Joyas Ocultas", icon: Gem},
 ];
 
 const VALID_COMBINATIONS: Record<string, string[]> = {
@@ -58,8 +58,9 @@ const FilterBar = () => {
 
     if (isMobile) {
         return (
-            <div className="fixed top-[70px] z-40 w-full h-[70px] bg-primary border-b border-neutral text-[14px] flex items-center">
-                {FILTERS.map(({ key, label, icon: Icon }) => {
+            <div
+                className="fixed top-[70px] z-40 w-full h-[70px] bg-primary border-b border-neutral text-[14px] flex items-center">
+                {FILTERS.map(({key, label, icon: Icon}) => {
                     const isActive = selectedFilters.includes(key);
                     return (
                         <button
@@ -80,7 +81,7 @@ const FilterBar = () => {
                 {label}
               </span>
                             {isActive && (
-                                <div className="mt-1 h-[2px] w-6 bg-secondary rounded-full" />
+                                <div className="mt-1 h-[2px] w-6 bg-secondary rounded-full"/>
                             )}
                         </button>
                     );
@@ -91,8 +92,9 @@ const FilterBar = () => {
 
     // 🖥 Desktop layout (original intacto)
     return (
-        <div className="bg-base-100 rounded-4xl mx-auto px-2 py-3 shadow flex flex-wrap justify-center gap-3 max-w-full">
-            {FILTERS.map(({ key, label, icon: Icon }) => {
+        <div
+            className="bg-base-100 rounded-4xl mx-auto px-2 py-3 shadow flex flex-wrap justify-center gap-3 max-w-full">
+            {FILTERS.map(({key, label, icon: Icon}) => {
                 const isActive = selectedFilters.includes(key);
                 return (
                     <button
@@ -104,7 +106,7 @@ const FilterBar = () => {
                                 : "hover:bg-accent/20"
                         }`}
                     >
-                        <Icon className="w-4 h-4" />
+                        <Icon className="w-4 h-4"/>
                         <span>{label}</span>
                     </button>
                 );

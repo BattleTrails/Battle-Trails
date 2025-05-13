@@ -8,9 +8,9 @@ import {
     CLASS_OPACITY_TOGGLE,
     CLASS_LOGO_LARGE,
     CLASS_LOGO_SMALL
-} from "@layouts/header/headerBreakpoints";
+} from "@layouts/header/header-breakpoints/headerBreakpoints.ts";
 
-const Logo = ({ searchOpen, onClick }: { searchOpen: boolean; onClick: () => void }) => {
+const HeaderLogo = ({searchOpen, onClick}: { searchOpen: boolean; onClick: () => void }) => {
     return (
         <div
             className={`flex items-center cursor-pointer justify-start 
@@ -19,10 +19,10 @@ const Logo = ({ searchOpen, onClick }: { searchOpen: boolean; onClick: () => voi
         ${CLASS_OPACITY_TOGGLE}`}
             onClick={onClick}
         >
-            <img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`} />
-            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`} />
+            <img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`}/>
+            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`}/>
         </div>
     );
 };
 
-export default Logo;
+export default HeaderLogo;
