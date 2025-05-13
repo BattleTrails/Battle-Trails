@@ -8,7 +8,7 @@ const Card = ({post}: { post: Post }) => {
     return (
         <div className="card bg-base-100 w-full max-w-sm rounded-field border border-neutral/20">
 
-        <figure>
+            <figure>
                 <img
                     src={images.length > 0 ? images[0] : "/placeholder.jpg"}
                     alt={title}

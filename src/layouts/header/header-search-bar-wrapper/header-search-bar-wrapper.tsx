@@ -1,6 +1,6 @@
-import SearchBox from "@components/ui/search-box/search-box";
+import SearchBox from "@components/ui/search-box/search-box.tsx";
 
-const SearchBarWrapper = ({ setSearchOpen }: { setSearchOpen: (value: boolean) => void }) => {
+const HeaderSearchBarWrapper = ({ setSearchOpen }: { setSearchOpen: (value: boolean) => void }) => {
     return (
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md flex justify-center">
             <SearchBox onFocusChange={setSearchOpen} />
@@ -8,4 +8,4 @@ const SearchBarWrapper = ({ setSearchOpen }: { setSearchOpen: (value: boolean) =
     );
 };
 
-export default SearchBarWrapper;
+export default HeaderSearchBarWrapper;
