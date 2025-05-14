@@ -5,7 +5,7 @@
       "name": "Usuario 0",
       "email": "user0@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/0.jpg",
-      "bio": "Aventura hist\u00f3rica #0",
+      "bio": "Aventura histórica #0",
       "savedPosts": [
         "post2",
         "post4",
@@ -17,7 +17,7 @@
       "name": "Usuario 1",
       "email": "user1@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/1.jpg",
-      "bio": "Aventura hist\u00f3rica #1",
+      "bio": "Aventura histórica #1",
       "savedPosts": [
         "post8",
         "post3",
@@ -29,7 +29,7 @@
       "name": "Usuario 2",
       "email": "user2@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/2.jpg",
-      "bio": "Aventura hist\u00f3rica #2",
+      "bio": "Aventura histórica #2",
       "savedPosts": [
         "post6",
         "post1",
@@ -41,7 +41,7 @@
       "name": "Usuario 3",
       "email": "user3@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/3.jpg",
-      "bio": "Aventura hist\u00f3rica #3",
+      "bio": "Aventura histórica #3",
       "savedPosts": [
         "post8",
         "post2",
@@ -53,7 +53,7 @@
       "name": "Usuario 4",
       "email": "user4@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/4.jpg",
-      "bio": "Aventura hist\u00f3rica #4",
+      "bio": "Aventura histórica #4",
       "savedPosts": [
         "post4",
         "post1",
@@ -65,7 +65,7 @@
       "name": "Usuario 5",
       "email": "user5@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/5.jpg",
-      "bio": "Aventura hist\u00f3rica #5",
+      "bio": "Aventura histórica #5",
       "savedPosts": [
         "post9",
         "post5",
@@ -77,7 +77,7 @@
       "name": "Usuario 6",
       "email": "user6@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/6.jpg",
-      "bio": "Aventura hist\u00f3rica #6",
+      "bio": "Aventura histórica #6",
       "savedPosts": [
         "post2",
         "post0",
@@ -89,7 +89,7 @@
       "name": "Usuario 7",
       "email": "user7@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/7.jpg",
-      "bio": "Aventura hist\u00f3rica #7",
+      "bio": "Aventura histórica #7",
       "savedPosts": [
         "post1",
         "post6",
@@ -101,7 +101,7 @@
       "name": "Usuario 8",
       "email": "user8@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/8.jpg",
-      "bio": "Aventura hist\u00f3rica #8",
+      "bio": "Aventura histórica #8",
       "savedPosts": [
         "post8",
         "post6",
@@ -113,7 +113,7 @@
       "name": "Usuario 9",
       "email": "user9@example.com",
       "profilePicture": "https://randomuser.me/api/portraits/men/9.jpg",
-      "bio": "Aventura hist\u00f3rica #9",
+      "bio": "Aventura histórica #9",
       "savedPosts": [
         "post3",
         "post5",
@@ -125,12 +125,12 @@
     {
       "id": "post1",
       "userId": "user9",
-      "title": "Ruta hist\u00f3rica #1",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 1.",
+      "title": "Ruta histórica #1",
+      "description": "Exploración detallada del sitio histórico número 1.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1549924231-f129b911e442",
+        "https://images.unsplash.com/photo-1532274402917-5aadf881bdfb",
+        "https://images.unsplash.com/photo-1602784874203-671072fcbff2"
       ],
       "location": {
         "lat": 40.486769,
@@ -149,12 +149,12 @@
     {
       "id": "post2",
       "userId": "user5",
-      "title": "Ruta hist\u00f3rica #2",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 2.",
+      "title": "Ruta histórica #2",
+      "description": "Exploración detallada del sitio histórico número 2.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1747109644717-9e867b41c987?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1613079237336-e2f49ef49338",
+        "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f"
       ],
       "location": {
         "lat": 47.855582,
@@ -170,12 +170,12 @@
     {
       "id": "post3",
       "userId": "user7",
-      "title": "Ruta hist\u00f3rica #3",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 3.",
+      "title": "Ruta histórica #3",
+      "description": "Exploración detallada del sitio histórico número 3.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1579546929518-9e396f3cc809",
+        "https://images.unsplash.com/photo-1558981033-0fcb6468d7af",
+        "https://images.unsplash.com/photo-1579547621706-1a9c79d5ffa1"
       ],
       "location": {
         "lat": 45.253087,
@@ -192,12 +192,12 @@
     {
       "id": "post4",
       "userId": "user5",
-      "title": "Ruta hist\u00f3rica #4",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 4.",
+      "title": "Ruta histórica #4",
+      "description": "Exploración detallada del sitio histórico número 4.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1508672019048-805c876b67e2",
+        "https://images.unsplash.com/photo-1604147706288-fc1e3dfb6a13",
+        "https://images.unsplash.com/photo-1524492449097-cbdf3a0c3d57"
       ],
       "location": {
         "lat": 48.899962,
@@ -213,12 +213,12 @@
     {
       "id": "post5",
       "userId": "user1",
-      "title": "Ruta hist\u00f3rica #5",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 5.",
+      "title": "Ruta histórica #5",
+      "description": "Exploración detallada del sitio histórico número 5.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+        "https://images.unsplash.com/photo-1604022600594-690c18a84584",
+        "https://images.unsplash.com/photo-1504198266285-1659872e6590"
       ],
       "location": {
         "lat": 44.913636,
@@ -235,12 +235,12 @@
     {
       "id": "post6",
       "userId": "user7",
-      "title": "Ruta hist\u00f3rica #6",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 6.",
+      "title": "Ruta histórica #6",
+      "description": "Exploración detallada del sitio histórico número 6.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1747140415072-bf52b5f7739e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1483721310020-03333e577078",
+        "https://images.unsplash.com/photo-1481349518771-20055b2a7b24"
       ],
       "location": {
         "lat": 49.515107,
@@ -257,12 +257,12 @@
     {
       "id": "post7",
       "userId": "user1",
-      "title": "Ruta hist\u00f3rica #7",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 7.",
+      "title": "Ruta histórica #7",
+      "description": "Exploración detallada del sitio histórico número 7.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1745681619881-975e836e432c?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d6",
+        "https://images.unsplash.com/photo-1582719478171-72c2331913d7"
       ],
       "location": {
         "lat": 43.913374,
@@ -277,12 +277,12 @@
     {
       "id": "post8",
       "userId": "user4",
-      "title": "Ruta hist\u00f3rica #8",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 8.",
+      "title": "Ruta histórica #8",
+      "description": "Exploración detallada del sitio histórico número 8.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1746730341411-03b1f6b8f1f0?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1606857521015-7f70f9406d0e",
+        "https://images.unsplash.com/photo-1585421514287-27be95a0c44c"
       ],
       "location": {
         "lat": 46.37952,
@@ -300,12 +300,12 @@
     {
       "id": "post9",
       "userId": "user2",
-      "title": "Ruta hist\u00f3rica #9",
-      "description": "Exploraci\u00f3n detallada del sitio hist\u00f3rico n\u00famero 9.",
+      "title": "Ruta histórica #9",
+      "description": "Exploración detallada del sitio histórico número 9.",
       "images": [
-        "https://placehold.co/600x400?text=Imagen+1",
-        "https://placehold.co/600x400?text=Imagen+2",
-        "https://placehold.co/600x400?text=Imagen+3"
+        "https://images.unsplash.com/photo-1542831371-d531d36971e6",
+        "https://images.unsplash.com/photo-1515263487990-61e2f9d8b8a1",
+        "https://images.unsplash.com/photo-1563729784474-d77dbb933a9d"
       ],
       "location": {
         "lat": 41.867833,
