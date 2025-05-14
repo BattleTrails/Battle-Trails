@@ -33,7 +33,7 @@ const AuthInputs = ({email, password, setEmail, setPassword, mode}: Props): JSX.
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
 
                     <input
-                        type={showPassword ? "password" : "text"}
+                        type={showPassword ? "text" : "password"}
                         id="password"
                         placeholder="Introduce tu contraseña"
                         className="w-full h-[48px] bg-white border border-gray-200 rounded-field pl-10 pr-10 py-3 text-gray-800 placeholder-gray-400 shadow focus:outline-none focus:ring-2 focus:ring-secondary"
@@ -46,7 +46,7 @@ const AuthInputs = ({email, password, setEmail, setPassword, mode}: Props): JSX.
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
                     >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? <Eye className="w-5 h-5"/> : <EyeOff className="w-5 h-5"  />}
                     </button>
                 </div>
 
