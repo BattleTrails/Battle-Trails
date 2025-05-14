@@ -3,7 +3,10 @@ import Home from "@pages/home-page.tsx";
 import Test from "@pages/test-page.tsx";
 import MainLayout from "@layouts/main-layout.tsx";
 import AuthLayout from "@layouts/auth-layout.tsx";
-import AuthPage from "@pages/auth-page.tsx";
+import Auth from "@pages/auth-page.tsx";
+import Forge from "@pages/forge-page.tsx";
+import PrivateRoute from "@/routes/private-route.tsx";
+
 
 const App = () => {
     return useRoutes([
@@ -12,14 +15,15 @@ const App = () => {
             element: <MainLayout/>,
             children: [
                 {index: true, element: <Home/>},
-                {path: "test", element: <Test/>}
+                {path: "test", element: <Test/>},
+                {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
             ],
         },
         {
             path: "/auth",
-            element: <AuthLayout />,
+            element: <AuthLayout/>,
             children: [
-                { path: "", element: <AuthPage /> },
+                {path: "", element: <Auth/>},
 
             ],
         },

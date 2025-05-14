@@ -16,7 +16,7 @@ const HeaderUserActions = ({searchOpen}: { searchOpen: boolean }) => {
     const navigate = useNavigate();
 
     const goToAuth = () => navigate("/auth");
-    const goToNewRoute = () => { /* navigate("/ruta/nueva"); */
+    const goToNewRoute = () => {  navigate("/new");
     };
     const handleLogout = async () => {
         await logout();
