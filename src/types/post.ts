@@ -6,8 +6,8 @@ export interface Post {
     title: string;
     description: string;
     images: string[];
-    location?: GeoPoint; // opcional hasta que se integre el mapa
-    createdAt: Timestamp;
+   /* location?: GeoPoint;*/
+    /*createdAt: Timestamp ;*/
     likes: number;
     likedBy: string[];
 }

@@ -1,11 +1,17 @@
-import {useRef} from "react";
-
+import { useRef } from "react";
+import { usePostStore } from "@/store/usePostStore";
 
 const ForgeImages = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const { setImages } = usePostStore();
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
+    };
+
+    const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        setImages(files);
     };
 
     return (
@@ -26,13 +32,13 @@ const ForgeImages = () => {
                     Subir fotos
                 </button>
 
-                {/* Input oculto */}
                 <input
                     type="file"
                     accept="image/*"
                     multiple
                     ref={fileInputRef}
                     className="hidden"
+                    onChange={handleFilesSelected}
                 />
             </div>
         </div>
