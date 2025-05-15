@@ -1,5 +1,5 @@
 export type ForgeInputProps = {
-    label: string;
+    label?: string;
     placeholder?: string;
     name: string;
     value: string;
@@ -9,4 +9,5 @@ export type ForgeInputProps = {
     textarea?: boolean;
     rows?: number;
     maxLength?: number;
+    className?: string;
 }

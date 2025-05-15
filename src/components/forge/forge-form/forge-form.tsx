@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ForgeInput from "@components/forge/forge-input/forge-input.tsx";
+import ForgeButtonSave from "@components/forge/forge-button-save/forge-button-save.tsx";
 
 
 type ForgeFormData = {
@@ -13,7 +14,7 @@ const ForgeForm = () => {
     const [form, setForm] = useState<ForgeFormData>({
         title: "",
         description: "",
-        distance: "0 km", // por ahora hardcoded
+        distance: "0 km", // automatically calculated
         address: "",
     });
 
@@ -39,12 +40,13 @@ const ForgeForm = () => {
                 onChange={handleChange}
             />
 
+           {/* Destino*/}
             <ForgeInput
-                label="Dirección"
                 name="address"
                 placeholder="Ubicación principal"
                 value={form.address}
                 onChange={handleChange}
+                className="w-10/12 mx-auto"
             />
 
             <ForgeInput
@@ -68,9 +70,7 @@ const ForgeForm = () => {
             />
 
             <div className="text-right pt-2">
-                <button type="submit" className="btn btn-outline rounded-full px-6">
-                    Crear ruta
-                </button>
+                <ForgeButtonSave/>
             </div>
         </form>
     );
