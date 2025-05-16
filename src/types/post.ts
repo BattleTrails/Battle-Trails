@@ -1,4 +1,4 @@
-/*import { Timestamp, GeoPoint } from "firebase/firestore";*/
+import { Timestamp, GeoPoint } from "firebase/firestore";
 
 export interface Post {
     id: string;
@@ -6,8 +6,8 @@ export interface Post {
     title: string;
     description: string;
     images: string[];
-    /*location: GeoPoint;
-    createdAt: Timestamp;*/
+   /* location?: GeoPoint;*/
+    /*createdAt: Timestamp ;*/
     likes: number;
     likedBy: string[];
 }
