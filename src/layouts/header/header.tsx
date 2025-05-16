@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate,useLocation} from "react-router-dom";
 import HeaderLogo from "@layouts/header/header-logo/header-logo.tsx";
 import HeaderSearchBarWrapper from "@layouts/header/header-search-bar-wrapper/header-search-bar-wrapper.tsx";
 import HeaderUserActions from "@layouts/header/header-user-actions/header-user-actions.tsx";
@@ -8,14 +8,31 @@ import HeaderUserActions from "@layouts/header/header-user-actions/header-user-a
 const Header = () => {
     const navigate = useNavigate();
     const [searchOpen, setSearchOpen] = useState(false);
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    /*const isHome = currentPath === "/";
+    const isForge = currentPath==="/new";*/
+    const isHome = currentPath === "/";
+    const isForge = currentPath.startsWith("/new");
+    //const isDetails = currentPath.includes("/post/");
+
+    const headerClass = isHome
+        ? "bg-primary text-white"
+        : isForge ? "bg-base-100 text-neutral !h-[60px] shadow-sm" : "bg-neutral text-white";
+
 
     return (
         <div
-            className="fixed flex items-center top-0 left-0 w-full z-50 bg-primary h-[70px] md:h-[70px] lg:h-[90px] px-4 py-4 md:py-5 lg:py-6">
-            <div className="relative flex items-center w-full h-full">
-                <HeaderLogo searchOpen={searchOpen} onClick={() => navigate("/")}/>
-                <HeaderSearchBarWrapper setSearchOpen={setSearchOpen}/>
-                <HeaderUserActions searchOpen={searchOpen}/>
+            className={`fixed flex items-center top-0 left-0 w-full z-50  h-[70px] md:h-[70px] lg:h-[90px] px-4 py-4 md:py-5 lg:py-6 ${headerClass} `}>
+            <div className="relative flex items-center w-full h-full ">
+                <HeaderLogo searchOpen={searchOpen}
+                            onClick={() => navigate("/")}
+                            currentPath={currentPath}/>
+
+                <HeaderSearchBarWrapper setSearchOpen={setSearchOpen} currentPath={currentPath}/>
+                <HeaderUserActions searchOpen={searchOpen} currentPath={currentPath} />
+
             </div>
         </div>
     );

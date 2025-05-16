@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { usePostStore } from "@/store/usePostStore";
 import { compressImages } from "@/utils/compress-images";
-import { X,ImagePlus } from "lucide-react";
+import { X,ImagePlus ,Plus} from "lucide-react";
 
 const ForgeImages = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -28,7 +28,10 @@ const ForgeImages = () => {
     return (
         <div className="bg-neutral/5 rounded-lg border border-dashed border-neutral/30 p-4">
             {!hasImages && (
-                <div className="flex flex-col items-center justify-center text-center min-h-[400px]">
+                <div className="flex flex-col items-center gap-2 justify-center text-center min-h-[400px]">
+
+                    <ImagePlus/>
+
                     <p className="text-sm text-neutral">
                         Añade algunas imágenes de tu ruta
                     </p>
