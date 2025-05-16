@@ -7,12 +7,14 @@ export const compressImages = async (files: File[]): Promise<File[]> => {
     const compressedFiles: File[] = [];
 
     for (const file of files) {
+        const isWebP = file.type === "image/webp";
+
         const options = {
             maxSizeMB: 0.5,
             maxWidthOrHeight: 1280,
             useWebWorker: true,
-            fileType: "image/webp",
-            initialQuality: 0.8,
+            ...(isWebP ? {} : { fileType: "image/webp" }),
+            initialQuality: 0.9,
         };
 
 
