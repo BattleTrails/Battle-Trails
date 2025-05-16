@@ -6,7 +6,7 @@ import {usePostStore} from "@/store/usePostStore.ts";
 import {useNavigate} from "react-router-dom";
 
 import {createPost} from "@/services/db-service.ts";
-
+import {uploadImagesToSupabase} from "@/services/supabase-storage-service.ts";
 
 
 const ForgePage = () => {
@@ -24,7 +24,8 @@ const ForgePage = () => {
         // Validación simple
         if (
             !postDraft.title.trim() ||
-            !postDraft.description.trim()
+            !postDraft.description.trim() ||
+            !postDraft.images.length
         ) {
             alert("Por favor, completa todos los campos obligatorios.");
             return;
@@ -37,14 +38,7 @@ const ForgePage = () => {
 
         try {
             // 1. Subir imágenes a Firebase Storage
-            /*const imageUrls = await uploadImages(postDraft.images, user.uid);*/
-
-            // const imageUrls = await uploadImages(postDraft.images, user.uid);
-            const imageUrls = [
-                "https://images.unsplash.com/photo-1542831371-d531d36971e6"
-            ];
-
-
+            const imageUrls = await uploadImagesToSupabase(postDraft.images, user.uid);
 
             // 2. Crear el post en Firestore
             /*esto para poder usar el id del post cuando lo creemos :const postId = await createPost({*/
