@@ -38,11 +38,7 @@ export default function (plop) {
                 path: "src/components/{{folder}}/{{kebabCase name}}/{{kebabCase name}}.module.css",
                 templateFile: "templates/styles.module.css.hbs",
             },
-            {
-                type: "add",
-                path: "src/components/{{folder}}/{{kebabCase name}}/index.ts",
-                templateFile: "templates/index.ts.hbs",
-            },
+
         ],
     });
 

@@ -11,13 +11,21 @@ import {
     CLASS_BELOW_BP_HIDDEN, CLASS_MIN_BP_HIDDEN
 } from "@layouts/header/header-breakpoints/headerBreakpoints.ts";
 
-const HeaderUserActions = ({searchOpen}: { searchOpen: boolean }) => {
+const HeaderUserActions = ({searchOpen,currentPath}: { searchOpen: boolean ;currentPath:string}) => {
     const {user, loading} = useAuthHandler();
     const navigate = useNavigate();
 
     const goToAuth = () => navigate("/auth");
-    const goToNewRoute = () => {  navigate("/new");
-    };
+    const goToNewRoute = () => {  navigate("/new");};
+
+    const isHome = currentPath === "/";
+    const isForge = currentPath.startsWith("/new");
+
+    const headerClass = isHome
+        ? ""
+        : isForge ? "!pointer-events-none !hidden" : "";
+
+
     const handleLogout = async () => {
         await logout();
         navigate("/");
@@ -31,7 +39,7 @@ const HeaderUserActions = ({searchOpen}: { searchOpen: boolean }) => {
                         ${CLASS_OPACITY_TOGGLE}`}
         >
             {/* Botón visible desde el breakpoint */}
-            <div className={CLASS_BELOW_BP_HIDDEN}>
+            <div className={`${CLASS_BELOW_BP_HIDDEN} ${headerClass}`} >
                 <button
                     onClick={() => (user ? goToNewRoute() : goToAuth())}
                     className="btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2"

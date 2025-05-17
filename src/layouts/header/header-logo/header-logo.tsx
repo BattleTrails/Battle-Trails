@@ -1,5 +1,3 @@
-import logo from "@assets/btlogo_full.svg";
-import logo2 from "@assets/Logo-sm.svg";
 
 import {
     CLASS_BELOW_BP_WIDTH,
@@ -9,8 +7,18 @@ import {
     CLASS_LOGO_LARGE,
     CLASS_LOGO_SMALL
 } from "@layouts/header/header-breakpoints/headerBreakpoints.ts";
+import BtLogoLg from "@components/logo/bt-logo-lg/bt-logo-lg.tsx";
+import BtLogoSm from "@components/logo/bt-logo-sm/bt-logo-sm.tsx";
 
-const HeaderLogo = ({searchOpen, onClick}: { searchOpen: boolean; onClick: () => void }) => {
+const HeaderLogo = ({searchOpen, onClick,currentPath}: { searchOpen: boolean; onClick: () => void ; currentPath:string }) => {
+
+    const isHome = currentPath === "/";
+    const isForge = currentPath.startsWith("/new");
+
+
+    const logoColor = isHome ? "text-white" : isForge ? "text-neutral" : "text-accent";
+
+
     return (
         <div
             className={`flex items-center cursor-pointer justify-start 
@@ -19,8 +27,10 @@ const HeaderLogo = ({searchOpen, onClick}: { searchOpen: boolean; onClick: () =>
         ${CLASS_OPACITY_TOGGLE}`}
             onClick={onClick}
         >
-            <img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`}/>
-            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`}/>
+            {/*<img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`}/>
+            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`}/>*/}
+            <BtLogoLg className={`${CLASS_LOGO_LARGE} h-10 ${logoColor}`} />
+            <BtLogoSm className={`${CLASS_LOGO_SMALL} h-8 ${logoColor}`} />
         </div>
     );
 };
