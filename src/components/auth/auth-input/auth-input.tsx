@@ -20,7 +20,7 @@ const AuthInput = ({label, type, name, value, onChange, icon, showToggle = false
 
     return (
         <div className="flex flex-col gap-1">
-            <label htmlFor={name} className="text-left font-medium text-white">
+            <label htmlFor={name} className="text-left font-medium text-neutral">
                 {label}
             </label>
             <div className="relative">
