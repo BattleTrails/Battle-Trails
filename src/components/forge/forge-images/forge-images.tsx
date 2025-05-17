@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { usePostStore } from "@/store/usePostStore";
 import { compressImages } from "@/utils/compress-images";
-import { X,ImagePlus ,Plus} from "lucide-react";
+import { X,ImagePlus } from "lucide-react";
 
 const ForgeImages = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
