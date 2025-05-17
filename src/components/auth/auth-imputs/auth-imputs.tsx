@@ -1,61 +1,47 @@
-import {Eye,EyeOff, Mail, Lock} from "lucide-react";
-import {AuthInputsProps, AuthMode} from "@/types";
-import {JSX, useState} from "react";
-import AuthResetPasword from "@components/auth/auth-reset-pasword/auth-reset-pasword.tsx";
+import { Mail, Lock, User } from "lucide-react";
+import AuthResetPasword from "@components/auth/auth-reset-pasword/auth-reset-pasword";
+import AuthInput from "@components/auth/auth-input/auth-input";
+import { AuthInputsProps, AuthMode } from "@/types";
 
-interface Props extends AuthInputsProps{
-    mode:AuthMode
+interface Props extends AuthInputsProps {
+    mode: AuthMode;
 }
 
-const AuthInputs = ({email, password, setEmail, setPassword, mode}: Props): JSX.Element => {
-    const [showPassword, setShowPassword] = useState(false);
+const AuthInputs = ({ email, password, setEmail, setPassword, mode }: Props) => {
+    const isRegister = mode === "register";
 
     return (
         <div className="flex flex-col gap-5 w-[350px]">
-            {/* Email Input */}
-            <div className="flex flex-col gap-1">
-                <label htmlFor="email" className=" text-left font-medium ">Correo electrónico</label>
-                <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"/>
-                    <input
-                        type="text"
-                        id="email"
-                        placeholder="Escribe tu correo"
-                        className="w-full h-[48px] bg-white border border-gray-200 rounded-field pl-10 pr-4 py-3 text-gray-800 placeholder-gray-400 shadow focus:outline-none focus:ring-2 focus:ring-secondary"
-                        value={email} onChange={(e) => setEmail(e.target.value)}/>
-                </div>
-            </div>
+            {isRegister && (
+                <AuthInput
+                    label="Nombre"
+                    type="text"
+                    name="name"
+                    value={""} // Añade estado si lo necesitas
+                    onChange={() => {}} // Añade setName si lo usas
+                    icon={<User className="w-5 h-5" />}
+                />
+            )}
 
-            {/* Password Input */}
-            <div className="flex flex-col gap-1">
-                <label htmlFor="password" className="text-left font-medium">Contraseña</label>
-                <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <AuthInput
+                label="Correo electrónico"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                icon={<Mail className="w-5 h-5" />}
+            />
 
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        placeholder="Introduce tu contraseña"
-                        className="w-full h-[48px] bg-white border border-gray-200 rounded-field pl-10 pr-10 py-3 text-gray-800 placeholder-gray-400 shadow focus:outline-none focus:ring-2 focus:ring-secondary"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-secondary"
-                    >
-                        {showPassword ? <Eye className="w-5 h-5"/> : <EyeOff className="w-5 h-5"  />}
-                    </button>
-                </div>
-
-
-                    <AuthResetPasword mode={mode}/>
-
-            </div>
-
-
+            <AuthInput
+                label="Contraseña"
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                icon={<Lock className="w-5 h-5" />}
+                showToggle={true}
+                showResetLink={mode === "login" && <AuthResetPasword mode={mode} />}
+            />
         </div>
     );
 };

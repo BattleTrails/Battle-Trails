@@ -18,13 +18,13 @@ const Header = () => {
     //const isDetails = currentPath.includes("/post/");
 
     const headerClass = isHome
-        ? "bg-primary text-white"
-        : isForge ? "bg-base-100 text-neutral !h-[60px] shadow-sm" : "bg-neutral text-white";
+        ? "bg-primary"
+        : isForge ? "bg-base-100 text-neutral !h-[60px] shadow-sm" : "";
 
 
     return (
         <div
-            className={`fixed flex items-center top-0 left-0 w-full z-50  h-[70px] md:h-[70px] lg:h-[90px] px-4 py-4 md:py-5 lg:py-6 ${headerClass} `}>
+            className={`fixed flex items-center top-0 left-0 w-full z-50  h-[70px] md:h-[70px] lg:h-[80px] px-4 py-4 md:py-5 lg:py-6 ${headerClass} `}>
             <div className="relative flex items-center w-full h-full ">
                 <HeaderLogo searchOpen={searchOpen}
                             onClick={() => navigate("/")}
