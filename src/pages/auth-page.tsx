@@ -71,31 +71,60 @@ const AuthPage = () => {
         )}
       >
         <div
-          className="w-[95%] h-[95%] rounded-2xl relative flex items-center justify-center text-white text-xl font-bold shadow-lg"
+          className="w-[95%] h-[95%] rounded-2xl relative overflow-hidden flex flex-col justify-between px-8 py-6 text-white shadow-lg"
           style={{
             backgroundImage: `url(${banner})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          {/* Botón login */}
-          <button
-            onClick={() => handleModeChange("login")}
-            className="absolute left-4 bottom-6 bg-black text-white px-4 py-2 rounded"
-          >
-            Mostrar login
-          </button>
 
-          {/* Botón registro */}
-          <button
-            onClick={() => handleModeChange("register")}
-            className="absolute right-4 bottom-6 bg-black text-white px-4 py-2 rounded"
+          {/* Botones alineados al lado del formulario */}
+          <div
+            className={clsx(
+              "flex gap-4",
+              mode === "login" ? "justify-end" : "justify-start"
+            )}
           >
-            Mostrar registro
-          </button>
+
+          <button
+              onClick={() => handleModeChange("login")}
+              className={clsx(
+                "text-sm px-4 py-2  rounded-full transition-all duration-300",
+                mode === "login"
+                  ? " border "
+                  : " "
+              )}
+            >
+              Inicia sesión
+            </button>
+
+            <button
+              onClick={() => handleModeChange("register")}
+              className={clsx(
+                "text-sm px-4 py-2  rounded-full transition-all duration-300",
+                mode === "register"
+                  ? "border"
+                  : " "
+              )}
+            >
+              Regístrate ahora
+            </button>
+          </div>
+
+          {/* Texto central fijo */}
+          <div className="flex flex-col items-center justify-center mt-16 max-w-md">
+            <h2 className="text-3xl font-bold leading-snug drop-shadow-md">
+              Comparte experiencias,<br />
+              crea rutas y organiza<br />
+              eventos.
+            </h2>
+          </div>
+
 
         </div>
       </div>
+
     </div>
   );
 };

@@ -31,8 +31,8 @@ export const useAuthHandler = () => {
         "auth/invalid-email": "El formato del correo no es válido.",
         "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
         "auth/missing-password": "La contraseña introducida no es correcta.",
-        "auth/cancelled-popup-request": "Se ha cancelado la ventana de inicio de sesión.",
-        "auth/popup-closed-by-user": "Has cerrado la ventana de inicio de sesión.",
+        /*"auth/cancelled-popup-request": "Se ha cancelado la ventana de inicio de sesión.",*/
+        /*"auth/popup-closed-by-user": "Has cerrado la ventana de inicio de sesión.",*/
     };
 
     const handleError = (error: unknown) => {
