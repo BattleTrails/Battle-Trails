@@ -26,8 +26,12 @@ const AuthPage = () => {
         </div>
       )}
       {/* Forms  login/register */}
-      <div className="flex w-full h-full">
-        <div className="w-1/2 flex items-center justify-center"> <AuthForm /></div>
+      <div
+        className={clsx(
+          "absolute top-0 h-full w-1/2 flex items-center justify-center transition-all duration-500 z-10",
+          isOnLeft ? "left-1/2" : "left-0"
+        )}
+      >
         <div className="w-1/2 flex items-center justify-center"> <AuthForm /></div>
       </div>
 
