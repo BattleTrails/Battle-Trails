@@ -48,7 +48,7 @@ const AuthPage = () => {
         onTransitionEnd={handleSlideTransitionEnd}
         className={clsx(
           "absolute top-0 h-full w-1/2 flex items-center justify-center transition-all duration-500 z-10",
-          mode === "login" ? "left-1/2" : "left-0"
+          mode === "login" ? "left-0" : "left-1/2"
         )}
       >
         {/* Formulario (opacidad separada) */}
@@ -67,7 +67,7 @@ const AuthPage = () => {
       <div
         className={clsx(
           "absolute top-0 h-full w-1/2 flex items-center justify-center transition-all duration-500 z-10",
-          mode === "login" ? "left-0" : "left-1/2"
+          mode === "login" ? "left-1/2" : "left-0"
         )}
       >
         <div
@@ -83,7 +83,7 @@ const AuthPage = () => {
           <div
             className={clsx(
               "flex gap-4",
-              mode === "login" ? "justify-end" : "justify-start"
+              mode === "login" ? "justify-start" : "justify-end"
             )}
           >
 
@@ -92,7 +92,7 @@ const AuthPage = () => {
               className={clsx(
                 "text-sm px-4 py-2  rounded-full transition-all duration-300",
                 mode === "login"
-                  ? " border "
+                  ? "border"
                   : " "
               )}
             >
