@@ -9,6 +9,7 @@ const MainLayout = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <Header/>
+
             <main className="flex-1 pt-[100px] p-4">
                 <Outlet/> {/* Renderiza las páginas */}
             </main>

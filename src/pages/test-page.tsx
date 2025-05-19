@@ -4,6 +4,7 @@ import Card from "@components/home/card/card.tsx";
 import data from "@/assets/fake_firestore_data.json";
 import AuthForm from "@components/auth/auth-form/auth-form.tsx";
 import Header from "@layouts/header/header.tsx";
+import { AuthLoginButton } from "@/components/auth/auth-login-button/AuthLoginButton";
 
 const TestPage = () => {
     const posts = data.posts;
@@ -40,6 +41,7 @@ const TestPage = () => {
                     <p className="mb-2 font-semibold">Login/SignUp:</p>
                     <AuthForm/>
                 </div>
+                <AuthLoginButton/>
             </div>
         </div>
     );
