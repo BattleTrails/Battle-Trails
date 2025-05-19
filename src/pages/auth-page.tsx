@@ -10,6 +10,30 @@ const AuthPage = () => {
   const { errorMessage, clearError } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("login");
+  const [isFormVisible, setIsFormVisible] = useState(true);
+  const [isSliding, setIsSliding] = useState(false);
+
+  const handleModeChange = (newMode: AuthMode) => {
+    if (newMode === mode) return;
+
+    // Fase 1: Ocultar opacidad
+    setIsFormVisible(false);
+
+    // Fase 2: Cambio de modo + activación del slide tras fundido
+    setTimeout(() => {
+      setMode(newMode);
+      setIsSliding(true);
+    }, 300); // ⚠️ Coincide con duración de opacidad-out
+  };
+
+  const handleSlideTransitionEnd = () => {
+    // Fase 3: el slide ha terminado, esperamos un pelín antes de mostrar
+    setIsSliding(false);
+    setTimeout(() => {
+      setIsFormVisible(true);
+    }, 400); // ✅ margen de seguridad para que no aparezca en el último frame del slide
+  };
+
 
   return (
     <div className="relative w-screen h-screen bg-base overflow-hidden">
@@ -19,17 +43,25 @@ const AuthPage = () => {
         </div>
       )}
 
-      {/* Formulario */}
+      {/* Formulario (posición) */}
       <div
+        onTransitionEnd={handleSlideTransitionEnd}
         className={clsx(
           "absolute top-0 h-full w-1/2 flex items-center justify-center transition-all duration-500 z-10",
           mode === "login" ? "left-1/2" : "left-0"
         )}
       >
-        <div className="w-1/2 flex items-center justify-center">
+        {/* Formulario (opacidad separada) */}
+        <div
+          className={clsx(
+            "w-1/2 flex items-center justify-center transition-opacity duration-300",
+            isFormVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          )}
+        >
           <AuthForm mode={mode} />
         </div>
       </div>
+
 
       {/* Banner */}
       <div
@@ -48,7 +80,7 @@ const AuthPage = () => {
         >
           {/* Botón login */}
           <button
-            onClick={() => setMode("login")}
+            onClick={() => handleModeChange("login")}
             className="absolute left-4 bottom-6 bg-black text-white px-4 py-2 rounded"
           >
             Mostrar login
@@ -56,11 +88,12 @@ const AuthPage = () => {
 
           {/* Botón registro */}
           <button
-            onClick={() => setMode("register")}
+            onClick={() => handleModeChange("register")}
             className="absolute right-4 bottom-6 bg-black text-white px-4 py-2 rounded"
           >
             Mostrar registro
           </button>
+
         </div>
       </div>
     </div>

@@ -41,7 +41,7 @@ const AuthForm = ({mode}: { mode: AuthMode }) => {
     };
 
     return (
-      <div className="flex flex-col w-[600px] h-[800px] justify-center gap-6 rounded-field bg-white text-primary shadow-md">
+      <div className="flex flex-col w-[600px] h-[800px] justify-center gap-6 rounded-field bg-white text-primary ">
           <AuthHeader mode={mode} />
 
           <div className="flex flex-col items-center gap-7 ">
