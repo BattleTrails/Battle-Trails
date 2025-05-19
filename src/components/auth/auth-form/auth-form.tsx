@@ -1,12 +1,12 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@context/auth-context.tsx";
+import { AuthMode } from "@/types";
 import { useState } from "react";
 import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
 import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
 import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@components/auth/auth-button/auth-button.tsx";
 import { CircleArrowDown } from "lucide-react";
-import { useAuth } from "@context/auth-context.tsx";
-import { AuthMode } from "@/types";
-import { useNavigate } from "react-router-dom";
 
 const texts = {
     login: {
@@ -19,16 +19,14 @@ const texts = {
     },
 };
 
-const AuthForm = () => {
-    const [mode, setMode] = useState<AuthMode>("login");
+const AuthForm = ({mode}: { mode: AuthMode }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const { login, register } = useAuth();
 
-    const toggleMode = () =>
-      setMode((prev) => (prev === "login" ? "register" : "login"));
+
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -37,9 +35,7 @@ const AuthForm = () => {
             ? await login(email, password)
             : await register(email, password);
 
-        if (success) {
-            navigate("/");
-        }
+        if (success) navigate("/");
 
         setLoading(false);
     };
@@ -71,12 +67,6 @@ const AuthForm = () => {
 
               <OAuthButton />
 
-              <p
-                className="text-sm/4 text-center text-neutral/70 mt-1 cursor-pointer hover:text-accent transition-colors duration-300"
-                onClick={toggleMode}
-              >
-                  {texts[mode].switchText}
-              </p>
           </div>
       </div>
     );
