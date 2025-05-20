@@ -1,13 +1,13 @@
 import AuthForm from "@components/auth/auth-form/auth-form.tsx";
-import { useAuth } from "@context/auth-context.tsx";
+import {useAuth} from "@context/auth-context.tsx";
 import AuthAlert from "@components/auth/auth-alert/auth-alert.tsx";
-import { useState } from "react";
+import {useState} from "react";
 import clsx from "clsx";
 import banner from "@assets/authimgs/banner-cell-phone-map-1.webp";
-import { AuthMode } from "@/types";
+import {AuthMode} from "@/types";
 
 const AuthPage = () => {
-  const { errorMessage, clearError } = useAuth();
+  const {errorMessage, clearError} = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [isFormVisible, setIsFormVisible] = useState(true);
@@ -34,12 +34,11 @@ const AuthPage = () => {
     }, 400); // ✅ margen de seguridad para que no aparezca en el último frame del slide
   };
 
-
   return (
     <div className="relative w-screen h-screen bg-base overflow-hidden">
       {errorMessage && (
         <div className="absolute top-6 right-6 z-50">
-          <AuthAlert message={errorMessage} onClose={clearError} />
+          <AuthAlert message={errorMessage} onClose={clearError}/>
         </div>
       )}
 
@@ -58,10 +57,9 @@ const AuthPage = () => {
             isFormVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
         >
-          <AuthForm mode={mode} />
+          <AuthForm mode={mode}/>
         </div>
       </div>
-
 
       {/* Banner */}
       <div
@@ -82,15 +80,16 @@ const AuthPage = () => {
           {/* Botones alineados al lado del formulario */}
           <div
             className={clsx(
-              "flex gap-4",
-              mode === "login" ? "justify-start" : "justify-end"
+              "flex gap-4 transition-opacity duration-300",
+              mode === "login" ? "justify-start" : "justify-end",
+              isFormVisible ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
           >
 
-          <button
+            <button
               onClick={() => handleModeChange("login")}
               className={clsx(
-                "text-sm px-4 py-2  rounded-full transition-all duration-300",
+                "text-sm px-4 py-2  rounded-full transition-all ",
                 mode === "login"
                   ? "border"
                   : " "
@@ -102,7 +101,7 @@ const AuthPage = () => {
             <button
               onClick={() => handleModeChange("register")}
               className={clsx(
-                "text-sm px-4 py-2  rounded-full transition-all duration-300",
+                "text-sm px-4 py-2  rounded-full transition-all   ",
                 mode === "register"
                   ? "border"
                   : " "
@@ -115,16 +114,14 @@ const AuthPage = () => {
           {/* Texto central fijo */}
           <div className="flex flex-col items-center justify-center mt-16 max-w-md">
             <h2 className="text-3xl font-bold leading-snug drop-shadow-md">
-              Comparte experiencias,<br />
-              crea rutas y organiza<br />
+              Comparte experiencias,<br/>
+              crea rutas y organiza<br/>
               eventos.
             </h2>
+
           </div>
-
-
         </div>
       </div>
-
     </div>
   );
 };
