@@ -1,15 +1,12 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@context/auth-context.tsx";
+import { AuthMode } from "@/types";
 import { useState } from "react";
-
 import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
 import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
 import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@components/auth/auth-button/auth-button.tsx";
-import {CircleArrowDown} from "lucide-react";
-
-import { useAuth } from "@context/auth-context.tsx";
-
-import {AuthMode} from "@/types";
-import {useNavigate} from "react-router-dom";
+import { CircleArrowDown } from "lucide-react";
 
 const texts = {
     login: {
@@ -22,74 +19,56 @@ const texts = {
     },
 };
 
-const AuthForm = () => {
+const AuthForm = ({mode}: { mode: AuthMode }) => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const navigate = useNavigate();
-    const [mode, setMode] = useState<AuthMode>("login");
     const { login, register } = useAuth();
 
 
-    const toggleMode = () => setMode(mode === "login" ? "register" : "login");
+
     const handleSubmit = async () => {
         setLoading(true);
-        let success = false;
+        const success =
+          mode === "login"
+            ? await login(email, password)
+            : await register(email, password);
 
-        if (mode === "login") {
-            success = await login(email, password);
-        } else {
-            success = await register(email, password);
-        }
-
-        if (success) {
-            navigate("/");
-        }
+        if (success) navigate("/");
 
         setLoading(false);
     };
 
-
-
-
-
     return (
-        <div className="flex flex-col w-[600px] h-[800px] p-5 gap-6 rounded-field bg-primary/75 text-white">
-            <AuthHeader mode={mode} />
+      <div className="flex flex-col w-[600px] h-[800px] justify-center gap-6 rounded-field bg-white text-primary ">
+          <AuthHeader mode={mode} />
 
-            <div className="flex flex-col items-center gap-7 flex-1 justify-center">
-                <AuthImputs
-                    mode={mode}
-                    email={email}
-                    setEmail={setEmail}
-                    password={password}
-                    setPassword={setPassword}
-                />
+          <div className="flex flex-col items-center gap-7 ">
+              <AuthImputs
+                mode={mode}
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+              />
 
-                <AuthButton
-                    text={texts[mode].button}
-                    onClick={handleSubmit}
-                    loading={loading}
-                />
+              <AuthButton
+                text={texts[mode].button}
+                onClick={handleSubmit}
+                loading={loading}
+              />
 
-                <div className="flex items-center gap-4 w-[350px] my-6">
-                    <div className="flex-1 h-[1px] bg-white" />
-                    <CircleArrowDown size={28} strokeWidth={1} />
-                    <div className="flex-1 h-[1px] bg-white" />
-                </div>
+              <div className="flex items-center gap-4 w-[350px] my-6">
+                  <div className="flex-1 h-[1px] bg-neutral" />
+                  <CircleArrowDown size={28} strokeWidth={1} />
+                  <div className="flex-1 h-[1px] bg-neutral" />
+              </div>
 
-                <OAuthButton />
+              <OAuthButton />
 
-                <p
-                    className="text-sm/4 text-center text-accent/70 mt-1 cursor-pointer hover:text-accent transition-colors duration-300"
-                    onClick={toggleMode}
-                >
-                    {texts[mode].switchText}
-                </p>
-            </div>
-
-        </div>
+          </div>
+      </div>
     );
 };
 
