@@ -39,6 +39,7 @@ const AuthInput = ({label, type, name, value, onChange, icon, showToggle = false
                         text-gray-800 placeholder-gray-400 shadow focus:outline-none
                         focus:ring-2 focus:ring-secondary`}
                     value={value}
+                    autoComplete={isPassword ? "new-password" : "on"}
                     onChange={onChange}
                 />
                 {showToggle && isPassword && (
