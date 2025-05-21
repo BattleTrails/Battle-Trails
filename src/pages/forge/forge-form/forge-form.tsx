@@ -1,5 +1,5 @@
 
-import ForgeInput from "@components/forge/forge-input/forge-input.tsx";
+import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 import {usePostStore} from "@/store/usePostStore.ts";
 
 

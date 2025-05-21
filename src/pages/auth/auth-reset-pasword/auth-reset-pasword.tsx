@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useAuth } from "@context/auth-context"; // 👈 usamos el hook global
+import { useAuth } from "@context/auth-context.tsx"; // 👈 usamos el hook global
 import { AuthMode } from "@/types";
 
 interface Props {

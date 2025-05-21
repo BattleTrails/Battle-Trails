@@ -1,8 +1,8 @@
 
-import FilterBar from "@components/home/filter-bar/filter-bar.tsx";
-import Card from "@components/home/card/card.tsx";
+import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
+import Card from "@components/ui/card/card.tsx";
 import data from "@/assets/fake_firestore_data.json";
-import AuthForm from "@components/auth/auth-form/auth-form.tsx";
+import AuthForm from "@pages/auth/auth-form/auth-form.tsx";
 import Header from "@layouts/header/header.tsx";
 
 const TestPage = () => {

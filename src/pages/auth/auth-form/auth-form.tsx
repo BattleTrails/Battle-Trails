@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@context/auth-context.tsx";
 import { AuthMode } from "@/types";
 import { useState } from "react";
-import AuthHeader from "@components/auth/auth-header/auth-header.tsx";
-import AuthImputs from "@components/auth/auth-imputs/auth-imputs.tsx";
-import OAuthButton from "@components/auth/o-auth-button/o-auth-button.tsx";
-import AuthButton from "@components/auth/auth-button/auth-button.tsx";
+import AuthHeader from "@pages/auth/auth-header/auth-header.tsx";
+import AuthImputs from "@pages/auth/auth-imputs/auth-imputs.tsx";
+import OAuthButton from "@pages/auth/o-auth-button/o-auth-button.tsx";
+import AuthButton from "@pages/auth/auth-button/auth-button.tsx";
 import { CircleArrowDown } from "lucide-react";
 
 const texts = {

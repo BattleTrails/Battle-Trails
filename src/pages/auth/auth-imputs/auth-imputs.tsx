@@ -1,6 +1,6 @@
 import { Mail, Lock, User } from "lucide-react";
-import AuthResetPasword from "@components/auth/auth-reset-pasword/auth-reset-pasword";
-import AuthInput from "@components/auth/auth-input/auth-input";
+import AuthResetPasword from "@pages/auth/auth-reset-pasword/auth-reset-pasword.tsx";
+import AuthInput from "@pages/auth/auth-input/auth-input.tsx";
 import { AuthInputsProps, AuthMode } from "@/types";
 
 interface Props extends AuthInputsProps {

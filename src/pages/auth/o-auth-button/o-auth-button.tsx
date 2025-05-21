@@ -1,6 +1,6 @@
 import {FcGoogle} from "react-icons/fc";
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "@context/auth-context";
+import {useAuth} from "@context/auth-context.tsx";
 
 const OAuthButton = () => {
     const navigate = useNavigate();

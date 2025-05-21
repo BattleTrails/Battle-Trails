@@ -1,6 +1,6 @@
-import Card from "@components/home/card/card.tsx";
+import Card from "@components/ui/card/card.tsx";
 
-import FilterBar from "@components/home/filter-bar/filter-bar.tsx";
+import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
 import {useEffect, useState} from "react";
 import {Post} from "@/types";
 import {getPosts} from "@/services/db-service.ts";

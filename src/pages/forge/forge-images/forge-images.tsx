@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { usePostStore } from "@/store/usePostStore";
-import { compressImages } from "@/utils/compress-images";
+import { usePostStore } from "@/store/usePostStore.ts";
+import { compressImages } from "@/utils/compress-images.ts";
 import { X,ImagePlus } from "lucide-react";
 
 const ForgeImages = () => {
