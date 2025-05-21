@@ -6,7 +6,7 @@ interface AuthHeaderProps {
   mode: "login" | "register";
 }
 
-const AuthHeader = ({ mode }: AuthHeaderProps) => {
+const AuthHeader = ({mode}: AuthHeaderProps) => {
   const navigate = useNavigate();
 
   return (
@@ -16,7 +16,6 @@ const AuthHeader = ({ mode }: AuthHeaderProps) => {
         className={clsx(
           "absolute top-10 transition-opacity duration-300 z-12",
           mode === "login" ? "left-10" : "right-10",
-
         )}
       >
         <button
@@ -24,7 +23,7 @@ const AuthHeader = ({ mode }: AuthHeaderProps) => {
           className="p-2 rounded-full hover:bg-neutral/10 transition"
           aria-label="Volver al inicio"
         >
-          <House className="w-5 h-5" />
+          <House className="w-5 h-5"/>
         </button>
       </div>
 
