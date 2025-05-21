@@ -1,7 +1,12 @@
-import {AuthButtonProps} from "@/types";
 
 
-const AuthButton = ({text, onClick, loading = false}: AuthButtonProps) => (
+interface Props {
+  text: string;
+  onClick: () => void;
+  loading?: boolean;
+}
+
+const AuthButton = ({text, onClick, loading = false}: Props) => (
   <button
     onClick={onClick}
     disabled={loading}

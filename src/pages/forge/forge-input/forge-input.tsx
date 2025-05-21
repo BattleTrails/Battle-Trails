@@ -1,7 +1,21 @@
-import {ForgeInputProps} from "@/types";
+
 import clsx from "clsx";
 
-const ForgeInput = ({label, placeholder, name, value, onChange, type = "text", disabled = false, textarea = false, rows = 3, maxLength, className = ""}: ForgeInputProps) => {
+interface Props {
+    label?: string;
+    placeholder?: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    type?: "text" | "number" | "email";
+    disabled?: boolean;
+    textarea?: boolean;
+    rows?: number;
+    maxLength?: number;
+    className?: string;
+}
+
+const ForgeInput = ({label, placeholder, name, value, onChange, type = "text", disabled = false, textarea = false, rows = 3, maxLength, className = ""}: Props) => {
     return (
         <div className={clsx(className)}>
 

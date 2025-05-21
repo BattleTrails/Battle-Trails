@@ -1,8 +1,12 @@
-import {AuthAlertProps} from "@/types";
+
 import {useEffect} from "react";
 
+interface  Props{
+    message: string;
+    onClose: () => void;
+}
 
-const AuthAlert = ({ message, onClose }: AuthAlertProps) => {
+const AuthAlert = ({ message, onClose }: Props) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
