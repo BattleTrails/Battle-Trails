@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 
 import {createPost} from "@/services/db-service.ts";
 import {uploadImagesToSupabase} from "@/services/supabase-storage-service.ts";
+import {useEffect} from "react";
 
 
 const ForgePage = () => {
@@ -15,6 +16,11 @@ const ForgePage = () => {
   const navigate = useNavigate();
   const {postDraft, resetPostDraft} = usePostStore();
 
+  useEffect(() => {
+    return () => {
+      resetPostDraft(); // se limpia al salir de la página
+    };
+  }, []);
   const handleCreatePost = async () => {
     if (!user) {
       console.warn("Usuario no autenticado.");

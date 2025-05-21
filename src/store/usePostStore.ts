@@ -1,5 +1,5 @@
-import {create} from "zustand";
-import {GeoPoint} from "firebase/firestore";
+import { create } from "zustand";
+import { GeoPoint } from "firebase/firestore";
 
 type PostDraft = {
   title: string;
@@ -22,32 +22,23 @@ export const usePostStore = create<PostStore>((set) => ({
     description: "",
     images: [],
     location: undefined,
-    distance: "0 km"
+    distance: "0 km",
   },
-
   setPostField: (field, value) =>
     set((state) => ({
-      postDraft: {
-        ...state.postDraft,
-        [field]: value,
-      },
+      postDraft: { ...state.postDraft, [field]: value },
     })),
-
   setImages: (files) =>
     set((state) => ({
-      postDraft: {
-        ...state.postDraft,
-        images: files,
-      },
+      postDraft: { ...state.postDraft, images: files },
     })),
-
-  resetPostDraft: () =>
-    set(() => ({
-      postDraft: {
-        title: "",
-        description: "",
-        images: [],
-        location: undefined,
-      },
-    })),
+  resetPostDraft: () => set(() => ({
+    postDraft: {
+      title: "",
+      description: "",
+      images: [],
+      location: undefined,
+      distance: "0 km",
+    },
+  })),
 }));

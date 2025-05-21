@@ -26,8 +26,9 @@ const ForgeImages = () => {
   const hasImages = postDraft.images.length > 0;
 
   return (
-    <div className="bg-neutral/5 rounded-lg border border-dashed border-neutral/30 p-4">
-      {!hasImages && (
+    <div className="w-full max-w-[400px] md:max-w-[500px] lg:max-w-full mx-auto bg-neutral/5 rounded-lg border border-dashed border-neutral/30 p-4">
+
+    {!hasImages && (
         <div className="flex flex-col items-center gap-2 justify-center text-center min-h-[400px]">
 
           <ImagePlus/>
@@ -60,9 +61,9 @@ const ForgeImages = () => {
 
       {hasImages && (
         <>
-          {/* Imagen destacada */}
-          <div className="relative w-full aspect-square overflow-hidden rounded-lg">
-            <img
+          {/* Imagen destacada */} {/*aspect-square*/}
+          <div className="relative w-full aspect-[4/3] overflow-hidden rounded-lg">
+          <img
               src={URL.createObjectURL(postDraft.images[0])}
               alt="preview"
               className="w-full h-full object-cover"
