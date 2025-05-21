@@ -9,25 +9,25 @@ import PrivateRoute from "@/routes/private-route.tsx";
 
 
 const App = () => {
-    return useRoutes([
-        {
-            path: "/",
-            element: <MainLayout/>,
-            children: [
-                {index: true, element: <Home/>},
-                {path: "test", element: <Test/>},
-                {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
-            ],
-        },
-        {
-            path: "/auth",
-            element: <AuthLayout/>,
-            children: [
-                {path: "", element: <Auth/>},
+  return useRoutes([
+    {
+      path: "/",
+      element: <MainLayout/>,
+      children: [
+        {index: true, element: <Home/>},
+        {path: "test", element: <Test/>},
+        {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
+      ],
+    },
+    {
+      path: "/auth",
+      element: <AuthLayout/>,
+      children: [
+        {path: "", element: <Auth/>},
 
-            ],
-        },
-    ]);
+      ],
+    },
+  ]);
 };
 
 export default App;

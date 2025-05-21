@@ -5,11 +5,9 @@ import {BrowserRouter} from "react-router-dom";
 import {AuthProvider} from "@context/auth-context.tsx";
 
 createRoot(document.getElementById('root')!).render(
-    <AuthProvider>
-        <BrowserRouter>
-            <App/>
-        </BrowserRouter>
-    </AuthProvider>
-
-
+  <AuthProvider>
+    <BrowserRouter>
+      <App/>
+    </BrowserRouter>
+  </AuthProvider>
 )

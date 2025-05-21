@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,21 +19,42 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"],
-      "@assets/*": ["assets/*"],
-      "@components/*": ["components/*"],
-      "@pages/*": ["pages/*"],
-      "@types/*": ["types/*"],
-      "@layouts/*": ["layouts/*"],
-      "@hooks/*": ["hooks/*"],
-      "@config/*": ["config/*"],
-      "@context/*": ["context/*"],
-      "@routes/*": ["routes/*"]
+      "@/*": [
+        "*"
+      ],
+      "@assets/*": [
+        "assets/*"
+      ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@types/*": [
+        "types/*"
+      ],
+      "@layouts/*": [
+        "layouts/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@config/*": [
+        "config/*"
+      ],
+      "@context/*": [
+        "context/*"
+      ],
+      "@routes/*": [
+        "routes/*"
+      ]
     },
     "types": []
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }
