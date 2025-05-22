@@ -1,11 +1,9 @@
 import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
-import Card from "@components/ui/card/card.tsx";
-import data from "@/assets/fake_firestore_data.json";
+
 import Header from "@layouts/header/header.tsx";
 import MapRoute from "@components/ui/map-route/map-route.tsx";
 
 const TestPage = () => {
-  const posts = data.posts;
   const fakeWaypoints = [
     { lat: 40.4168, lng: -3.7038 }, // Madrid
     { lat: 41.3874, lng: 2.1686 },  // Barcelona

@@ -40,7 +40,7 @@ export const createRoute = async (routeData: Route, postId: string): Promise<voi
 export const getPosts = async (): Promise<Post[]> => {
   const snapshot = await getDocs(collection(db, "posts"));
 
-  const posts: Post[] = snapshot.docs.map((doc) => {
+  return snapshot.docs.map((doc) => {
     const data = doc.data();
 
     return {
@@ -54,6 +54,4 @@ export const getPosts = async (): Promise<Post[]> => {
       likedBy: data.likedBy,
     };
   });
-
-  return posts;
 };
