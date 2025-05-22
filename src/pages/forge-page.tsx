@@ -5,9 +5,11 @@ import {useAuth} from "@context/auth-context.tsx";
 import {usePostStore} from "@/store/usePostStore.ts";
 import {useNavigate} from "react-router-dom";
 
-import {createPost} from "@/services/db-service.ts";
+import {createPost, createRoute} from "@/services/db-service.ts";
 import {uploadImagesToSupabase} from "@/services/supabase-storage-service.ts";
 import {useEffect} from "react";
+import {doc, updateDoc} from "firebase/firestore";
+import {db} from "@config/firebaseConfig.ts";
 
 
 const ForgePage = () => {
@@ -27,41 +29,41 @@ const ForgePage = () => {
       return;
     }
 
-    // Validación simple
     if (
       !postDraft.title.trim() ||
       !postDraft.description.trim() ||
-      !postDraft.images.length
+      !postDraft.images.length ||
+      postDraft.routePoints.length < 2
     ) {
-      alert("Por favor, completa todos los campos obligatorios.");
+      alert("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
       return;
     }
 
-    /*if (postDraft.images.length < 4) {
-        alert("Debes subir al menos 4 imágenes.");
-        return;
-    }*/
-
     try {
-      // 1. Subir imágenes a Firebase Storage
+      // 1. Subir imágenes a Supabase
       const imageUrls = await uploadImagesToSupabase(postDraft.images, user.uid);
 
-      // 2. Crear el post en Firestore
-      /*esto para poder usar el id del post cuando lo creemos :const postId = await createPost({*/
-
-      await createPost({
+      // 2. Crear el Post y obtener su ID
+      const postId = await createPost({
         userId: user.uid,
         title: postDraft.title,
         description: postDraft.description,
         images: imageUrls,
-        /*location: postDraft.location|| null,*/ // Asegúrate de que location sea opcional en tu tipo Post
         likes: 0,
-        likedBy: []
+        likedBy: [],
       });
 
-      // 3. (Opcional) Crear la ruta asociada
-      // Aquí puedes incluir los waypoints si ya los tienes:
-      // await createRoute({ waypoints: [...] }, postId);
+      // 3. Crear la Route asociada
+      await createRoute({
+        postId,
+        waypoints: postDraft.routePoints.map((p) => p.geoPoint),
+        images: [], // si luego usas imágenes de Google Places
+      }, postId);
+
+      // 4. Guardar el ID de la ruta en el post
+      await updateDoc(doc(db, "posts", postId), {
+        routeId: postId,
+      });
 
       // 4. Reset y redirección
       resetPostDraft();
@@ -71,6 +73,7 @@ const ForgePage = () => {
       alert("Ha ocurrido un error al crear la ruta. Intenta de nuevo.");
     }
   };
+
 
   return (
     <div className="max-w-6xl mx-auto p-6 rounded-xl bg-base-100 shadow-sm border border-neutral/10">
