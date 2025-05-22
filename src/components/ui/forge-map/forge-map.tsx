@@ -10,12 +10,15 @@ import { GeoPoint } from "firebase/firestore";
 import { usePostStore } from "@/store/usePostStore";
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 
+// ✅ Corrección: mantener esta constante FUERA del componente
+const libraries: ("places")[] = ["places"];
+
 const containerStyle = {
   width: "100%",
   height: "200px",
 };
 
-const defaultCenter = { lat: 40.4168, lng: -3.7038 };
+const defaultCenter = { lat: 40.4168, lng: -3.7038 }; // Madrid por defecto
 
 const ForgeMap = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -26,7 +29,7 @@ const ForgeMap = () => {
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries,
   });
 
   const geoPointToLatLng = (geo: GeoPoint) => ({
@@ -34,23 +37,25 @@ const ForgeMap = () => {
     lng: geo.longitude,
   });
 
-  // 🗺️ Autoajuste del mapa al añadir/eliminar puntos
+  // 🗺️ Autoajuste del mapa a todos los puntos seleccionados
   useEffect(() => {
-    const points = postDraft.routePoints;
-    if (!mapRef.current || points.length === 0) return;
+    if (!mapRef.current || postDraft.routePoints.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
-    points.forEach(({ geoPoint }) => bounds.extend(geoPointToLatLng(geoPoint)));
+    postDraft.routePoints.forEach(({ geoPoint }) => {
+      bounds.extend(geoPointToLatLng(geoPoint));
+    });
+
     mapRef.current.fitBounds(bounds, 80);
 
     const listener = mapRef.current.addListener("bounds_changed", () => {
-      const zoom = mapRef.current?.getZoom();
+      const zoom = mapRef.current!.getZoom();
       if (zoom && zoom < 7) mapRef.current!.setZoom(5);
       google.maps.event.removeListener(listener);
     });
   }, [postDraft.routePoints]);
 
-  // ➕ Añadir punto seleccionado desde Autocomplete
+  // ➕ Añadir punto desde Autocomplete
   const handlePlaceChanged = () => {
     const place = autocompleteRef.current?.getPlace();
     const location = place?.geometry?.location;
@@ -66,7 +71,7 @@ const ForgeMap = () => {
     ]);
   };
 
-  // ❌ Eliminar punto por índice
+  // ❌ Eliminar punto
   const handleDeletePoint = (index: number) => {
     setPostField(
       "routePoints",
@@ -123,7 +128,7 @@ const ForgeMap = () => {
         </GoogleMap>
       </div>
 
-      {/* 📋 Lista de ubicaciones añadidas */}
+      {/* 📋 Lista de ubicaciones seleccionadas */}
       <div className="mt-4 px-2 space-y-2">
         {postDraft.routePoints.map(({ address }, index) => (
           <div
