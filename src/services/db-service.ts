@@ -49,7 +49,7 @@ export const getPosts = async (): Promise<Post[]> => {
       title: data.title,
       description: data.description,
       images: data.images,
-      location: data.location,
+      routeId: data.routeId,
       likes: data.likes,
       likedBy: data.likedBy,
     };

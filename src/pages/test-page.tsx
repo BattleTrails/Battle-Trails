@@ -32,12 +32,12 @@ const TestPage = () => {
 
         <div className="mb-4">
           <p className="mb-2 font-semibold">Grid de Cards:</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+          {/*<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {posts.map((post) => (
               <Card key={post.id} post={post}/>
 
             ))}
-          </div>
+          </div>*/}
         </div>
         <div className=" flex flex-col  items-center justify-center ">
           <p className="mb-2 font-semibold">Maps:</p>
