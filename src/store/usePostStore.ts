@@ -6,7 +6,7 @@ type PostDraft = {
   description: string;
   images: File[];
   address: string;
-  waypoints: GeoPoint[];
+  routePoints: { address: string; geoPoint: GeoPoint }[];
   distance?: string;
 };
 
@@ -23,7 +23,7 @@ export const usePostStore = create<PostStore>((set) => ({
     description: "",
     images: [],
     address: "",
-    waypoints: [],
+    routePoints: [],
     distance: "0 km",
   },
   setPostField: (field, value) =>
@@ -40,7 +40,7 @@ export const usePostStore = create<PostStore>((set) => ({
       description: "",
       images: [],
       address: "",
-      waypoints: [],
+      routePoints: [],
       distance: "0 km",
     },
   })),
