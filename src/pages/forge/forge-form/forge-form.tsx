@@ -21,13 +21,13 @@ const ForgeForm = () => {
       />
 
       {/* Destino*/}
-      {/*<ForgeInput
+      <ForgeInput
                 name="address"
                 placeholder="Ubicación principal"
                 value={postDraft.address }
                 onChange={handleChange}
                 className="w-10/12 mx-auto"
-            />*/}
+            />
 
       <ForgeInput
         label="Distancia"
