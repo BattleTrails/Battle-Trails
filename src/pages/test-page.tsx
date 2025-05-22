@@ -1,12 +1,16 @@
 import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
 import Card from "@components/ui/card/card.tsx";
 import data from "@/assets/fake_firestore_data.json";
-import AuthForm from "@pages/auth/auth-form/auth-form.tsx";
 import Header from "@layouts/header/header.tsx";
+import MapRoute from "@components/ui/map-route/map-route.tsx";
 
 const TestPage = () => {
   const posts = data.posts;
-
+  const fakeWaypoints = [
+    { lat: 40.4168, lng: -3.7038 }, // Madrid
+    { lat: 41.3874, lng: 2.1686 },  // Barcelona
+    { lat: 43.2630, lng: -2.9350 }, // Bilbao
+  ];
   return (
     <div className="flex flex-col text-center">
       <div className="text-center p-6">
@@ -36,8 +40,8 @@ const TestPage = () => {
           </div>
         </div>
         <div className=" flex flex-col  items-center justify-center ">
-          <p className="mb-2 font-semibold">Login/SignUp:</p>
-          <AuthForm/>
+          <p className="mb-2 font-semibold">Maps:</p>
+          <MapRoute waypoints={fakeWaypoints}/>
         </div>
       </div>
     </div>
