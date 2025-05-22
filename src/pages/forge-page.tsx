@@ -18,6 +18,9 @@ const ForgePage = () => {
   const navigate = useNavigate();
   const {postDraft, resetPostDraft} = usePostStore();
 
+  const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
+
+
   useEffect(() => {
     return () => {
       resetPostDraft(); // se limpia al salir de la página
@@ -49,6 +52,7 @@ const ForgePage = () => {
         title: postDraft.title,
         description: postDraft.description,
         images: imageUrls,
+        locationName,
         likes: 0,
         likedBy: [],
       });

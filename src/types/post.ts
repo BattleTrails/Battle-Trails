@@ -6,6 +6,7 @@ export interface Post {
   title: string;
   description: string;
   images: string[];
+  locationName: string;
   routeId: string;
   /*createdAt: Timestamp ;*/
   likes: number;

@@ -12,6 +12,7 @@ export const createPost = async (postData: {
   title: string;
   description: string;
   images: string[];
+  locationName: string;
   likes: number;
   likedBy: string[]
 }): Promise<string> => {
@@ -49,6 +50,7 @@ export const getPosts = async (): Promise<Post[]> => {
       title: data.title,
       description: data.description,
       images: data.images,
+      locationName: data.locationName,
       routeId: data.routeId,
       likes: data.likes,
       likedBy: data.likedBy,
