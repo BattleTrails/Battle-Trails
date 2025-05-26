@@ -7,13 +7,13 @@ import {
 } from "@react-google-maps/api";
 
 // Hooks de React
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 
 // Tipado de coordenadas GeoPoint desde Firestore
-import { GeoPoint } from "firebase/firestore";
+import {GeoPoint} from "firebase/firestore";
 
 // Store global para estado del post
-import { usePostStore } from "@/store/usePostStore";
+import {usePostStore} from "@/store/usePostStore";
 
 // Input reutilizable para direcciones
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
@@ -22,14 +22,13 @@ import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 import debounce from "lodash.debounce";
 
 // Icono para eliminar puntos
-import { X } from "lucide-react";
+import {X} from "lucide-react";
 
 // Icono personalizado de marcador
 import MarkerSVG from "@assets/marker.svg";
 
 // Configuración del mapa
-const containerStyle = { width: "100%", height: "250px" };
-const defaultCenter = { lat: 40.4168, lng: -3.7038 };
+const containerStyle = {width: "100%", height: "250px"};
 const libraries: ("places")[] = ["places"];
 
 // Tipos para las predicciones del autocomplete
@@ -53,11 +52,12 @@ const ForgeMap = () => {
   const [predictions, setPredictions] = useState<Prediction[]>([]); // Lista de predicciones del autocomplete
   const [showSuggestions, setShowSuggestions] = useState(false); // Mostrar lista de sugerencias
   const [isSelecting, setIsSelecting] = useState(false); // Flag para evitar conflictos al seleccionar
-  const { postDraft, setPostField } = usePostStore(); // Estado del post (Zustand)
+  const {postDraft, setPostField} = usePostStore(); // Estado del post (Zustand)
   const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null); // Índice del marker activo (con overlay)
+  const [, setShouldAutoCenter] = useState(true);
 
   // Carga del script de Google Maps
-  const { isLoaded } = useJsApiLoader({
+  const {isLoaded} = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
@@ -73,16 +73,16 @@ const ForgeMap = () => {
     if (!mapRef.current || postDraft.routePoints.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
-    postDraft.routePoints.forEach(({ geoPoint }) => {
+    postDraft.routePoints.forEach(({geoPoint}) => {
       bounds.extend(geoPointToLatLng(geoPoint));
     });
 
-    mapRef.current.fitBounds(bounds, 80); // Centra el mapa con padding
+    /*mapRef.current.fitBounds(bounds, 100);*/ // Centra el mapa con padding
 
     // Asegura un zoom mínimo
     const listener = mapRef.current.addListener("bounds_changed", () => {
       const zoom = mapRef.current!.getZoom();
-      if (zoom && zoom < 7) mapRef.current!.setZoom(7);
+      if (zoom && zoom < 7) mapRef.current!.setZoom(10);
       google.maps.event.removeListener(listener);
     });
   }, [postDraft.routePoints]);
@@ -94,8 +94,8 @@ const ForgeMap = () => {
       try {
         const res = await fetch(import.meta.env.VITE_AUTOCOMPLETE_ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input }),
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({input}),
         });
 
         const data = await res.json();
@@ -148,6 +148,7 @@ const ForgeMap = () => {
   // Cuando el usuario selecciona una predicción
   const handleSelectSuggestion = async (prediction: Prediction) => {
     setIsSelecting(true);
+    setShouldAutoCenter(true); // permitimos centrar
 
     const res = await fetch(
       `https://places.googleapis.com/v1/places/${prediction.placeId}?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&languageCode=es&regionCode=ES`,
@@ -169,10 +170,15 @@ const ForgeMap = () => {
     const address = prediction.mainText;
     const geoPoint = new GeoPoint(place.location.latitude, place.location.longitude);
 
+    // Si ya hay puntos, centra el mapa en el último punto añadido
+    const latLng = geoPointToLatLng(geoPoint);
+    mapRef.current?.panTo(latLng);
+
+
     // Añade el nuevo punto
     setPostField("routePoints", [
       ...postDraft.routePoints,
-      { address, geoPoint },
+      {address, geoPoint},
     ]);
 
     // Vacía el input después de añadir el punto
@@ -186,6 +192,7 @@ const ForgeMap = () => {
 
   // Eliminar un punto concreto
   const handleDeletePoint = (index: number) => {
+    setShouldAutoCenter(false); // evitamos recentrado
     setPostField(
       "routePoints",
       postDraft.routePoints.filter((_, i) => i !== index)
@@ -213,7 +220,8 @@ const ForgeMap = () => {
             className="w-[95%]"
           />
           {showSuggestions && predictions.length > 0 && (
-            <ul className="w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
+            <ul
+              className="w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
               {predictions.map((p) => (
                 <li
                   key={p.placeId}
@@ -230,11 +238,7 @@ const ForgeMap = () => {
         {/* Mapa con markers y overlays */}
         <GoogleMap
           mapContainerStyle={containerStyle}
-          center={
-            postDraft.routePoints.length > 0
-              ? geoPointToLatLng(postDraft.routePoints[0].geoPoint)
-              : defaultCenter
-          }
+
           zoom={postDraft.routePoints.length ? 8 : 5}
           onLoad={(map: google.maps.Map) => {
             mapRef.current = map;
@@ -256,9 +260,10 @@ const ForgeMap = () => {
                     url: MarkerSVG,
                     scaledSize: new window.google.maps.Size(32, 32),
                   }}
-                  onClick={() =>
-                    setActiveMarkerIndex((prev) => (prev === index ? null : index))
-                  }
+                  onClick={() => {
+                    setActiveMarkerIndex((prev) => (prev === index ? null : index));
+                    mapRef.current?.panTo(position); // centra en ese punto
+                  }}
                 />
 
                 {/* Overlay tipo badge con botón de eliminar */}
@@ -267,7 +272,8 @@ const ForgeMap = () => {
                     position={position}
                     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                   >
-                    <div className="relative left-1/2 -translate-x-1/2 -translate-y-17 bg-white w-max px-3 py-1 rounded-full shadow-md flex items-center gap-2">
+                    <div
+                      className="relative left-1/2 -translate-x-1/2 -translate-y-17 bg-white w-max px-3 py-1 rounded-full shadow-md flex items-center gap-2">
                       <p className="text-sm font-medium max-w-[160px] truncate">
                         {point.address}
                       </p>
@@ -279,7 +285,7 @@ const ForgeMap = () => {
                         }}
                         className="text-red-500 hover:text-red-700 text-sm font-medium"
                       >
-                        <X />
+                        <X/>
                       </button>
                     </div>
                   </OverlayView>
