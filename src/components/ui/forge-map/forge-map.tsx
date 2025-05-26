@@ -2,18 +2,19 @@ import {
   GoogleMap,
   Marker,
   useJsApiLoader,
+  OverlayView
 } from "@react-google-maps/api";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { GeoPoint } from "firebase/firestore";
-import { usePostStore } from "@/store/usePostStore";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {GeoPoint} from "firebase/firestore";
+import {usePostStore} from "@/store/usePostStore";
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
-import clsx from "clsx";
+
 import debounce from "lodash.debounce";
-import { X } from "lucide-react";
+import {X} from "lucide-react";
 import MarkerSVG from "@assets/marker.svg";
 
-const containerStyle = { width: "100%", height: "250px" };
-const defaultCenter = { lat: 40.4168, lng: -3.7038 };
+const containerStyle = {width: "100%", height: "250px"};
+const defaultCenter = {lat: 40.4168, lng: -3.7038};
 const libraries: ("places")[] = ["places"];
 
 interface Prediction {
@@ -36,9 +37,10 @@ const ForgeMap = () => {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
-  const { postDraft, setPostField } = usePostStore();
+  const {postDraft, setPostField} = usePostStore();
+  const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null);
 
-  const { isLoaded } = useJsApiLoader({
+  const {isLoaded} = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
@@ -52,7 +54,7 @@ const ForgeMap = () => {
     if (!mapRef.current || postDraft.routePoints.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
-    postDraft.routePoints.forEach(({ geoPoint }) => {
+    postDraft.routePoints.forEach(({geoPoint}) => {
       bounds.extend(geoPointToLatLng(geoPoint));
     });
 
@@ -71,8 +73,8 @@ const ForgeMap = () => {
       try {
         const res = await fetch(import.meta.env.VITE_AUTOCOMPLETE_ENDPOINT, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input }),
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({input}),
         });
 
         const data = await res.json();
@@ -135,6 +137,9 @@ const ForgeMap = () => {
 
     const place = await res.json();
 
+
+
+
     if (!place?.location) {
       setIsSelecting(false);
       return;
@@ -146,11 +151,13 @@ const ForgeMap = () => {
       place.location.longitude
     );
 
-    setPostField("address", address);
     setPostField("routePoints", [
       ...postDraft.routePoints,
       { address, geoPoint },
     ]);
+    setPostField("address", ""); // 👈 vacía el input después
+    console.log("GUARDADO:", [...postDraft.routePoints, {address, geoPoint}]);
+
     setShowSuggestions(false);
     setPredictions([]);
 
@@ -163,21 +170,26 @@ const ForgeMap = () => {
       postDraft.routePoints.filter((_, i) => i !== index)
     );
   };
-
+  const placeholderText =
+    postDraft.routePoints.length > 0
+      ? "Busca tu siguiente parada..."
+      : "Busca la primera ubicación...";
   if (!isLoaded) return <p>Cargando mapa...</p>;
 
   return (
     <>
-      <div className="relative rounded-lg overflow-hidden shadow-md">
-        <div className="absolute top-4 left-3 w-[95%] z-10">
+      <div className="relative rounded-lg overflow-hidden">
+        <div className="flex flex-col top-3 absolute items-center justify-center w-full z-10">
           <ForgeInput
             name="address"
-            placeholder="Busca una ubicación..."
+            placeholder={placeholderText}
             value={postDraft.address}
             onChange={handleChange}
+            className="   w-[95%] "
           />
           {showSuggestions && predictions.length > 0 && (
-            <ul className="absolute w-full z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
+            <ul
+              className=" w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
               {predictions.map((p) => (
                 <li
                   key={p.placeId}
@@ -208,20 +220,59 @@ const ForgeMap = () => {
             clickableIcons: false,
           }}
         >
-          {postDraft.routePoints.map(({ geoPoint }, index) => (
-            <Marker
-              key={index}
-              position={geoPointToLatLng(geoPoint)}
-              icon={{
-                url: MarkerSVG,
-                scaledSize: new window.google.maps.Size(32, 32),
-              }}
-            />
-          ))}
+          {postDraft.routePoints.map((point, index) => {
+            const position = geoPointToLatLng(point.geoPoint);
+
+            return (
+              <>
+                <Marker
+                  position={position}
+                  icon={{
+                    url: MarkerSVG,
+                    scaledSize: new window.google.maps.Size(32, 32),
+                  }}
+                  onClick={() =>
+                    setActiveMarkerIndex((prev) => (prev === index ? null : index))
+                  }
+
+                />
+                {
+                  activeMarkerIndex === index && (
+                    <OverlayView
+                      position={position}
+                      mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                    >
+                      <div className="relative left-1/2 -translate-x-1/2  bg-white w-max px-3 py-1  -translate-y-17 rounded-full shadow-md flex items-center gap-2">
+                        <p className="text-sm font-medium max-w-[160px] truncate">{point.address}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleDeletePoint(index);
+                            setActiveMarkerIndex(null);
+                          }}
+                          className="text-red-500 hover:text-red-700 text-sm font-medium"
+                        >
+                          <X />
+                        </button>
+                      </div>
+                    </OverlayView>
+
+
+                  )
+                }
+              </>
+
+
+          )
+            ;
+          })}
+
+
         </GoogleMap>
+
       </div>
 
-      <div className="mt-4 px-2 space-y-2">
+      {/*<div className="mt-4 px-2 space-y-2">
         {postDraft.routePoints.map(({ address }, index) => (
           <div
             key={index}
@@ -237,7 +288,7 @@ const ForgeMap = () => {
             </button>
           </div>
         ))}
-      </div>
+      </div>*/}
     </>
   );
 };

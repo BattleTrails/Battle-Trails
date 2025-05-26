@@ -80,7 +80,7 @@ const ForgePage = () => {
 
 
   return (
-    <div className="max-w-6xl mx-auto p-6 rounded-xl bg-base-100 shadow-sm border border-neutral/10">
+    <div className="max-w-6xl mx-auto p-4 rounded-xl bg-base-100 shadow-sm border border-neutral/10">
       <h1 className="text-2xl font-bold text-neutral mb-6">Crear ruta</h1>
       <div className="flex flex-col md:flex-row gap-8">
         {/* Columna izquierda */}
