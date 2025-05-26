@@ -1,22 +1,38 @@
+// Importación de componentes de Google Maps y hooks
 import {
   GoogleMap,
   Marker,
   useJsApiLoader,
   OverlayView
 } from "@react-google-maps/api";
-import {useCallback, useEffect, useRef, useState} from "react";
-import {GeoPoint} from "firebase/firestore";
-import {usePostStore} from "@/store/usePostStore";
+
+// Hooks de React
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// Tipado de coordenadas GeoPoint desde Firestore
+import { GeoPoint } from "firebase/firestore";
+
+// Store global para estado del post
+import { usePostStore } from "@/store/usePostStore";
+
+// Input reutilizable para direcciones
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 
+// Debounce para controlar llamadas al Autocomplete
 import debounce from "lodash.debounce";
-import {X} from "lucide-react";
+
+// Icono para eliminar puntos
+import { X } from "lucide-react";
+
+// Icono personalizado de marcador
 import MarkerSVG from "@assets/marker.svg";
 
-const containerStyle = {width: "100%", height: "250px"};
-const defaultCenter = {lat: 40.4168, lng: -3.7038};
+// Configuración del mapa
+const containerStyle = { width: "100%", height: "250px" };
+const defaultCenter = { lat: 40.4168, lng: -3.7038 };
 const libraries: ("places")[] = ["places"];
 
+// Tipos para las predicciones del autocomplete
 interface Prediction {
   placeId: string;
   mainText: string;
@@ -33,33 +49,37 @@ interface AutocompleteSuggestion {
 }
 
 const ForgeMap = () => {
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
-  const {postDraft, setPostField} = usePostStore();
-  const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null); // Referencia al mapa
+  const [predictions, setPredictions] = useState<Prediction[]>([]); // Lista de predicciones del autocomplete
+  const [showSuggestions, setShowSuggestions] = useState(false); // Mostrar lista de sugerencias
+  const [isSelecting, setIsSelecting] = useState(false); // Flag para evitar conflictos al seleccionar
+  const { postDraft, setPostField } = usePostStore(); // Estado del post (Zustand)
+  const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null); // Índice del marker activo (con overlay)
 
-  const {isLoaded} = useJsApiLoader({
+  // Carga del script de Google Maps
+  const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
 
+  // Conversión de GeoPoint a LatLng
   const geoPointToLatLng = (geo: GeoPoint) => ({
     lat: geo.latitude,
     lng: geo.longitude,
   });
 
+  // Recalcular los límites del mapa cada vez que cambian los puntos
   useEffect(() => {
     if (!mapRef.current || postDraft.routePoints.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
-    postDraft.routePoints.forEach(({geoPoint}) => {
+    postDraft.routePoints.forEach(({ geoPoint }) => {
       bounds.extend(geoPointToLatLng(geoPoint));
     });
 
-    mapRef.current.fitBounds(bounds, 80);
+    mapRef.current.fitBounds(bounds, 80); // Centra el mapa con padding
 
+    // Asegura un zoom mínimo
     const listener = mapRef.current.addListener("bounds_changed", () => {
       const zoom = mapRef.current!.getZoom();
       if (zoom && zoom < 7) mapRef.current!.setZoom(7);
@@ -67,14 +87,15 @@ const ForgeMap = () => {
     });
   }, [postDraft.routePoints]);
 
+  // Petición debounced al backend de autocomplete
   const fetchPredictions = useCallback(
     debounce(async (input: string) => {
       if (!input.trim()) return;
       try {
         const res = await fetch(import.meta.env.VITE_AUTOCOMPLETE_ENDPOINT, {
           method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({input}),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input }),
         });
 
         const data = await res.json();
@@ -98,12 +119,14 @@ const ForgeMap = () => {
     []
   );
 
+  // Limpia el debounce al desmontar
   useEffect(() => {
     return () => {
       fetchPredictions.cancel();
     };
   }, [fetchPredictions]);
 
+  // Manejo del input del usuario
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -122,6 +145,7 @@ const ForgeMap = () => {
     fetchPredictions(value);
   };
 
+  // Cuando el usuario selecciona una predicción
   const handleSelectSuggestion = async (prediction: Prediction) => {
     setIsSelecting(true);
 
@@ -137,59 +161,59 @@ const ForgeMap = () => {
 
     const place = await res.json();
 
-
-
-
     if (!place?.location) {
       setIsSelecting(false);
       return;
     }
 
     const address = prediction.mainText;
-    const geoPoint = new GeoPoint(
-      place.location.latitude,
-      place.location.longitude
-    );
+    const geoPoint = new GeoPoint(place.location.latitude, place.location.longitude);
 
+    // Añade el nuevo punto
     setPostField("routePoints", [
       ...postDraft.routePoints,
       { address, geoPoint },
     ]);
-    setPostField("address", ""); // 👈 vacía el input después
-    console.log("GUARDADO:", [...postDraft.routePoints, {address, geoPoint}]);
+
+    // Vacía el input después de añadir el punto
+    setPostField("address", "");
 
     setShowSuggestions(false);
     setPredictions([]);
 
-    setTimeout(() => setIsSelecting(false), 50);
+    setTimeout(() => setIsSelecting(false), 50); // Espera para evitar conflictos de estado
   };
 
+  // Eliminar un punto concreto
   const handleDeletePoint = (index: number) => {
     setPostField(
       "routePoints",
       postDraft.routePoints.filter((_, i) => i !== index)
     );
   };
+
+  // Placeholder dinámico según si hay puntos añadidos
   const placeholderText =
     postDraft.routePoints.length > 0
       ? "Busca tu siguiente parada..."
       : "Busca la primera ubicación...";
+
   if (!isLoaded) return <p>Cargando mapa...</p>;
 
   return (
     <>
       <div className="relative rounded-lg overflow-hidden">
+        {/* Input + sugerencias sobre el mapa */}
         <div className="flex flex-col top-3 absolute items-center justify-center w-full z-10">
           <ForgeInput
             name="address"
             placeholder={placeholderText}
             value={postDraft.address}
             onChange={handleChange}
-            className="   w-[95%] "
+            className="w-[95%]"
           />
           {showSuggestions && predictions.length > 0 && (
-            <ul
-              className=" w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
+            <ul className="w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
               {predictions.map((p) => (
                 <li
                   key={p.placeId}
@@ -203,6 +227,7 @@ const ForgeMap = () => {
           )}
         </div>
 
+        {/* Mapa con markers y overlays */}
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={
@@ -216,7 +241,6 @@ const ForgeMap = () => {
           }}
           options={{
             disableDefaultUI: true,
-
             clickableIcons: false,
           }}
         >
@@ -225,6 +249,7 @@ const ForgeMap = () => {
 
             return (
               <>
+                {/* Marcador personalizado */}
                 <Marker
                   position={position}
                   icon={{
@@ -234,61 +259,36 @@ const ForgeMap = () => {
                   onClick={() =>
                     setActiveMarkerIndex((prev) => (prev === index ? null : index))
                   }
-
                 />
-                {
-                  activeMarkerIndex === index && (
-                    <OverlayView
-                      position={position}
-                      mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                    >
-                      <div className="relative left-1/2 -translate-x-1/2  bg-white w-max px-3 py-1  -translate-y-17 rounded-full shadow-md flex items-center gap-2">
-                        <p className="text-sm font-medium max-w-[160px] truncate">{point.address}</p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleDeletePoint(index);
-                            setActiveMarkerIndex(null);
-                          }}
-                          className="text-red-500 hover:text-red-700 text-sm font-medium"
-                        >
-                          <X />
-                        </button>
-                      </div>
-                    </OverlayView>
 
-
-                  )
-                }
+                {/* Overlay tipo badge con botón de eliminar */}
+                {activeMarkerIndex === index && (
+                  <OverlayView
+                    position={position}
+                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                  >
+                    <div className="relative left-1/2 -translate-x-1/2 -translate-y-17 bg-white w-max px-3 py-1 rounded-full shadow-md flex items-center gap-2">
+                      <p className="text-sm font-medium max-w-[160px] truncate">
+                        {point.address}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleDeletePoint(index);
+                          setActiveMarkerIndex(null);
+                        }}
+                        className="text-red-500 hover:text-red-700 text-sm font-medium"
+                      >
+                        <X />
+                      </button>
+                    </div>
+                  </OverlayView>
+                )}
               </>
-
-
-          )
-            ;
+            );
           })}
-
-
         </GoogleMap>
-
       </div>
-
-      {/*<div className="mt-4 px-2 space-y-2">
-        {postDraft.routePoints.map(({ address }, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center bg-base-100 p-2 rounded shadow-sm"
-          >
-            <span className="text-sm truncate max-w-[80%]">{address}</span>
-            <button
-              type="button"
-              onClick={() => handleDeletePoint(index)}
-              className="text-red-500 hover:text-red-700 text-sm font-medium"
-            >
-              <X />
-            </button>
-          </div>
-        ))}
-      </div>*/}
     </>
   );
 };
