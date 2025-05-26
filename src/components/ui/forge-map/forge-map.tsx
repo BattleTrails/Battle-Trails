@@ -85,7 +85,7 @@ const ForgeMap = () => {
     debounce(async (input: string) => {
       if (!input.trim()) return;
       try {
-        const res = await fetch("http://127.0.0.1:54321/functions/v1/autocomplete", {
+        const res = await fetch(import.meta.env.VITE_AUTOCOMPLETE_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ input }),
