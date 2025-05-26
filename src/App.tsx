@@ -6,6 +6,7 @@ import AuthLayout from "@layouts/auth-layout.tsx";
 import Auth from "@pages/auth-page.tsx";
 import Forge from "@pages/forge-page.tsx";
 import PrivateRoute from "@/routes/private-route.tsx";
+import PostDetails from "@pages/details-page"
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         {index: true, element: <Home/>},
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
+        {path: "details", element: <PostDetails/> },
       ],
     },
     {
