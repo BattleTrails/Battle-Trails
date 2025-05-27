@@ -1,11 +1,8 @@
 import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
-import Card from "@components/ui/card/card.tsx";
-import data from "@/assets/fake_firestore_data.json";
-import AuthForm from "@pages/auth/auth-form/auth-form.tsx";
+
 import Header from "@layouts/header/header.tsx";
 
 const TestPage = () => {
-  const posts = data.posts;
 
   return (
     <div className="flex flex-col text-center">
@@ -28,16 +25,16 @@ const TestPage = () => {
 
         <div className="mb-4">
           <p className="mb-2 font-semibold">Grid de Cards:</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+          {/*<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {posts.map((post) => (
               <Card key={post.id} post={post}/>
 
             ))}
-          </div>
+          </div>*/}
         </div>
         <div className=" flex flex-col  items-center justify-center ">
-          <p className="mb-2 font-semibold">Login/SignUp:</p>
-          <AuthForm/>
+          <p className="mb-2 font-semibold">Maps:</p>
+
         </div>
       </div>
     </div>

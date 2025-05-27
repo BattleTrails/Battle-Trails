@@ -23,7 +23,7 @@ const Card = ({post}: { post: Post }) => {
           <h2 className="text-lg font-semibold line-clamp-2">{title}</h2>
           <div className="flex flex-row h-fit items-center gap-3">
             <img src={mark} alt="" className="h-5"/>
-            <p className="text-sm opacity-90 line-clamp-2">Paris, Francia</p>
+            <p className="text-sm opacity-90 line-clamp-2">{post.locationName}</p>
           </div>
 
         </div>
