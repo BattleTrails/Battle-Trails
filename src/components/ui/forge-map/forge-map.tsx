@@ -54,7 +54,8 @@ const ForgeMap = () => {
   const [isSelecting, setIsSelecting] = useState(false); // Flag para evitar conflictos al seleccionar
   const {postDraft, setPostField} = usePostStore(); // Estado del post (Zustand)
   const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null); // Índice del marker activo (con overlay)
-  const [, setShouldAutoCenter] = useState(true);
+  const [mapCenter, setMapCenter] = useState({ lat: 40.4168, lng: -3.7038 });
+
 
   // Carga del script de Google Maps
   const {isLoaded} = useJsApiLoader({
@@ -148,7 +149,7 @@ const ForgeMap = () => {
   // Cuando el usuario selecciona una predicción
   const handleSelectSuggestion = async (prediction: Prediction) => {
     setIsSelecting(true);
-    setShouldAutoCenter(true); // permitimos centrar
+     // permitimos centrar
 
     const res = await fetch(
       `https://places.googleapis.com/v1/places/${prediction.placeId}?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&languageCode=es&regionCode=ES`,
@@ -173,7 +174,7 @@ const ForgeMap = () => {
     // Si ya hay puntos, centra el mapa en el último punto añadido
     const latLng = geoPointToLatLng(geoPoint);
     mapRef.current?.panTo(latLng);
-
+    setMapCenter(latLng);
 
     // Añade el nuevo punto
     setPostField("routePoints", [
@@ -192,7 +193,6 @@ const ForgeMap = () => {
 
   // Eliminar un punto concreto
   const handleDeletePoint = (index: number) => {
-    setShouldAutoCenter(false); // evitamos recentrado
     setPostField(
       "routePoints",
       postDraft.routePoints.filter((_, i) => i !== index)
@@ -238,7 +238,7 @@ const ForgeMap = () => {
         {/* Mapa con markers y overlays */}
         <GoogleMap
           mapContainerStyle={containerStyle}
-
+          center={mapCenter}
           zoom={postDraft.routePoints.length ? 8 : 5}
           onLoad={(map: google.maps.Map) => {
             mapRef.current = map;
@@ -262,8 +262,10 @@ const ForgeMap = () => {
                   }}
                   onClick={() => {
                     setActiveMarkerIndex((prev) => (prev === index ? null : index));
-                    mapRef.current?.panTo(position); // centra en ese punto
+                    mapRef.current?.panTo(position);
+                    setMapCenter(position); // 👈 sincroniza el estado
                   }}
+
                 />
 
                 {/* Overlay tipo badge con botón de eliminar */}
