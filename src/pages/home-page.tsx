@@ -26,11 +26,11 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-5 p-6">
-      <FilterBar/>
+    <div className="flex flex-col  items-center gap-5 p-5 ">
+
 
       {loading ? (
-        <p className="text-neutral">Cargando publicaciones...</p>
+        <p className="bg-primary">Cargando publicaciones...</p>
       ) : (
         <div className="grid grid-cols-1 pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20">
           {posts.map((post) => (

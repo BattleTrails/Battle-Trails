@@ -88,17 +88,17 @@ const FilterBar = () => {
   // 🖥 Desktop layout (original intacto)
   return (
     <div
-      className="bg-base-100 rounded-4xl mx-auto px-2 py-3 shadow flex flex-wrap justify-center gap-3 max-w-full">
+      className="bg-transparent rounded-4xl mx-auto px-2 py-3 flex flex-wrap justify-center gap-3 max-w-full">
       {FILTERS.map(({key, label, icon: Icon}) => {
         const isActive = selectedFilters.includes(key);
         return (
           <button
             key={key}
             onClick={() => toggleFilter(key)}
-            className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-sm ${
+            className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-full text-white transition-all duration-150 text-sm border-2 ${
               isActive
-                ? "bg-accent text-secondary font-semibold"
-                : "hover:bg-accent/20"
+                ? " text-secondary font-semibold border-secondary"
+                : "border-transparent hover:border-white"
             }`}
           >
             <Icon className="w-4 h-4"/>
