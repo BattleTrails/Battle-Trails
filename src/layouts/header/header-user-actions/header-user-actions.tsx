@@ -36,7 +36,7 @@ const HeaderUserActions = ({searchOpen, currentPath}: { searchOpen: boolean; cur
 
   return (
     <div
-      className={`flex items-center justify-end ml-auto
+      className={`flex items-center justify-end 
                         ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH}
                         ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"}
                         ${CLASS_OPACITY_TOGGLE}`}
