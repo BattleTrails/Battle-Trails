@@ -1,0 +1,15 @@
+/* swiper-navigation.css o similar */
+
+.custom-swiper .swiper-button-next,
+.custom-swiper .swiper-button-prev {
+  color: white;           /* color de flechas */
+  border-radius: 9999px;
+  width: 40px;
+  height: 40px;
+}
+
+.custom-swiper .swiper-button-next::after,
+.custom-swiper .swiper-button-prev::after {
+  font-size: 18px; /* tamaño del icono */
+  font-weight: bold;
+}
