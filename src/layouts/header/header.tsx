@@ -14,6 +14,15 @@ const Header = () => {
   const currentPath = location.pathname;
   const [isScrolled, setIsScrolled] = useState(false);
 
+
+  const isHome = currentPath === "/";
+  const isForge = currentPath.startsWith("/new");
+  //const isDetails = currentPath.includes("/post/");
+
+  const headerClass = isHome
+    ? ""
+    : isForge ? "!h-[75px] " : "";
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
@@ -26,7 +35,7 @@ const Header = () => {
   return (
     <div
       className={clsx(
-        "fixed flex-col gap-5 backdrop-blur-sm transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4 ",
+        `fixed flex-col gap-5 backdrop-blur-sm transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4 ${headerClass}`,
         isScrolled ? "min-[1250px]:!h-[75px]" : ""
       )}
     >
@@ -54,16 +63,19 @@ const Header = () => {
         <HeaderUserActions searchOpen={searchOpen} currentPath={currentPath} isScrolled={isScrolled}/>
 
       </div>
-      <div
-        className={clsx(
-          "transition-transform duration-300 w-full", // ✅ por defecto (mobile)
-          isScrolled
-            ? "min-[1250px]:-translate-y-17 min-[1250px]:w-auto"
-            : "min-[1250px]:translate-y-0 min-[1250px]:w-auto"
-        )}
-      >
-        <FilterBar />
-      </div>
+      {isHome && (
+        <div
+          className={clsx(
+            "transition-transform duration-300 w-full",
+            isScrolled
+              ? "min-[1250px]:-translate-y-17 min-[1250px]:w-auto"
+              : "min-[1250px]:translate-y-0 min-[1250px]:w-auto"
+          )}
+        >
+          <FilterBar />
+        </div>
+      )}
+
 
     </div>
   );

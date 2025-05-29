@@ -40,7 +40,7 @@ const SearchBox = ({onFocusChange}: Props) => {
         <div
           className={`
                         absolute top-1/2 -translate-y-1/2 
-                        flex items-center justify-center rounded-full bg-primary backdrop-blur-sm
+                        flex items-center justify-center rounded-full bg-transparent backdrop-blur-sm
                         w-6 h-6
                         ${sharedTransition}
                         ${isExpanded
@@ -51,7 +51,7 @@ const SearchBox = ({onFocusChange}: Props) => {
           <Search
             size={16}
             className={`
-                            ${sharedTransition}
+                           ${sharedTransition}
                             ${isExpanded ? "text-secondary" : "text-white/70"}
                         `}
           />

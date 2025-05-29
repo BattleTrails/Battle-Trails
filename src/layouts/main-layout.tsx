@@ -11,13 +11,13 @@ const MainLayout = () => {
   //const isDetails = currentPath.includes("/post/");
 
   const mainClass = isHome
-    ? "bg-neutral text-neutral"
-    : isForge ? "  text-neutral  " : "";
+    ? "bg-neutral text-neutral pt-[120px]"
+    : isForge ? "  text-neutral pt-[75px] " : "";
 
   return (
     <div className={`flex flex-col min-h-screen  ${mainClass}`}>
       <Header/>
-      <main className="flex-1 pt-[120px] ">
+      <main className="flex-1  ">
         <Outlet/> {/* Renderiza las páginas */}
       </main>
       <Footer/>
