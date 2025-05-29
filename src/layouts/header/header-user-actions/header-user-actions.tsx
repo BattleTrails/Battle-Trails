@@ -27,7 +27,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!pointer-events-none !hidden !h-[70px]" : "";
+    : isForge ? "!pointer-events-none !hidden" : "";
 
 
   const handleLogout = async () => {
@@ -80,18 +80,21 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
           <ul
             className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
             {/* Botón mobile visible solo por debajo del breakpoint */}
-            <li className={clsx(
-              "flex",
-              CLASS_MIN_BP_HIDDEN,                      // oculto en desktop
-              isScrolled && "!flex"                     // forzar visibilidad si isScrolled
-            )}>
-              <button
-                onClick={() => (user ? goToNewRoute() : goToAuth())}
-                className="w-full text-left text-secondary"
-              >
-                Añade tu ruta
-              </button>
-            </li>
+            {!isForge && (
+              <li className={clsx(
+                "flex",
+                CLASS_MIN_BP_HIDDEN,
+                isScrolled && "!flex"
+              )}>
+                <button
+                  onClick={() => (user ? goToNewRoute() : goToAuth())}
+                  className="w-full text-left text-secondary"
+                >
+                  Añade tu ruta
+                </button>
+              </li>
+            )}
+
             {user ? (
               <>
                 <li className="pointer-events-none hover:bg-transparent">

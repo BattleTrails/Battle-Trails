@@ -80,8 +80,14 @@ const ForgePage = () => {
 
 
   return (
-    <div className="max-w-6xl mx-auto p-4 rounded-xl bg-base-100 shadow-sm border border-neutral/10">
-      <h1 className="text-2xl font-bold text-neutral mb-6">Crear ruta</h1>
+    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 ">
+      <div className="flex flex-row justify-between ">
+        <h1 className="text-2xl font-bold text-neutral mb-6">Crea tu ruta!</h1>
+
+        <ForgeButtonSave onClick={handleCreatePost}/>
+
+      </div>
+
       <div className="flex flex-col md:flex-row gap-8">
         {/* Columna izquierda */}
         <div className="flex-1">
@@ -91,9 +97,7 @@ const ForgePage = () => {
         {/* Columna derecha */}
         <div className="flex-1">
           <ForgeForm/>
-          <div className="flex justify-end mt-6">
-            <ForgeButtonSave onClick={handleCreatePost}/>
-          </div>
+
         </div>
       </div>
     </div>
