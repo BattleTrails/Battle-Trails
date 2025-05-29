@@ -26,8 +26,8 @@ const Header = () => {
   return (
     <div
       className={clsx(
-        "fixed flex-col gap-4 backdrop-blur-sm transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[150px] px-4 py-4 md:py-5 lg:py-6",
-        isScrolled ? "min-[801px]:!h-[70px]" : ""
+        "fixed flex-col gap-5 backdrop-blur-sm transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4 ",
+        isScrolled ? "min-[1250px]:!h-[75px]" : ""
       )}
     >
       <div className="relative flex flex-row justify-between items-center w-full h-full ">
@@ -38,10 +38,10 @@ const Header = () => {
         <div
           className={clsx(
             "w-full max-w-md flex justify-center transition-transform duration-300",
-            "min-[801px]:absolute min-[801px]:top-1/2 min-[801px]:left-1/2 min-[801px]:-translate-y-1/2",
+            "min-[1250px]:absolute min-[1250px]:top-1/2 min-[1250px]:left-1/2 min-[1250px]:-translate-y-1/2",
             isScrolled
-              ? "min-[801px]:translate-x-[290px]"
-              : "min-[801px]:-translate-x-1/2"
+              ? "min-[1250px]:translate-x-[240px]"
+              : "min-[1250px]:-translate-x-1/2"
           )}
         >
 
@@ -51,18 +51,20 @@ const Header = () => {
           />
         </div>
 
-        <HeaderUserActions searchOpen={searchOpen} currentPath={currentPath}/>
+        <HeaderUserActions searchOpen={searchOpen} currentPath={currentPath} isScrolled={isScrolled}/>
 
       </div>
       <div
         className={clsx(
-          "transition-transform duration-300 w-fill",
-          isScrolled ? "min-[801px]:-translate-y-14" : "min-[801px]:translate-y-0"
+          "transition-transform duration-300 w-full", // ✅ por defecto (mobile)
+          isScrolled
+            ? "min-[1250px]:-translate-y-17 min-[1250px]:w-auto"
+            : "min-[1250px]:translate-y-0 min-[1250px]:w-auto"
         )}
       >
-
-      <FilterBar />
+        <FilterBar />
       </div>
+
     </div>
   );
 };

@@ -1,12 +1,12 @@
-import {useEffect, useState} from "react";
-import {Eye, Flame, Gem, LocateFixed,} from "lucide-react";
+import { useState } from "react";
+import { Eye, Flame, Gem, LocateFixed } from "lucide-react";
+import clsx from "clsx";
 
 const FILTERS = [
-  {key: "populares", label: "Populares", icon: Flame},
-  {key: "cercanos", label: "Cercanos", icon: LocateFixed},
-  /*{ key: "explorados", label: "Más explorados", icon: Compass },*/
-  {key: "vistos", label: "Más vistos", icon: Eye},
-  {key: "descubre", label: "Joyas Ocultas", icon: Gem},
+  { key: "populares", label: "Populares", icon: Flame },
+  { key: "cercanos", label: "Cercanos", icon: LocateFixed },
+  { key: "vistos", label: "Más vistos", icon: Eye },
+  { key: "descubre", label: "Joyas Ocultas", icon: Gem },
 ];
 
 const VALID_COMBINATIONS: Record<string, string[]> = {
@@ -19,7 +19,6 @@ const VALID_COMBINATIONS: Record<string, string[]> = {
 
 const FilterBar = () => {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const toggleFilter = (key: string) => {
     const isSelected = selectedFilters.includes(key);
@@ -41,68 +40,36 @@ const FilterBar = () => {
     }
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 701);
-    };
-
-    handleResize(); // inicial
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  if (isMobile) {
-    return (
-      <div
-        className="fixed top-[70px] z-40 w-full h-[70px] bg-primary border-b border-neutral text-[14px] flex items-center">
-        {FILTERS.map(({key, label, icon: Icon}) => {
-          const isActive = selectedFilters.includes(key);
-          return (
-            <button
-              key={key}
-              onClick={() => toggleFilter(key)}
-              className="flex flex-col items-center justify-center flex-1 h-full"
-            >
-              <Icon
-                className={`w-5 h-5 mb-1 ${
-                  isActive ? "text-secondary" : "text-accent/60"
-                }`}
-              />
-              <span
-                className={`text-[11px] font-medium ${
-                  isActive ? "text-secondary" : "text-accent/60"
-                }`}
-              >
-                {label}
-              </span>
-              {isActive && (
-                <div className="mt-1 h-[2px] w-6 bg-secondary rounded-full"/>
-              )}
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // 🖥 Desktop layout (original intacto)
   return (
     <div
-      className="bg-transparent rounded-4xl mx-auto px-2 py-3 flex flex-wrap justify-center gap-3 max-w-full">
-      {FILTERS.map(({key, label, icon: Icon}) => {
+      className={clsx(
+        // MOBILE
+        "w-full flex justify-between h-[70px] text-[14px]",
+        // DESKTOP override
+        "md:h-auto md:w-auto md:justify-center md:flex-wrap md:gap-3 md:rounded-4xl md:px-2 md:py-3"
+      )}
+    >
+      {FILTERS.map(({ key, label, icon: Icon }) => {
         const isActive = selectedFilters.includes(key);
         return (
           <button
             key={key}
             onClick={() => toggleFilter(key)}
-            className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-full text-white transition-all duration-150 text-sm border-2 ${
+            className={clsx(
+              // MOBILE
+              "flex flex-col flex-1 items-center justify-center h-full",
+              // DESKTOP override
+              "md:flex-row md:flex-none md:gap-2 md:px-4 md:py-2 md:rounded-full md:border-2 md:text-sm",
               isActive
-                ? " text-secondary font-semibold border-secondary"
-                : "border-transparent hover:border-white"
-            }`}
+                ? "text-secondary md:border-secondary md:font-semibold"
+                : "text-accent/60 md:border-transparent md:hover:border-white"
+            )}
           >
-            <Icon className="w-4 h-4"/>
-            <span>{label}</span>
+            <Icon className="w-5 h-5 mb-1 md:mb-0" />
+            <span className="text-[11px] md:text-sm">{label}</span>
+            {isActive && (
+              <div className="mt-1 h-[2px] w-6 bg-secondary rounded-full md:hidden" />
+            )}
           </button>
         );
       })}

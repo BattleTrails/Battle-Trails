@@ -17,7 +17,7 @@ const MainLayout = () => {
   return (
     <div className={`flex flex-col min-h-screen  ${mainClass}`}>
       <Header/>
-      <main className="flex-1 pt-[70px] ">
+      <main className="flex-1 pt-[120px] ">
         <Outlet/> {/* Renderiza las páginas */}
       </main>
       <Footer/>
