@@ -17,11 +17,11 @@ const Header = () => {
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
-  //const isDetails = currentPath.includes("/post/");
+  const isDetails = currentPath.includes("/details");
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!h-[75px] " : "";
+    : isForge ? "!h-[75px] " : isDetails ? "!h-[75px] !md:-[75] " : "";
 
   useEffect(() => {
     const handleScroll = () => {

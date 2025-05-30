@@ -15,7 +15,7 @@ const DetailsPage = () => {
     return (
         <div>
             {/*sección hero*/}
-            <div className="flex flex-col lg:flex-row  -m-4">
+            <div className="flex flex-col lg:flex-row  ">
                 {/* Galería vertical con scroll */}
                 <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory">
                     {images.map((src, index) => (
@@ -80,7 +80,7 @@ const DetailsPage = () => {
                 </div>
             </div>
             {/* sección rutas relacionadas */}
-            <div className="mt-20 bg-[#1E1E1E] -m-4 py-12">
+            <div className="mt-20 bg-[#1E1E1E] py-12">
                 <h2 className="pl-4 font-semibold text-3xl text-white mb-10">Rutas relacionadas</h2>
                 {/* carrusel cards rutas relacionadas */}
                 <div className="pl-4 lg:pl-20">

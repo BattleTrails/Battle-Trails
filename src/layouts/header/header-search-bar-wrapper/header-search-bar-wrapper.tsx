@@ -10,7 +10,7 @@ const HeaderSearchBarWrapper = ({setSearchOpen, currentPath}: {
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!pointer-events-none !hidden" : "bg-neutral text-white";
+    : isForge ? "!pointer-events-none !hidden" : "bg-transparent text-white";
 
   return (
     <div
