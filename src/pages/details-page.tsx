@@ -15,22 +15,23 @@ const DetailsPage = () => {
     return (
         <div>
             {/*sección hero*/}
-            <div className="flex flex-col lg:flex-row h-screen -m-4">
+            <div className="flex flex-col lg:flex-row  -m-4">
                 {/* Galería vertical con scroll */}
-                <div className="w-full lg:w-[55%] h-screen overflow-y-scroll snap-y snap-mandatory">
+                <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory">
                     {images.map((src, index) => (
-                        <div
-                            key={index}
-                            className="h-screen w-full snap-start relative"
-                        >
-                            <img
-                                src={`${src}?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2`}
-                                alt={`Imagen ${index + 1}`}
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
+                      <div
+                        key={index}
+                        className="h-[55dvh] lg:h-screen w-full snap-start relative"
+                      >
+                          <img
+                            src={src}
+                            alt={`Imagen ${index + 1}`}
+                            className="h-full w-full object-cover"
+                          />
+                      </div>
                     ))}
                 </div>
+
 
                 {/* Contenido de texto fijo */}
                 <div className="w-full lg:w-[45%] flex flex-col justify-center px-5 lg:px-20 pt-10 lg:pt-0">
