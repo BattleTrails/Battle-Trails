@@ -12,6 +12,7 @@ export const createPost = async (postData: {
   title: string;
   description: string;
   images: string[];
+  locationName: string;
   likes: number;
   likedBy: string[]
 }): Promise<string> => {
@@ -40,7 +41,7 @@ export const createRoute = async (routeData: Route, postId: string): Promise<voi
 export const getPosts = async (): Promise<Post[]> => {
   const snapshot = await getDocs(collection(db, "posts"));
 
-  const posts: Post[] = snapshot.docs.map((doc) => {
+  return snapshot.docs.map((doc) => {
     const data = doc.data();
 
     return {
@@ -49,11 +50,10 @@ export const getPosts = async (): Promise<Post[]> => {
       title: data.title,
       description: data.description,
       images: data.images,
-      location: data.location,
+      locationName: data.locationName,
+      routeId: data.routeId,
       likes: data.likes,
       likedBy: data.likedBy,
     };
   });
-
-  return posts;
 };

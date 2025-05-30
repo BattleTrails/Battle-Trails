@@ -1,5 +1,6 @@
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 import {usePostStore} from "@/store/usePostStore.ts";
+import ForgeMap from "@components/ui/forge-map/forge-map.tsx";
 
 
 const ForgeForm = () => {
@@ -21,13 +22,7 @@ const ForgeForm = () => {
       />
 
       {/* Destino*/}
-      {/*<ForgeInput
-                name="address"
-                placeholder="Ubicación principal"
-                value={postDraft.address }
-                onChange={handleChange}
-                className="w-10/12 mx-auto"
-            />*/}
+      <ForgeMap/>
 
       <ForgeInput
         label="Distancia"
