@@ -73,7 +73,7 @@ const DetailsPage = () => {
                 </div>
             </div>
             {/*sección comentarios*/}
-            <div className="mt-20">
+            <div className="mt-20 ml-5">
                 <h2 className="mb-8 font-semibold text-3xl">Comentarios</h2>
                 <div className="px-0 lg:px-20">
                     <Comments />
@@ -81,11 +81,11 @@ const DetailsPage = () => {
             </div>
             {/* sección rutas relacionadas */}
             <div className="mt-20 bg-[#1E1E1E] py-12">
-                <h2 className="pl-4 font-semibold text-3xl text-white mb-10">Rutas relacionadas</h2>
+                <h2 className="pl-5 font-semibold text-3xl text-white mb-10">Rutas relacionadas</h2>
                 {/* carrusel cards rutas relacionadas */}
-                <div className="pl-4 lg:pl-20">
-                    <Carouselcards></Carouselcards>
-                </div>
+
+                    <Carouselcards/>
+
             </div>
 
 

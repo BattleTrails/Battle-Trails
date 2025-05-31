@@ -42,7 +42,7 @@ const Card = ({ post, variant = "default" }: CardProps) => {
           <h2 className={titleClasses}>{title}</h2>
           <div className="flex items-center gap-3">
             <img src={mark} alt="" className="h-5" />
-            <p className={`${locationClasses} opacity-90 line-clamp-2`}>Paris, Francia</p>
+            <p className={`${locationClasses} opacity-90 line-clamp-2`}>{post.locationName}</p>
           </div>
         </div>
 
