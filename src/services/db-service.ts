@@ -1,5 +1,5 @@
 import {db} from "@/config/firebaseConfig";
-import {addDoc, collection, doc, getDocs, setDoc,} from "firebase/firestore";
+import {addDoc, collection, doc, getDocs,getDoc, setDoc,query,where} from "firebase/firestore";
 
 import {Post, Route} from "@/types";
 
@@ -56,4 +56,20 @@ export const getPosts = async (): Promise<Post[]> => {
       likedBy: data.likedBy,
     };
   });
+};
+
+export const getPostById = async (postId: string): Promise<Post> => {
+  const docRef = doc(db, "posts", postId);
+  const snap = await getDoc(docRef);
+  if (!snap.exists()) throw new Error("Post no encontrado");
+  return { id: snap.id, ...snap.data() } as Post;
+};
+
+export const getRouteByPostId = async (postId: string) => {
+  const q = query(collection(db, "routes"), where("postId", "==", postId));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+
+  const doc = snapshot.docs[0];
+  return { id: doc.id, ...doc.data() };
 };

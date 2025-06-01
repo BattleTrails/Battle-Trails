@@ -17,7 +17,7 @@ const HeaderLogo = ({searchOpen, onClick, currentPath}: {
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
-  const isDetails = currentPath.startsWith("/details");
+  const isDetails = currentPath.startsWith("/post");
 
 
   const logoColor = isHome ? "text-white" : isForge ? "text-neutral" : isDetails ? "text-neutral/50" : "";

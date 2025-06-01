@@ -13,7 +13,7 @@ const SearchBox = ({ onFocusChange }: Props) => {
   const location = useLocation();
 
   const isHome = location.pathname === "/";
-  const isDetails = location.pathname.includes("/details");
+  const isDetails = location.pathname.includes("/post");
 
   const isExpanded = isFocused || isHovered;
   const sharedTransition = "transition-all duration-400 ease-in-out";

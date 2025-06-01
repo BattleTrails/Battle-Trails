@@ -1,6 +1,7 @@
 import { Bookmark, Eye, Share2 } from "lucide-react";
 import mark from "@assets/iconslogo.svg";
 import { Post } from "@/types";
+import {useNavigate} from "react-router-dom";
 
 interface CardProps {
   post: Post;
@@ -9,6 +10,12 @@ interface CardProps {
 
 const Card = ({ post, variant = "default" }: CardProps) => {
   const { title, images, likes, likedBy } = post;
+  const navigate = useNavigate();
+
+  // Función para manejar el clic en la card y navegar al detalle del post
+  const handleClick = () => {
+    navigate(`/post/${post.id}`);
+  };
 
   // Tamaños condicionales para que la card sea más grande en el post detalles
   const sizeClasses =
@@ -32,6 +39,7 @@ const Card = ({ post, variant = "default" }: CardProps) => {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
+      onClick={handleClick}
     >
       {/* Overlay oscuro */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
