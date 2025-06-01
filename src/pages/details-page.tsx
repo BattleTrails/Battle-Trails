@@ -7,22 +7,30 @@ import Carouselcards from "@/components/ui/carouselcards/carouselcards";
 import { LocateFixed, Timer, Share2, Bookmark } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
+import {getFormattedRouteMetaData} from "@/utils/route-data.ts";
 
 const DetailsPage = () => {
     const { postId } = useParams();
     const [post, setPost] = useState<Post | null>(null);
     const[route,setRoute] = useState<Route | null>(null);
-
     const [loading, setLoading] = useState(true);
+    const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+
 
     useEffect(() => {
         const fetchPost = async () => {
             if (!postId) return;
+
             try {
+
                 const fetchedPost = await getPostById(postId);
                 setPost(fetchedPost);
                 const fetchedRoute = await getRouteByPostId(postId);
                 setRoute(fetchedRoute);
+                if (!fetchedRoute) throw new Error("No se encontró la ruta.");
+                const meta = await getFormattedRouteMetaData(fetchedRoute.waypoints);
+
+                setRouteInfo(meta);
 
             } catch (error) {
                 console.error("Error al cargar el post:", error);
@@ -60,7 +68,7 @@ const DetailsPage = () => {
                   ))}
               </div>
 
-              <div className="w-full lg:w-[45%] flex flex-col justify-center px-5 lg:px-20 pt-10 lg:pt-0">
+              <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 lg:pt-0">
                   <div className="flex gap-x-2 mb-6">
                       <Share2 />
                       <Bookmark />
@@ -75,14 +83,15 @@ const DetailsPage = () => {
                       </div>
                       <div className="flex items-center gap-2">
                           <img src={IconDistance} alt="Distancia" className="w-6 h-6" />
-                          <span>8 km</span> {/* esto de momento es mock */}
+                          <span>{routeInfo?.distance ?? "—"}</span>
                       </div>
                       <div className="flex items-center gap-2">
                           <Timer />
-                          <span>7 horas</span> {/* también mock */}
+                          <span>{routeInfo?.duration ?? "—"}</span>
                       </div>
+
                   </div>
-                  <div>
+                  <div className=" rounded overflow-auto">
                       {route && <MapBaseDirections waypoints={route.waypoints} />}
                   </div>
               </div>

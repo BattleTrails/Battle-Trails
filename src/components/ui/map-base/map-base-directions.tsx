@@ -1,10 +1,13 @@
 import {
   GoogleMap,
   useJsApiLoader,
-  DirectionsRenderer,
+  DirectionsRenderer, Libraries,
 } from "@react-google-maps/api";
 import { useEffect, useState, useMemo } from "react";
 import { GeoPoint } from "firebase/firestore";
+
+// 👉 Constante estática para evitar warning de performance
+const GOOGLE_MAP_LIBRARIES: Libraries = ["places"];
 
 interface Props {
   waypoints: GeoPoint[];
@@ -12,7 +15,7 @@ interface Props {
 
 const containerStyle = {
   width: "100%",
-  height: "400px",
+  height: "250px",
 };
 
 const geoPointToLatLng = (point: GeoPoint): { lat: number; lng: number } => ({
@@ -22,10 +25,11 @@ const geoPointToLatLng = (point: GeoPoint): { lat: number; lng: number } => ({
 
 const MapBaseDirections = ({ waypoints }: Props) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [travelMode, setTravelMode] = useState<google.maps.TravelMode | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries: GOOGLE_MAP_LIBRARIES,
   });
 
   const latLngWaypoints = useMemo(
@@ -34,7 +38,14 @@ const MapBaseDirections = ({ waypoints }: Props) => {
   );
 
   useEffect(() => {
-    if (!isLoaded || latLngWaypoints.length < 2) return;
+    if (!isLoaded) return;
+
+    if (!travelMode) {
+      setTravelMode(google.maps.TravelMode.DRIVING);
+      return;
+    }
+
+    if (latLngWaypoints.length < 2) return;
 
     const directionsService = new google.maps.DirectionsService();
 
@@ -46,7 +57,7 @@ const MapBaseDirections = ({ waypoints }: Props) => {
           location: point,
           stopover: true,
         })),
-        travelMode: google.maps.TravelMode.DRIVING,
+        travelMode: travelMode,
       },
       (result, status) => {
         if (status === google.maps.DirectionsStatus.OK && result) {
@@ -56,18 +67,50 @@ const MapBaseDirections = ({ waypoints }: Props) => {
         }
       }
     );
-  }, [isLoaded, latLngWaypoints]);
+  }, [isLoaded, latLngWaypoints, travelMode]);
 
   if (!isLoaded) return <p className="text-center">Cargando mapa...</p>;
 
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={latLngWaypoints[0] || { lat: 0, lng: 0 }}
-      zoom={8}
-    >
-      {directions && <DirectionsRenderer directions={directions} />}
-    </GoogleMap>
+    <>
+      {/*<div className="flex gap-2 justify-evenly mb-2">
+        <button
+          onClick={() => setTravelMode(google.maps.TravelMode.DRIVING)}
+          className={`btn btn-xs ${
+            travelMode === google.maps.TravelMode.DRIVING
+              ? "btn-primary"
+              : "btn-outline"
+          }`}
+        >
+          🚗 Coche
+        </button>
+        <button
+          onClick={() => setTravelMode(google.maps.TravelMode.WALKING)}
+          className={`btn btn-xs ${
+            travelMode === google.maps.TravelMode.WALKING
+              ? "btn-primary"
+              : "btn-outline"
+          }`}
+        >
+          🚶 A pie
+        </button>
+      </div>*/}
+
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={latLngWaypoints[0] || { lat: 0, lng: 0 }}
+        zoom={8}
+        options={{
+          disableDefaultUI: true,
+          zoomControl: true,
+          fullscreenControl: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+        }}
+      >
+        {directions && <DirectionsRenderer directions={directions} />}
+      </GoogleMap>
+    </>
   );
 };
 
