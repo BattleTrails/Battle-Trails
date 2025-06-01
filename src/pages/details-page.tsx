@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getPostById } from "@/services/db-service"; // asegúrate de que esto existe
-import { Post } from "@/types";
+import { getPostById , getRouteByPostId } from "@/services/db-service"; // asegúrate de que esto existe
+import { Post,Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
 import { LocateFixed, Timer, Share2, Bookmark } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
+import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 
 const DetailsPage = () => {
     const { postId } = useParams();
     const [post, setPost] = useState<Post | null>(null);
+    const[route,setRoute] = useState<Route | null>(null);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,6 +21,9 @@ const DetailsPage = () => {
             try {
                 const fetchedPost = await getPostById(postId);
                 setPost(fetchedPost);
+                const fetchedRoute = await getRouteByPostId(postId);
+                setRoute(fetchedRoute);
+
             } catch (error) {
                 console.error("Error al cargar el post:", error);
             } finally {
@@ -75,6 +81,9 @@ const DetailsPage = () => {
                           <Timer />
                           <span>7 horas</span> {/* también mock */}
                       </div>
+                  </div>
+                  <div>
+                      {route && <MapBaseDirections waypoints={route.waypoints} />}
                   </div>
               </div>
           </div>

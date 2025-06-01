@@ -71,5 +71,11 @@ export const getRouteByPostId = async (postId: string) => {
   if (snapshot.empty) return null;
 
   const doc = snapshot.docs[0];
-  return { id: doc.id, ...doc.data() };
+  return {
+    id: doc.id,
+    postId: doc.data().postId,
+    waypoints: doc.data().waypoints,
+    images: doc.data().images,
+  } as Route;
+
 };
