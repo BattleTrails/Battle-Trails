@@ -17,27 +17,37 @@ const Header = () => {
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
-  //const isDetails = currentPath.includes("/post/");
+  const isDetails = currentPath.includes("/post");
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!h-[75px] " : "";
+    : isForge ? "!h-[75px] " : isDetails ? "!h-[75px] !md:-[75] " : "";
 
   useEffect(() => {
+    if (isDetails) {
+      setIsScrolled(true);
+      return; // no añadir el listener en este caso
+    }
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30);
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isDetails]);
+
 
   return (
     <div
       className={clsx(
-        `fixed flex-col gap-5 backdrop-blur-sm transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4 ${headerClass}`,
-        isScrolled ? "min-[1250px]:!h-[75px]" : ""
-      )}
+        "fixed flex-col gap-5 transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4",
+        !isDetails && "backdrop-blur-sm",
+        headerClass,
+        isScrolled && "min-[1250px]:!h-[75px]"
+      )
+      }
     >
       <div className="relative flex flex-row justify-between items-center w-full h-full ">
         <HeaderLogo searchOpen={searchOpen}
