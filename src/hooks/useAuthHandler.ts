@@ -9,8 +9,9 @@ import {
   signOut,
   User,
 } from "firebase/auth";
-import {auth} from "@config/firebaseConfig"; // tu path original
+import {auth, db} from "@config/firebaseConfig"; // tu path original
 import { FirebaseError } from "firebase/app";
+import {doc, setDoc} from "firebase/firestore";
 
 export const useAuthHandler = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -60,9 +61,25 @@ export const useAuthHandler = () => {
   };
 
 
-  const register = async (email: string, password: string): Promise<boolean> => {
+  const register = async (
+    email: string,
+    password: string,
+    name: string,
+    username: string,
+    profilePicture: string
+  ): Promise<boolean> => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Guarda perfil extendido en Firestore
+      await setDoc(doc(db, "users", uid), {
+        name,
+        username,
+        email,
+        profilePicture,
+      });
+
       setErrorMessage("");
       return true;
     } catch (error) {

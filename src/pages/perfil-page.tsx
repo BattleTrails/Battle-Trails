@@ -22,12 +22,12 @@ const PerfilPage = () => {
           <div className="px-4 translate-y-25 sm:px-10">
               {/* Header */}
               <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
-                  <div className="w-28 lg:w-20 aspect-square overflow-hidden rounded">
+                  <div className="w-28  aspect-square overflow-hidden rounded">
                       <img src={user.image} alt={`foto de perfil de ${user.fullName}`} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-[150px] text-center lg:text-start">
-                      <h2 className="text-2xl sm:text-4xl font-bold mb-1">{user.username}</h2>
-                      <span className="text-lg sm:text-xl">{user.fullName}</span>
+                      <h2 className="text-2xl sm:text-4xl  mb-1">{user.fullName}</h2>
+                      <span className="text-lg font-light sm:text-xl">{user.username}</span>
                       <div className="flex flex-wrap gap-3 mt-3 justify-center lg:justify-start w-full lg:w-fit">
                           <button className="border border-b-blue-950 text-blue-950 px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
                           <button onClick={() => setShowModal(true)} className="bg-blue-950 p-1.5 rounded-md">

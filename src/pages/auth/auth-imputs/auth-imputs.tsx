@@ -5,13 +5,15 @@ import {AuthMode} from "@/types";
 
 interface Props {
   mode: AuthMode;
+  name: string; // Solo necesario si el modo es "register"
+  setName: (value: string) => void; // Opcional si no se usa
   email: string;
   password: string;
   setEmail: (value: string) => void;
   setPassword: (value: string) => void;
 }
 
-const AuthInputs = ({email, password, setEmail, setPassword, mode}: Props) => {
+const AuthInputs = ({name , setName,email, password, setEmail, setPassword, mode}: Props) => {
   const isRegister = mode === "register";
 
   return (
@@ -21,9 +23,9 @@ const AuthInputs = ({email, password, setEmail, setPassword, mode}: Props) => {
           label="Nombre"
           type="text"
           name="name"
-          value={""} // Añade estado si lo necesitas
-          onChange={() => {
-          }} // Añade setName si lo usas
+          value={name} // Añade estado si lo necesitas
+          onChange={(e) => setName(e.target.value)}
+            // Añade setName si lo usas
           icon={<User className="w-5 h-5"/>}
         />
       )}
