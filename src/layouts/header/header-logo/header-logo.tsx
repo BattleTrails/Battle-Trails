@@ -28,11 +28,9 @@ const HeaderLogo = ({searchOpen, onClick, currentPath}: {
       className={`flex items-center cursor-pointer justify-start 
         ${CLASS_BELOW_BP_WIDTH} ${CLASS_MIN_BP_WIDTH} 
         ${searchOpen ? CLASS_HIDE_BELOW_BP_OPACITY : "opacity-100"} 
-        ${CLASS_OPACITY_TOGGLE}`}
+        ${CLASS_OPACITY_TOGGLE} z-10`}
       onClick={onClick}
     >
-      {/*<img src={logo} alt="logo" className={`${CLASS_LOGO_LARGE} h-10`}/>
-            <img src={logo2} alt="logo" className={`${CLASS_LOGO_SMALL} h-8`}/>*/}
       <BtLogoLg className={`${CLASS_LOGO_LARGE} h-10 ${logoColor}`}/>
       <BtLogoSm className={`${CLASS_LOGO_SMALL} h-8 ${logoColor}`}/>
     </div>

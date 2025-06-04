@@ -23,7 +23,7 @@ const App = () => {
         {index: true, element: <Home/>},
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
-        {path: "perfil", element: <Perfil/>},
+        {path: "profile", element: <Perfil/>},
         {path: "post/:postId", element: <PostDetails/> },
       ],
     },

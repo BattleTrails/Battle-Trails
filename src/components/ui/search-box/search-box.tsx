@@ -14,25 +14,26 @@ const SearchBox = ({ onFocusChange }: Props) => {
 
   const isHome = location.pathname === "/";
   const isDetails = location.pathname.includes("/post");
+  const isProfile = location.pathname.includes("/profile");
 
   const isExpanded = isFocused || isHovered;
   const sharedTransition = "transition-all duration-400 ease-in-out";
 
   const iconColorClass = isHome
     ? "text-white"
-    : isDetails
+    : isDetails || isProfile
       ? "text-neutral-800"
       : "";
 
   const borderColorClass = isHome
     ? "border-white"
-    : isDetails
+    : isDetails || isProfile
       ? "border-neutral-800"
       : "";
 
   const textColorClass = isHome
     ? "text-white placeholder-white"
-    : isDetails
+    : isDetails || isProfile
       ? "text-neutral-800 placeholder-neutral-800"
       : "";
 

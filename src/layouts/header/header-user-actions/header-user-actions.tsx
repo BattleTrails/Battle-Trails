@@ -24,6 +24,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
+  const isProfile = currentPath.includes("/profile");
 
   const headerClass = isHome
     ? ""
@@ -48,7 +49,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
           className={clsx("btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2",
-            isScrolled ? "min-[1250px]:!hidden" : "min-[1250px]:flex",)}
+            isScrolled || isProfile  ? "min-[1250px]:!hidden" : "min-[1250px]:flex",)}
         >
           <CircleFadingPlus/>
           <p>Añade tu ruta</p>

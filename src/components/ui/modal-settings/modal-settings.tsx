@@ -71,7 +71,7 @@ const ModalSettings = ({ showModal, setShowModal }: ModalSettingsProps) => {
                         {/* Botón cerrar - Fijo arriba, fuera del modal */}
                         <button
                             onClick={(e) => { e.stopPropagation(); setShowModal(false); }}
-                            className="absolute top-6 right-6 sm:top-4 sm:right-4 text-white z-50"
+                            className="absolute top-6 right-6 sm:top-4 sm:right-4 text-white z-50 "
                             aria-label="Cerrar modal"
                         >
                             <X className="size-6 sm:size-5" />
@@ -94,9 +94,9 @@ const ModalSettings = ({ showModal, setShowModal }: ModalSettingsProps) => {
                                         <button
                                             key={id}
                                             onClick={() => setActiveModalTab(id)}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-md transition text-left ${activeModalTab === id
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-md transition  text-left ${activeModalTab === id
                                                     ? "bg-white text-black font-semibold"
-                                                    : "text-white hover:bg-gray-100"
+                                                    : "text-white hover:text-black/70 hover:bg-gray-100"
                                                 }`}
                                         >
                                             <Icon className="size-4" />
