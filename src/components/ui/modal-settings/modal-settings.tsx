@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Settings,
-    Share2,
     X,
     GlobeLock,
     Info,
@@ -10,7 +8,6 @@ import {
     Database,
     Scale,
     LogOut,
-    CircleFadingPlus,
     ChevronRight,
 } from "lucide-react";
 
