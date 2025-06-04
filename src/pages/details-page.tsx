@@ -68,15 +68,15 @@ const DetailsPage = () => {
                   ))}
               </div>
 
-              <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 lg:pt-0">
-                  <div className="flex gap-x-2 mb-6">
+              <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 ">
+                  <div className="flex gap-x-2">
                       <Share2 />
                       <Bookmark />
                   </div>
-                  <h2 className="text-4xl font-bold mb-4">{post.title}</h2>
+                  <h2 className="text-4xl font-bold ">{post.title}</h2>
                   <p className="whitespace-pre-line">{post.description}</p>
 
-                  <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 mt-6">
+                  <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 ">
                       <div className="flex items-center gap-2">
                           <LocateFixed />
                           <span>{post.locationName}</span>
