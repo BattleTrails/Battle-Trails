@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Settings, Share2, X, GlobeLock, Info, MessageCircleQuestion, Database, Scale, LogOut, CircleFadingPlus, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Settings, Share2, CircleFadingPlus } from "lucide-react";
+import { motion} from "framer-motion";
 import { Link } from "react-router-dom";
 import ModalSettings from "@/components/ui/modal-settings/modal-settings";
 
 const PerfilPage = () => {
     const [activeTab, setActiveTab] = useState<"guardados" | "publicaciones">("publicaciones");
     const [showModal, setShowModal] = useState(false);
-    const [activeModalTab, setActiveModalTab] = useState<string | null>("ayuda");
+
 
     const user = {
         username: "Karen_García",
@@ -82,7 +82,7 @@ const PerfilPage = () => {
                 ) : (
                     <p className="text-center lg:text-start text-base sm:text-lg text-gray-700">Aquí se mostrarán tus publicaciones.</p>
                 )}
-            </div>            
+            </div>
         </div>
     );
 };

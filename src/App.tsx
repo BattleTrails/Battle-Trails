@@ -7,6 +7,11 @@ import Auth from "@pages/auth-page.tsx";
 import Forge from "@pages/forge-page.tsx";
 import PrivateRoute from "@/routes/private-route.tsx";
 import Perfil from "@/pages/perfil-page"
+import PostDetails from "@pages/details-page"
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
 
 
 const App = () => {
@@ -19,6 +24,7 @@ const App = () => {
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
         {path: "perfil", element: <Perfil/>},
+        {path: "post/:postId", element: <PostDetails/> },
       ],
     },
     {

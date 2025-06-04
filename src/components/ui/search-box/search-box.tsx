@@ -1,17 +1,40 @@
-import {Search} from "lucide-react";
-import {useEffect, useState} from "react";
+import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 type Props = {
   onFocusChange?: (value: boolean) => void;
 };
 
-const SearchBox = ({onFocusChange}: Props) => {
+const SearchBox = ({ onFocusChange }: Props) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const location = useLocation();
+
+  const isHome = location.pathname === "/";
+  const isDetails = location.pathname.includes("/post");
 
   const isExpanded = isFocused || isHovered;
   const sharedTransition = "transition-all duration-400 ease-in-out";
+
+  const iconColorClass = isHome
+    ? "text-white"
+    : isDetails
+      ? "text-neutral-800"
+      : "";
+
+  const borderColorClass = isHome
+    ? "border-white"
+    : isDetails
+      ? "border-neutral-800"
+      : "";
+
+  const textColorClass = isHome
+    ? "text-white placeholder-white"
+    : isDetails
+      ? "text-neutral-800 placeholder-neutral-800"
+      : "";
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
@@ -25,7 +48,6 @@ const SearchBox = ({onFocusChange}: Props) => {
     return () => clearTimeout(timeout);
   }, [isExpanded]);
 
-  // ✅ Comunica el estado al padre
   useEffect(() => {
     onFocusChange?.(isExpanded);
   }, [isExpanded]);
@@ -36,24 +58,31 @@ const SearchBox = ({onFocusChange}: Props) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative">
+      <div
+        className={`
+        relative flex items-center
+        rounded-full overflow-hidden
+        ${isDetails ? "bg-white/20 backdrop-blur-sm" : ""}
+        ${sharedTransition}
+      `}
+      >
         <div
           className={`
-                        absolute top-1/2 -translate-y-1/2 
-                        flex items-center justify-center rounded-full bg-transparent backdrop-blur-sm
-                        w-6 h-6
-                        ${sharedTransition}
-                        ${isExpanded
+          absolute top-1/2 -translate-y-1/2 
+          flex items-center justify-center rounded-full bg-transparent 
+          ${borderColorClass} border
+          ${sharedTransition}
+          ${isExpanded
             ? "left-2 translate-x-0 w-7 h-7"
-            : "left-[80%] -translate-x-1/2 "}
-                    `}
+            : "left-[80%] -translate-x-1/2 w-6 h-6"}
+        `}
         >
           <Search
             size={16}
             className={`
-                           ${sharedTransition}
-                            ${isExpanded ? "text-secondary" : "text-white/70"}
-                        `}
+            ${sharedTransition}
+            ${iconColorClass}
+          `}
           />
         </div>
 
@@ -63,18 +92,18 @@ const SearchBox = ({onFocusChange}: Props) => {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={`
-                        pl-11 pr-8 rounded-full bg-white/20 text-white placeholder-white/60 outline-none border text-sm font-light
-                        placeholder:top-[-1px] placeholder:relative 
-                        ${sharedTransition}
-                        ${isExpanded
-            ? "w-72 h-10 bg-white text-secondary placeholder-secondary border-secondary shadow-lg"
-            : "w-8 h-8 border-transparent cursor-pointer"}
-                        focus:w-72 hover:w-72
-                    `}
+          pl-11 pr-8 rounded-full outline-none border text-sm font-light
+          placeholder:top-[-1px] placeholder:relative 
+          ${sharedTransition}
+          ${isExpanded
+            ? `w-72 h-10 bg-transparent ${textColorClass} ${borderColorClass} shadow-lg`
+            : `w-8 h-8 cursor-pointer ${borderColorClass}`}
+          focus:w-72 hover:w-72
+        `}
         />
       </div>
     </div>
   );
-};
+}
 
-export default SearchBox;
+  export default SearchBox;
