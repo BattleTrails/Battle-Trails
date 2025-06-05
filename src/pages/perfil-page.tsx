@@ -1,20 +1,50 @@
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { Settings, Share2, CircleFadingPlus } from "lucide-react";
 import { motion} from "framer-motion";
 import { Link } from "react-router-dom";
 import ModalSettings from "@/components/ui/modal-settings/modal-settings";
+import {useAuthHandler} from "@hooks/useAuthHandler.ts";
+import {doc, getDoc} from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
+
 
 const PerfilPage = () => {
     const [activeTab, setActiveTab] = useState<"guardados" | "publicaciones">("publicaciones");
     const [showModal, setShowModal] = useState(false);
 
+    const { user } = useAuthHandler();
 
-    const user = {
-        username: "Karen_García",
-        fullName: "Karen García",
-        image:
-            "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    };
+
+    const [profile, setProfile] = useState<null | {
+        name: string;
+        username: string;
+        profilePicture: string;
+    }>(null);
+
+
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!user) return;
+            const ref = doc(db, "users", user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                const data = snap.data();
+                setProfile({
+                    name: data.name,
+                    username: data.username,
+                    profilePicture: data.profilePicture,
+                });
+            }
+        };
+
+        fetchProfile();
+    }, [user]);
+
+    if (!profile) return
+      <div className="flex items-center justify-center h-screen">;
+        <span className="text-gray-500">Cargando perfil...</span>
+      </div>;
 
     return (
       <>
@@ -23,11 +53,11 @@ const PerfilPage = () => {
               {/* Header */}
               <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
                   <div className="w-28  aspect-square overflow-hidden rounded">
-                      <img src={user.image} alt={`foto de perfil de ${user.fullName}`} className="w-full h-full object-cover" />
+                      <img src={profile.profilePicture} alt={`foto de perfil de ${profile.name}`} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-[150px] text-center lg:text-start">
-                      <h2 className="text-2xl sm:text-4xl  mb-1">{user.fullName}</h2>
-                      <span className="text-lg font-light sm:text-xl">{user.username}</span>
+                      <h2 className="text-2xl sm:text-4xl  mb-1">{profile.name}</h2>
+                      <span className="text-lg font-light sm:text-xl">{profile.username}</span>
                       <div className="flex flex-wrap gap-3 mt-3 justify-center lg:justify-start w-full lg:w-fit">
                           <button className="border border-b-blue-950 text-blue-950 px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
                           <button onClick={() => setShowModal(true)} className="bg-blue-950 p-1.5 rounded-md">

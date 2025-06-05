@@ -16,11 +16,15 @@ import clsx from "clsx";
 import {useEffect, useState} from "react";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "@config/firebaseConfig.ts";
+import defaultAvatar from "@assets/avatars/avatar-1.webp";
 
 const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: boolean; currentPath: string;isScrolled:boolean }) => {
   const {user, loading} = useAuthHandler();
   const navigate = useNavigate();
-  const [profilePicture, setProfilePicture] = useState<string>(""); // no null
+  const [profilePicture, setProfilePicture] = useState<string>(defaultAvatar);
+
+
+
 
 
 
@@ -41,6 +45,13 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
   const handleLogout = async () => {
     await logout();
     navigate("/");
+
+  };
+  const goToProfile = () => {
+    if (user) {
+      navigate(`/profile`);
+
+    }
   };
 
   useEffect(() => {
@@ -126,7 +137,9 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
                 <li className="pointer-events-none hover:bg-transparent">
                   <span className="text-sm text-neutral whitespace-nowrap">{user.email}</span>
                 </li>
-                <li><a>Perfil</a></li>
+                <li> <button onClick={goToProfile} className="w-full text-left">
+                  Perfil
+                </button></li>
                 <li>
                   <button onClick={handleLogout} className="w-full text-left">
                     Cerrar sesión

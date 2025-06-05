@@ -11,7 +11,7 @@ const AuthPage = () => {
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [isFormVisible, setIsFormVisible] = useState(true);
-  const [isSliding, setIsSliding] = useState(false);
+  const [, setIsSliding] = useState(false);
 
   const handleModeChange = (newMode: AuthMode) => {
     if (newMode === mode) return;
@@ -69,7 +69,7 @@ const AuthPage = () => {
         )}
       >
         <div
-          className="w-[95%] h-[95%] rounded-2xl relative overflow-hidden flex flex-col justify-between px-8 py-6 text-white shadow-lg"
+          className="w-full h-full  relative overflow-hidden flex flex-col justify-between px-8 py-6 text-white shadow-lg"
           style={{
             backgroundImage: `url(${banner})`,
             backgroundSize: "cover",
