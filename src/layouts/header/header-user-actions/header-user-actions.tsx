@@ -1,7 +1,8 @@
 import {useAuthHandler} from "@hooks/useAuthHandler.ts";
 import {logout} from "@/services/auth-service.ts";
 import {useNavigate} from "react-router-dom";
-import {CircleFadingPlus} from "lucide-react";
+import {CircleFadingPlus,CircleUserRound} from "lucide-react";
+
 
 import {
   CLASS_BELOW_BP_HIDDEN,
@@ -12,10 +13,16 @@ import {
   CLASS_OPACITY_TOGGLE
 } from "@layouts/header/header-breakpoints/headerBreakpoints.ts";
 import clsx from "clsx";
+import {useEffect, useState} from "react";
+import {doc, getDoc} from "firebase/firestore";
+import {db} from "@config/firebaseConfig.ts";
 
 const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: boolean; currentPath: string;isScrolled:boolean }) => {
   const {user, loading} = useAuthHandler();
   const navigate = useNavigate();
+  const [profilePicture, setProfilePicture] = useState<string>(""); // no null
+
+
 
   const goToAuth = () => navigate("/auth");
   const goToNewRoute = () => {
@@ -35,6 +42,23 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
     await logout();
     navigate("/");
   };
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setProfilePicture(data.profilePicture);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
+
 
   return (
     <div
@@ -69,11 +93,12 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
           )}
         >
           <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer ml-auto">
-            <img
+            {user ? <img
               alt="user avatar"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+              src={profilePicture}
               className="w-full h-full object-cover"
-            />
+            /> : <CircleUserRound className="w-full h-full text-gray-400" strokeWidth={1} />}
+
           </div>
         </div>
 

@@ -11,13 +11,19 @@ import {
 } from "firebase/auth";
 import {auth, db} from "@config/firebaseConfig"; // tu path original
 import { FirebaseError } from "firebase/app";
-import {doc, setDoc} from "firebase/firestore";
+import {doc, getDoc, setDoc} from "firebase/firestore";
+import avatar1 from "@assets/avatars/avatar-1.webp"
+import avatar2 from "@assets/avatars/avatar-2.webp"
+import avatar3 from "@assets/avatars/avatar-3.webp"
+import avatar4 from "@assets/avatars/avatar-4.webp"
+import avatar5 from "@assets/avatars/avatar-5.webp"
 
 export const useAuthHandler = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true); // 👈 lo mantenemos para header
   const [errorMessage, setErrorMessage] = useState("");
-
+  const defaultAvatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
+  const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -65,19 +71,20 @@ export const useAuthHandler = () => {
     email: string,
     password: string,
     name: string,
-    username: string,
-    profilePicture: string
+    username: string
   ): Promise<boolean> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
+      const firebaseUser = userCredential.user;
+      const uid = firebaseUser.uid;
 
-      // Guarda perfil extendido en Firestore
+      /*const photo = firebaseUser.photoURL ;*/
+
       await setDoc(doc(db, "users", uid), {
         name,
         username,
         email,
-        profilePicture,
+        profilePicture: randomAvatar,
       });
 
       setErrorMessage("");
@@ -91,7 +98,29 @@ export const useAuthHandler = () => {
   const loginWithGoogle = async (): Promise<boolean> => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+
+      const uid = firebaseUser.uid;
+      const email = firebaseUser.email ?? "";
+      const displayName = firebaseUser.displayName ?? "Usuario";
+      const photo = firebaseUser.photoURL ?? randomAvatar;
+
+      const username = displayName.trim().toLowerCase().replace(/\s+/g, "_");
+
+      // Creamos el documento en /users solo si no existe
+      const userRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          name: displayName,
+          username,
+          email,
+          profilePicture: photo,
+        });
+      }
+
       setErrorMessage("");
       return true;
     } catch (error) {
@@ -99,6 +128,7 @@ export const useAuthHandler = () => {
       return false;
     }
   };
+
   const resetPassword = async (email: string): Promise<boolean> => {
     try {
       await sendPasswordResetEmail(auth, email);

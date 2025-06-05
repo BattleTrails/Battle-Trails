@@ -27,6 +27,14 @@ const ProfileUserPage = () => {
     fetchPosts();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="text-gray-500">Cargando publicaciones...</span>
+      </div>
+    );
+  }
+
   const user = {
     username: "Karen_García",
     fullName: "Karen García",
@@ -36,7 +44,7 @@ const ProfileUserPage = () => {
   };
 
   return (
-    <div className="px-4 sm:px-10">
+    <div className="px-4 translate-y-25 sm:px-10">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
