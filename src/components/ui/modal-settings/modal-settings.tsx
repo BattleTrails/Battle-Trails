@@ -116,7 +116,7 @@ const ModalSettings = ({ showModal, setShowModal }: ModalSettingsProps) => {
                                             >
                                                 <button
                                                     onClick={() => setActiveModalTab(isActive ? null : id)}
-                                                    className="flex items-center justify-between w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-left font-semibold text-gray-800"
+                                                    className="flex items-center justify-between w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-left  text-gray-800"
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <Icon className="size-4" />
@@ -137,7 +137,7 @@ const ModalSettings = ({ showModal, setShowModal }: ModalSettingsProps) => {
                                                             animate={{ height: "auto", opacity: 1 }}
                                                             exit={{ height: 0, opacity: 0 }}
                                                             transition={{ duration: 0.3 }}
-                                                            className="px-4 py-3 text-gray-700 text-sm whitespace-pre-line bg-white text-left"
+                                                            className="px-4 py-3 text-gray-700 text-sm font-light whitespace-pre-line bg-white text-left"
                                                         >
                                                             {tabContent[id]}
                                                         </motion.div>
