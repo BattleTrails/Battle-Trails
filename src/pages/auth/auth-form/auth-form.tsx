@@ -19,33 +19,51 @@ const texts = {
   },
 };
 
-const AuthForm = ({mode}: { mode: AuthMode }) => {
+const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMode: AuthMode) => void; }) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const {login, register} = useAuth();
+  const [name,setName] = useState("");
+
+
+  const isValidName = (name: string): boolean => {
+    const trimmed = name.trim();
+    const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]{2,30}$/;
+    return regex.test(trimmed);
+  };
 
 
   const handleSubmit = async () => {
+    if (mode === "register" && !isValidName(name)) {
+      alert("El nombre debe tener solo letras y espacios, con mínimo 2 caracteres.");
+      return;
+    }
+
     setLoading(true);
+
+    const username = name.trim().toLowerCase().replace(/\s+/g, "_");
+
     const success =
       mode === "login"
         ? await login(email, password)
-        : await register(email, password);
+        : await register(email, password, name, username);
 
     if (success) navigate("/");
-
     setLoading(false);
   };
 
+
   return (
-    <div className="flex flex-col w-[600px] h-[800px] justify-center gap-6 rounded-field bg-white text-primary ">
+    <div className="flex flex-col w-[600px] h-[800px] justify-center gap-0 sm:gap-6 rounded-field bg-white text-primary ">
       <AuthHeader mode={mode}/>
 
-      <div className="flex flex-col items-center gap-7 ">
+      <div className="flex flex-col items-center sm:gap-4 gap-0 ">
         <AuthImputs
+          setName={setName}
           mode={mode}
+          name={name}
           email={email}
           setEmail={setEmail}
           password={password}
@@ -65,6 +83,16 @@ const AuthForm = ({mode}: { mode: AuthMode }) => {
         </div>
 
         <OAuthButton/>
+        {/* Solo visible en mobile/tablet (<1024px) */}
+        <div className="block lg:hidden mt-6 text-sm text-center text-neutral">
+          <button
+            onClick={() => onModeChange(mode === "login" ? "register" : "login")}
+            className="underline underline-offset-4 hover:text-secondary transition-all"
+          >
+            {texts[mode].switchText}
+          </button>
+        </div>
+
 
       </div>
     </div>

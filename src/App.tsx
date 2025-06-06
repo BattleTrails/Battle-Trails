@@ -6,7 +6,9 @@ import AuthLayout from "@layouts/auth-layout.tsx";
 import Auth from "@pages/auth-page.tsx";
 import Forge from "@pages/forge-page.tsx";
 import PrivateRoute from "@/routes/private-route.tsx";
+import Perfil from "@/pages/perfil-page"
 import PostDetails from "@pages/details-page"
+import ProfileUserPage from "@pages/profile-user-page.tsx";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -22,6 +24,8 @@ const App = () => {
         {index: true, element: <Home/>},
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
+        {path: "profile", element: <Perfil/>},
+        {path: "/profile/:userId", element: <ProfileUserPage/>},
         {path: "post/:postId", element: <PostDetails/> },
       ],
     },

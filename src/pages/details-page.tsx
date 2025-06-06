@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getPostById , getRouteByPostId } from "@/services/db-service"; // asegúrate de que esto existe
+import {Link, useParams} from "react-router-dom";
+import { getPostById , getRouteByPostId,getUserById} from "@/services/db-service"; // asegúrate de que esto existe
 import { Post,Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
@@ -15,6 +15,7 @@ const DetailsPage = () => {
     const[route,setRoute] = useState<Route | null>(null);
     const [loading, setLoading] = useState(true);
     const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+    const [author, setAuthor] = useState<{ username: string } | null>(null);
 
 
     useEffect(() => {
@@ -23,10 +24,19 @@ const DetailsPage = () => {
 
             try {
 
+
+
                 const fetchedPost = await getPostById(postId);
                 setPost(fetchedPost);
+
                 const fetchedRoute = await getRouteByPostId(postId);
                 setRoute(fetchedRoute);
+
+                setPost(fetchedPost); //obtenemos el autor del post
+
+                const fetchedAuthor = await getUserById(fetchedPost.userId);
+                setAuthor({ username: fetchedAuthor.username });
+
                 if (!fetchedRoute) throw new Error("No se encontró la ruta.");
                 const meta = await getFormattedRouteMetaData(fetchedRoute.waypoints);
 
@@ -43,11 +53,11 @@ const DetailsPage = () => {
     }, [postId]);
 
     if (loading) {
-        return <p className="text-center mt-10 text-white/60">Cargando publicación...</p>;
+        return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
 
     if (!post) {
-        return <p className="text-center mt-10 text-red-500">No se encontró la publicación.</p>;
+        return <p className="text-center translate-y-20 text-red-500">No se encontró la publicación.</p>;
     }
 
     return (
@@ -68,15 +78,29 @@ const DetailsPage = () => {
                   ))}
               </div>
 
-              <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 lg:pt-0">
-                  <div className="flex gap-x-2 mb-6">
-                      <Share2 />
-                      <Bookmark />
+              <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 ">
+                  <div className="flex gap-x-2">
+                      <Share2 strokeWidth={1.5}  />
+                      <Bookmark strokeWidth={1.5} />
                   </div>
-                  <h2 className="text-4xl font-bold mb-4">{post.title}</h2>
+                  <div className="flex flex-col gap-1">
+                      {author && (
+                        <p className="text-sm text-gray-500">
+                            Publicado por{" "}
+                            <Link
+                              to={`/profile/${post.userId}`}
+                              className="text-blue-600 hover:underline"
+                            >
+                                @{author.username}
+                            </Link>
+                        </p>
+                      )}
+                      <h2 className="text-4xl font-bold">{post.title}</h2>
+                  </div>
+
                   <p className="whitespace-pre-line">{post.description}</p>
 
-                  <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 mt-6">
+                  <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 ">
                       <div className="flex items-center gap-2">
                           <LocateFixed />
                           <span>{post.locationName}</span>

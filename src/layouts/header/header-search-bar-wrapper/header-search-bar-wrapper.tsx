@@ -8,6 +8,7 @@ const HeaderSearchBarWrapper = ({setSearchOpen, currentPath}: {
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
 
+
   const headerClass = isHome
     ? ""
     : isForge ? "!pointer-events-none !hidden" : "bg-transparent text-white";

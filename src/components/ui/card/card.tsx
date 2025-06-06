@@ -1,4 +1,4 @@
-import { Bookmark, Eye, Share2 } from "lucide-react";
+import { Heart, Eye, Share2 } from "lucide-react";
 import mark from "@assets/iconslogo.svg";
 import { Post } from "@/types";
 import {useNavigate} from "react-router-dom";
@@ -25,8 +25,8 @@ const Card = ({ post, variant = "default" }: CardProps) => {
 
   const titleClasses =
     variant === "large"
-      ? "text-xl font-bold line-clamp-2"
-      : "text-lg font-semibold line-clamp-2";
+      ? "text-xl font-medium line-clamp-2"
+      : "text-lg font-medium line-clamp-2";
 
   const locationClasses =
     variant === "large" ? "text-base" : "text-sm";
@@ -48,22 +48,22 @@ const Card = ({ post, variant = "default" }: CardProps) => {
       <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 text-white">
         <div className="flex flex-col justify-center items-center mb-4 gap-4 text-center">
           <h2 className={titleClasses}>{title}</h2>
-          <div className="flex items-center gap-3">
+          <div className="flex w-full items-center gap-3">
             <img src={mark} alt="" className="h-5" />
-            <p className={`${locationClasses} opacity-90 line-clamp-2`}>{post.locationName}</p>
+            <p className={`${locationClasses} opacity-90 line-clamp-2 font-light`}>{post.locationName}</p>
           </div>
         </div>
 
         <div className="flex justify-between text-sm">
           <div className="flex gap-4">
-            <div className="flex items-center gap-1">
-              <Eye size={18} /> {likedBy.length}
+            <div className="flex items-center gap-1 font-light">
+              <Eye size={18} strokeWidth={1} /> {likedBy.length}
             </div>
-            <div className="flex items-center gap-1">
-              <Bookmark size={18} /> {likes}
+            <div className="flex items-center gap-1 font-light">
+              <Heart size={18} strokeWidth={1} /> {likes}
             </div>
           </div>
-          <Share2 size={18} />
+          <Share2 size={18} strokeWidth={1} />
         </div>
       </div>
     </div>
