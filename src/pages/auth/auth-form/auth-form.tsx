@@ -19,7 +19,7 @@ const texts = {
   },
 };
 
-const AuthForm = ({mode}: { mode: AuthMode }) => {
+const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMode: AuthMode) => void; }) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +48,7 @@ const AuthForm = ({mode}: { mode: AuthMode }) => {
     const success =
       mode === "login"
         ? await login(email, password)
-        : await register(email, password, name, username, "https://i.imgur.com/defaultAvatar.png");
+        : await register(email, password, name, username);
 
     if (success) navigate("/");
     setLoading(false);
@@ -56,10 +56,10 @@ const AuthForm = ({mode}: { mode: AuthMode }) => {
 
 
   return (
-    <div className="flex flex-col w-[600px] h-[800px] justify-center gap-6 rounded-field bg-white text-primary ">
+    <div className="flex flex-col w-[600px] h-[800px] justify-center gap-0 sm:gap-6 rounded-field bg-white text-primary ">
       <AuthHeader mode={mode}/>
 
-      <div className="flex flex-col items-center gap-7 ">
+      <div className="flex flex-col items-center sm:gap-4 gap-0 ">
         <AuthImputs
           setName={setName}
           mode={mode}
@@ -83,6 +83,16 @@ const AuthForm = ({mode}: { mode: AuthMode }) => {
         </div>
 
         <OAuthButton/>
+        {/* Solo visible en mobile/tablet (<1024px) */}
+        <div className="block lg:hidden mt-6 text-sm text-center text-neutral">
+          <button
+            onClick={() => onModeChange(mode === "login" ? "register" : "login")}
+            className="underline underline-offset-4 hover:text-secondary transition-all"
+          >
+            {texts[mode].switchText}
+          </button>
+        </div>
+
 
       </div>
     </div>
