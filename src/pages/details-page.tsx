@@ -80,8 +80,8 @@ const DetailsPage = () => {
 
               <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 ">
                   <div className="flex gap-x-2">
-                      <Share2 />
-                      <Bookmark />
+                      <Share2 strokeWidth={1.5}  />
+                      <Bookmark strokeWidth={1.5} />
                   </div>
                   <div className="flex flex-col gap-1">
                       {author && (
