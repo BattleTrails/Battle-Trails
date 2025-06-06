@@ -1,47 +1,54 @@
-import Card from "@components/ui/card/card.tsx";
-
-import { Share2, Bell, Ellipsis } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Share2, Bell, Ellipsis } from "lucide-react";
+import Card from "@components/ui/card/card.tsx";
 import { Post } from "@/types";
-import { getPosts } from "@/services/db-service.ts";
+import { getPostsByUserId, getUserById } from "@/services/db-service.ts";
 
 const ProfileUserPage = () => {
+  const { userId } = useParams();
 
+  const [profile, setProfile] = useState<null | {
+    name: string;
+    username: string;
+    profilePicture: string;
+  }>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOptions, setShowOptions] = useState(false);
 
-
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchUserData = async () => {
+      if (!userId) return;
       try {
-        const postsFromDb = await getPosts();
-        setPosts(postsFromDb);
+        const [userData, userPosts] = await Promise.all([
+          getUserById(userId),
+          getPostsByUserId(userId),
+        ]);
+
+        setProfile({
+          name: userData.name,
+          username: userData.username,
+          profilePicture: userData.profilePicture!,
+        });
+        setPosts(userPosts);
       } catch (error) {
-        console.error("Error al cargar posts:", error);
+        console.error("Error al cargar perfil del usuario:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
-  }, []);
+    fetchUserData();
+  }, [userId]);
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <span className="text-gray-500">Cargando publicaciones...</span>
+        <span className="text-gray-500">Cargando perfil...</span>
       </div>
     );
   }
-
-  const user = {
-    username: "Karen_García",
-    fullName: "Karen García",
-    image:
-      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    numberRoutes: 45
-  };
 
   return (
     <div className="px-4 translate-y-25 sm:px-10">
@@ -49,13 +56,17 @@ const ProfileUserPage = () => {
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
           <div className="w-28 aspect-square overflow-hidden rounded">
-            <img src={user.image} alt={`foto de perfil de ${user.fullName}`} className="w-full h-full object-cover" />
+            <img
+              src={profile.profilePicture}
+              alt={`foto de perfil de ${profile.name}`}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex-1 min-w-[150px] text-center lg:text-start">
-            <h2 className="text-2xl sm:text-4xl mb-1">{user.username}</h2>
-            <span className="text-lg sm:text-xl font-light">{user.fullName}</span>
+            <h2 className="text-2xl sm:text-4xl mb-1">{profile.name}</h2>
+            <span className="text-lg sm:text-xl font-light">@{profile.username}</span>
             <div className="mt-2">
-              <span className="text-xl font-light">{`${user.numberRoutes} rutas`}</span>
+              <span className="text-xl font-light">{`${posts.length} rutas`}</span>
             </div>
           </div>
         </div>
@@ -103,7 +114,6 @@ const ProfileUserPage = () => {
         <span className="text-xl font-light">Publicaciones</span>
       </div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
         {posts.map((post) => (
           <Card key={post.id} post={post} />

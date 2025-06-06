@@ -25,7 +25,7 @@ const App = () => {
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
         {path: "profile", element: <Perfil/>},
-        {path: "profile-user", element: <ProfileUserPage/>},
+        {path: "/profile/:userId", element: <ProfileUserPage/>},
         {path: "post/:postId", element: <PostDetails/> },
       ],
     },

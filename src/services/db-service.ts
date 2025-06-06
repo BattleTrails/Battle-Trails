@@ -1,7 +1,7 @@
 import {db} from "@/config/firebaseConfig";
 import {addDoc, collection, doc, getDocs,getDoc, setDoc,query,where} from "firebase/firestore";
 
-import {Post, Route} from "@/types";
+import {Post, Route, User} from "@/types";
 
 
 /**
@@ -78,4 +78,32 @@ export const getRouteByPostId = async (postId: string) => {
     images: doc.data().images,
   } as Route;
 
+};
+
+export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Post[];
+};
+
+
+export const getUserById = async (userId: string): Promise<User> => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) throw new Error("Usuario no encontrado");
+
+  const data = userSnap.data();
+  return {
+    id: userSnap.id,
+    name: data.name,
+    email:data.email,
+    username: data.username,
+    profilePicture: data.profilePicture,
+  };
 };
