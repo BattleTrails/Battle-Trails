@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {Link, useParams} from "react-router-dom";
-import { getPostById , getRouteByPostId,getUserById} from "@/services/db-service"; // asegúrate de que esto existe
+import { getPostById , getRouteByPostId,getUserById} from "@/services/db-service";
 import { Post,Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
@@ -8,6 +8,7 @@ import { LocateFixed, Timer, Share2, Bookmark } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import {getFormattedRouteMetaData} from "@/utils/route-data.ts";
+import {useAuthHandler} from "@hooks/useAuthHandler.ts";
 
 const DetailsPage = () => {
     const { postId } = useParams();
@@ -16,6 +17,7 @@ const DetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
     const [author, setAuthor] = useState<{ username: string } | null>(null);
+    const { user } = useAuthHandler();
 
 
     useEffect(() => {
@@ -27,6 +29,8 @@ const DetailsPage = () => {
 
 
                 const fetchedPost = await getPostById(postId);
+
+
                 setPost(fetchedPost);
 
                 const fetchedRoute = await getRouteByPostId(postId);
@@ -87,12 +91,15 @@ const DetailsPage = () => {
                       {author && (
                         <p className="text-sm text-gray-500">
                             Publicado por{" "}
-                            <Link
-                              to={`/profile/${post.userId}`}
-                              className="text-blue-600 hover:underline"
-                            >
-                                @{author.username}
-                            </Link>
+                            {user?.uid === post.userId ? (
+                              <Link to="/profile" className="text-blue-600 hover:underline">
+                                  @{author.username}
+                              </Link>
+                            ) : (
+                              <Link to={`/profile/${post.userId}`} className="text-blue-600 hover:underline">
+                                  @{author.username}
+                              </Link>
+                            )}
                         </p>
                       )}
                       <h2 className="text-4xl font-bold">{post.title}</h2>
