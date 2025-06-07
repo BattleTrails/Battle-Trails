@@ -41,7 +41,7 @@ const ForgeForm = () => {
         value={postDraft.description}
         onChange={handleChange}
         textarea
-        maxLength={100}
+        maxLength={500}
         rows={4}
       />
 
