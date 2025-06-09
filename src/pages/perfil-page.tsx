@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import {Link, useNavigate} from "react-router-dom";
 import ModalSettings from "@/components/ui/modal-settings/modal-settings";
 import { useAuthHandler } from "@hooks/useAuthHandler.ts";
-import { getPostsByUserId, getUserById } from "@/services/db-service.ts";
+import {  getUserById } from "@/services/db-service.ts";
 import Card from "@components/ui/card/card.tsx";
 import { Post } from "@/types";
+import {collection, query, where, onSnapshot } from "firebase/firestore";
+import {db} from "@config/firebaseConfig.ts";
 
 const PerfilPage = () => {
     const [activeTab, setActiveTab] = useState<"guardados" | "publicaciones">("publicaciones");
@@ -25,30 +27,40 @@ const PerfilPage = () => {
 
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            if (!user) return;
+        if (!user) return;
 
-            try {
-                const [userData, userPosts] = await Promise.all([
-                    getUserById(user.uid),
-                    getPostsByUserId(user.uid),
-                ]);
+        // 1. Carga el perfil del usuario (una sola vez)
+        getUserById(user.uid)
+          .then((userData) => {
+              setProfile({
+                  name: userData.name,
+                  username: userData.username,
+                  profilePicture: userData.profilePicture!,
+              });
+          })
+          .catch((error) => {
+              console.error("Error al cargar el perfil del usuario:", error);
+          });
 
-                setProfile({
-                    name: userData.name,
-                    username: userData.username,
-                    profilePicture: userData.profilePicture!,
-                });
+        // 2. Escucha sus publicaciones en tiempo real
+        const q = query(collection(db, "posts"), where("userId", "==", user.uid));
+        const unsubscribe = onSnapshot(
+          q,
+          (snapshot) => {
+              const updatedPosts = snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+              })) as Post[];
+              setPosts(updatedPosts);
+              setLoading(false); // solo cuando ya tenemos el snapshot
+          },
+          (error) => {
+              console.error("Error en onSnapshot de posts:", error);
+          }
+        );
 
-                setPosts(userPosts);
-            } catch (error) {
-                console.error("Error al cargar perfil del usuario logueado:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        return () => unsubscribe(); // limpieza al desmontar
 
-        fetchUserData();
     }, [user]);
 
     if (loading || !profile) {
@@ -145,7 +157,7 @@ const PerfilPage = () => {
                   ) : (
                     <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                         {posts.map((post) => (
-                          <Card key={post.id} post={post} />
+                          <Card key={post.id} post={post} isEditable={true} />
                         ))}
                     </div>
                   )}

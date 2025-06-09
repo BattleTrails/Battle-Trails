@@ -9,21 +9,25 @@ import {
   signOut,
   User,
 } from "firebase/auth";
-import {auth, db} from "@config/firebaseConfig"; // tu path original
+import {auth, db} from "@config/firebaseConfig";
 import { FirebaseError } from "firebase/app";
 import {doc, getDoc, setDoc} from "firebase/firestore";
-import avatar1 from "@assets/avatars/avatar-1.webp"
-import avatar2 from "@assets/avatars/avatar-2.webp"
-import avatar3 from "@assets/avatars/avatar-3.webp"
-import avatar4 from "@assets/avatars/avatar-4.webp"
-import avatar5 from "@assets/avatars/avatar-5.webp"
+
+const defaultAvatars = [
+  "/avatars/avatar-1.webp",
+  "/avatars/avatar-2.webp",
+  "/avatars/avatar-3.webp",
+  "/avatars/avatar-4.webp",
+  "/avatars/avatar-5.webp",
+];
 
 export const useAuthHandler = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true); // 👈 lo mantenemos para header
   const [errorMessage, setErrorMessage] = useState("");
-  const defaultAvatars = [avatar1, avatar2, avatar3, avatar4, avatar5];
   const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);

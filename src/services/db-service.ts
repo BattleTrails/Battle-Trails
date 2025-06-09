@@ -1,7 +1,8 @@
 import {db} from "@/config/firebaseConfig";
-import {addDoc, collection, doc, getDocs,getDoc, setDoc,query,where} from "firebase/firestore";
+import {addDoc, collection, doc, getDocs,getDoc, setDoc,query,where,deleteDoc} from "firebase/firestore";
 
 import {Post, Route, User} from "@/types";
+import {deleteImagesFromSupabase} from "@/services/supabase-storage-service.ts";
 
 
 /**
@@ -106,4 +107,67 @@ export const getUserById = async (userId: string): Promise<User> => {
     username: data.username,
     profilePicture: data.profilePicture,
   };
+};
+
+
+const extractSupabasePaths = (urls: string[]) => {
+  return urls
+    .map((url) => {
+      try {
+        const parsed = new URL(url);
+        const match = parsed.pathname.match(/\/storage\/v1\/object\/public\/posts\/(.+)/);
+        return match?.[1] || null;
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean) as string[];
+};
+
+/**
+ * Elimina un post y su ruta asociada por postId.
+ */
+export const deletePostById = async (postId: string): Promise<void> => {
+  try {
+    const postRef = doc(db, "posts", postId);
+    const postSnap = await getDoc(postRef);
+
+    if (!postSnap.exists()) {
+      throw new Error("Post no encontrado");
+    }
+
+    const postData = postSnap.data() as Post;
+
+    // 0. Eliminar imágenes de Supabase si existen
+    if (postData.images && Array.isArray(postData.images)) {
+      const imagePaths = extractSupabasePaths(postData.images);
+      console.log("🔍 Imagenes en post:", postData.images);
+      console.log("🧼 Paths extraídos:", imagePaths);
+      await deleteImagesFromSupabase(imagePaths);
+    }
+
+    // 1. Eliminar el post
+    await deleteDoc(postRef);
+
+    // 2. Eliminar ruta asociada
+    const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
+    const routeSnapshot = await getDocs(routeQuery);
+
+    const deleteRoutePromises = routeSnapshot.docs.map((routeDoc) =>
+      deleteDoc(doc(db, "routes", routeDoc.id))
+    );
+
+    await Promise.all(deleteRoutePromises);
+
+    // 3. (Futuro) Eliminar comentarios del post
+    // const commentsRef = collection(db, "posts", postId, "comments");
+    // const commentsSnap = await getDocs(commentsRef);
+    // const deleteComments = commentsSnap.docs.map((doc) => deleteDoc(doc.ref));
+    // await Promise.all(deleteComments);
+
+    console.log(`✅ Post ${postId} y ruta asociada eliminados correctamente`);
+  } catch (error) {
+    console.error("❌ Error al eliminar el post y ruta:", error);
+    throw error;
+  }
 };

@@ -24,3 +24,17 @@ export const uploadImagesToSupabase = async (files: File[], userId: string): Pro
 
   return uploads.filter(Boolean) as string[];
 };
+
+export const deleteImagesFromSupabase = async (paths: string[]) => {
+  if (!paths || paths.length === 0) {
+    console.warn("No hay imágenes para eliminar");
+    return;
+  }
+  console.log("Imagenes en post encontradas:", paths);
+  const bucket = await supabase.storage
+    .from("posts")
+    bucket.remove(paths);
+
+
+  console.log("✅ Imágenes eliminadas de Supabase");
+};
