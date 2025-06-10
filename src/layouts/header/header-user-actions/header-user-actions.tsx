@@ -16,7 +16,7 @@ import clsx from "clsx";
 import {useEffect, useState} from "react";
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "@config/firebaseConfig.ts";
-import defaultAvatar from "@assets/avatars/avatar-1.webp";
+import defaultAvatar from "../../../../public/avatars/avatar-1.webp";
 
 const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: boolean; currentPath: string;isScrolled:boolean }) => {
   const {user, loading} = useAuthHandler();

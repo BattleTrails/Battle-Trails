@@ -1,20 +1,36 @@
 import { Heart, Eye, Share2 } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import mark from "@assets/iconslogo.svg";
 import { Post } from "@/types";
 import {useNavigate} from "react-router-dom";
+import {useState} from "react";
+import {deletePostById} from "@/services/db-service.ts";
 
 interface CardProps {
   post: Post;
   variant?: "default" | "large";
+  isEditable?: boolean;
+  onDeleted?: (id: string) => void;
 }
 
-const Card = ({ post, variant = "default" }: CardProps) => {
+const Card = ({ post, variant = "default",isEditable }: CardProps) => {
   const { title, images, likes, likedBy } = post;
   const navigate = useNavigate();
+  const [showOptions, setShowOptions] = useState(false);
 
   // Función para manejar el clic en la card y navegar al detalle del post
   const handleClick = () => {
     navigate(`/post/${post.id}`);
+  };
+
+  // Función para manejar la eliminación de la ruta
+  const handleDeleteRoute = async (postId: string) => {
+    try {
+      await deletePostById(postId);
+      console.log("Publicación eliminada correctamente");
+    } catch (error) {
+      console.error("Error al eliminar publicación:", error);
+    }
   };
 
   // Tamaños condicionales para que la card sea más grande en el post detalles
@@ -41,6 +57,36 @@ const Card = ({ post, variant = "default" }: CardProps) => {
       }}
       onClick={handleClick}
     >
+      {isEditable && (
+        <div className="absolute top-3 right-3 z-30">
+          <button onClick={(e) => {
+            e.stopPropagation(); // evitar que se dispare el navigate
+            setShowOptions(prev => !prev);
+          }}>
+            <MoreVertical className="text-white" size={20} />
+          </button>
+
+          {showOptions && (
+            <div
+              className="absolute right-0 mt-2 bg-white text-black text-sm shadow-lg rounded w-36 z-40"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={async () => {
+                  const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta publicación?");
+                  if (!confirmDelete) return;
+                  await handleDeleteRoute(post.id);
+                  setShowOptions(false);
+                }}
+
+                className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-red-100 text-red-600"
+              >
+                <Trash2 size={16} /> Eliminar ruta
+              </button>
+            </div>
+          )}
+        </div>
+      )}
       {/* Overlay oscuro */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
 
