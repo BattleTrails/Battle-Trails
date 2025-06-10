@@ -51,7 +51,7 @@ const ProfileUserPage = () => {
   }
 
   return (
-    <div className="px-4 translate-y-25 sm:px-10">
+    <div className="px-4 pt-25 sm:px-10">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
@@ -72,14 +72,14 @@ const ProfileUserPage = () => {
         </div>
 
         <div className="flex gap-x-3 mt-3 items-start justify-center sm:justify-end">
-          <button className="bg-blue-950 p-1.5 rounded-md">
+          <button className="bg-neutral p-1.5 rounded-md">
             <Share2 color="white" strokeWidth={1} className="size-5" />
           </button>
-          <button className="bg-blue-950 p-1.5 rounded-md">
+          <button className="bg-neutral p-1.5 rounded-md">
             <Bell color="white" strokeWidth={1} className="size-5" />
           </button>
           <button
-            className="border border-blue-950 p-1.5 rounded-md relative"
+            className="border border-neutral p-1.5 rounded-md relative"
             onClick={() => setShowOptions(!showOptions)}
           >
             <Ellipsis color="black" strokeWidth={1} className="size-5" />

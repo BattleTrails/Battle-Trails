@@ -171,3 +171,52 @@ export const deletePostById = async (postId: string): Promise<void> => {
     throw error;
   }
 };
+
+
+/*export const deletePostsByUserId = async (userId: string): Promise<void> => {
+  try {
+    const postsRef = collection(db, "posts");
+    const userPostsQuery = query(postsRef, where("userId", "==", userId));
+    const snapshot = await getDocs(userPostsQuery);
+
+    if (snapshot.empty) {
+      console.log(`ℹ️ No se encontraron publicaciones del usuario ${userId}`);
+      return;
+    }
+
+    const deletePromises = snapshot.docs.map(async (docSnap) => {
+      const postId = docSnap.id;
+      const postData = docSnap.data() as Post;
+
+      // 0. Eliminar imágenes si las hay
+      if (postData.images && Array.isArray(postData.images)) {
+        const imagePaths = extractSupabasePaths(postData.images);
+        console.log("🔍 Imagenes en post:", postData.images);
+        console.log("🧼 Paths extraídos:", imagePaths);
+        await deleteImagesFromSupabase(imagePaths);
+      }
+
+      // 1. Eliminar el post
+      await deleteDoc(doc(db, "posts", postId));
+
+      // 2. Eliminar ruta asociada
+      const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
+      const routeSnap = await getDocs(routeQuery);
+
+      const deleteRoutes = routeSnap.docs.map((routeDoc) =>
+        deleteDoc(doc(db, "routes", routeDoc.id))
+      );
+
+      await Promise.all(deleteRoutes);
+
+      // 3. (opcional futuro) Eliminar comentarios
+    });
+
+    await Promise.all(deletePromises);
+    console.log(`✅ Publicaciones y rutas del usuario ${userId} eliminadas correctamente`);
+  } catch (error) {
+    console.error("❌ Error al eliminar publicaciones del usuario:", error);
+    throw error;
+  }
+};*/
+

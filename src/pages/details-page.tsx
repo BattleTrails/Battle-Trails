@@ -9,6 +9,9 @@ import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import {getFormattedRouteMetaData} from "@/utils/route-data.ts";
 import {useAuthHandler} from "@hooks/useAuthHandler.ts";
+import {useJsApiLoader} from "@react-google-maps/api";
+
+const libraries: ("places")[] = ["places"];
 
 const DetailsPage = () => {
     const { postId } = useParams();
@@ -18,6 +21,10 @@ const DetailsPage = () => {
     const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
     const [author, setAuthor] = useState<{ username: string } | null>(null);
     const { user } = useAuthHandler();
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+         libraries,
+    });
 
 
     useEffect(() => {
@@ -25,25 +32,15 @@ const DetailsPage = () => {
             if (!postId) return;
 
             try {
-
-
-
                 const fetchedPost = await getPostById(postId);
-
-
                 setPost(fetchedPost);
-
                 const fetchedRoute = await getRouteByPostId(postId);
                 setRoute(fetchedRoute);
-
                 setPost(fetchedPost); //obtenemos el autor del post
-
                 const fetchedAuthor = await getUserById(fetchedPost.userId);
                 setAuthor({ username: fetchedAuthor.username });
-
                 if (!fetchedRoute) throw new Error("No se encontró la ruta.");
                 const meta = await getFormattedRouteMetaData(fetchedRoute.waypoints);
-
                 setRouteInfo(meta);
 
             } catch (error) {
@@ -60,6 +57,9 @@ const DetailsPage = () => {
         return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
 
+    if (!isLoaded) {
+        return <p className="text-center translate-y-20 text-gray-700">Cargando mapa...</p>;
+    }
     if (!post) {
         return <p className="text-center translate-y-20 text-red-500">No se encontró la publicación.</p>;
     }

@@ -81,7 +81,7 @@ const PerfilPage = () => {
     return (
       <>
           <ModalSettings showModal={showModal} setShowModal={setShowModal} />
-          <div className="px-4 translate-y-25 sm:px-10">
+          <div className="px-4 pt-25 sm:px-10">
               {/* Header */}
               <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
                   <div className="w-28 aspect-square overflow-hidden rounded">
@@ -91,11 +91,11 @@ const PerfilPage = () => {
                       <h2 className="text-2xl sm:text-4xl mb-1">{profile.name}</h2>
                       <span className="text-lg font-light sm:text-xl">@{profile.username}</span>
                       <div className="flex flex-wrap gap-3 mt-3 justify-center lg:justify-start w-full lg:w-fit">
-                          <button className="border border-b-blue-950 text-blue-950 px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
-                          <button onClick={() => setShowModal(true)} className="bg-blue-950 p-1.5 rounded-md">
+                          <button className="border border-b-neutral text-neutral px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
+                          <button onClick={() => setShowModal(true)} className="bg-neutral p-1.5 rounded-md">
                               <Settings color="white" strokeWidth={1} className="size-5" />
                           </button>
-                          <button className="bg-blue-950 p-1.5 rounded-md">
+                          <button className="bg-neutral p-1.5 rounded-md">
                               <Share2 color="white" strokeWidth={1} className="size-5" />
                           </button>
                       </div>
