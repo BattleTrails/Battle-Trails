@@ -5,8 +5,11 @@ type PostDraft = {
   title: string;
   description: string;
   images: File[];
-  address: string;
-  routePoints: { address: string; geoPoint: GeoPoint }[];
+  routePoints: {
+    geoPoint: GeoPoint;
+    address: string;
+    description?: string;
+  }[];
   distance?: string;
 };
 
@@ -14,6 +17,7 @@ type PostStore = {
   postDraft: PostDraft;
   setPostField: <K extends keyof PostDraft>(field: K, value: PostDraft[K]) => void;
   setImages: (files: File[]) => void;
+  setWaypointDescription: (index: number, description: string) => void;
   resetPostDraft: () => void;
 };
 
@@ -22,9 +26,8 @@ export const usePostStore = create<PostStore>((set) => ({
     title: "",
     description: "",
     images: [],
-    address: "",
     routePoints: [],
-    distance: "0 km",
+    distance: "",
   },
   setPostField: (field, value) =>
     set((state) => ({
@@ -34,14 +37,22 @@ export const usePostStore = create<PostStore>((set) => ({
     set((state) => ({
       postDraft: { ...state.postDraft, images: files },
     })),
+  setWaypointDescription: (index, description) =>
+    set((state) => ({
+      postDraft: {
+        ...state.postDraft,
+        routePoints: state.postDraft.routePoints.map((point, i) =>
+          i === index ? { ...point, description } : point
+        )
+      }
+    })),
   resetPostDraft: () => set(() => ({
     postDraft: {
       title: "",
       description: "",
       images: [],
-      address: "",
       routePoints: [],
-      distance: "0 km",
+      distance: "",
     },
   })),
 }));

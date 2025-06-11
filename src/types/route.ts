@@ -2,6 +2,11 @@ import {GeoPoint} from "firebase/firestore";
 
 export interface Route {
   postId: string;
-  waypoints: GeoPoint[];
-  images: string[]; // Imágenes de los puntos si no hay de usuarios
+  waypoints: {
+    geoPoint: GeoPoint;
+    address: string;
+    description?: string; // editable por el usuario
+  }[];
+  images: string[];
 }
+

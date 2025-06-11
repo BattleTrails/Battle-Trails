@@ -1,10 +1,18 @@
 type Props = {
   onClick: () => void;
+  text?: string;
+  loading?: boolean;
 };
-const ForgeButtonSave = ({onClick}: Props) => {
+
+const ForgeButtonSave = ({ onClick, text = "Crear ruta", loading = false }: Props) => {
   return (
-    <button type="submit" className="btn btn-outline rounded-full px-6" onClick={onClick}>
-      Crear ruta
+    <button
+      type="submit"
+      className={`btn btn-outline rounded-full px-6 ${loading ? 'loading' : ''}`}
+      onClick={onClick}
+      disabled={loading}
+    >
+      {loading ? '' : text}
     </button>
   );
 };

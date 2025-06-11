@@ -1,35 +1,37 @@
+import { useState, useEffect } from "react";
 import ForgeImages from "@pages/forge/forge-images/forge-images.tsx";
 import ForgeForm from "@pages/forge/forge-form/forge-form.tsx";
 import ForgeButtonSave from "@pages/forge/forge-button-save/forge-button-save.tsx";
-import {useAuth} from "@context/auth-context.tsx";
-import {usePostStore} from "@/store/usePostStore.ts";
-import {useNavigate} from "react-router-dom";
 
-import {createPost, createRoute} from "@/services/db-service.ts";
-import {uploadImagesToSupabase} from "@/services/supabase-storage-service.ts";
-import {useEffect} from "react";
-import {doc, updateDoc} from "firebase/firestore";
-import {db} from "@config/firebaseConfig.ts";
-
+import { useAuth } from "@context/auth-context.tsx";
+import { usePostStore } from "@/store/usePostStore.ts";
+import { useNavigate } from "react-router-dom";
+import { createPost, createRoute } from "@/services/db-service.ts";
+import { uploadImagesToSupabase } from "@/services/supabase-storage-service.ts";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@config/firebaseConfig.ts";
+import ForgeRouteEditor from "@pages/forge/ForgeRouteDescription.tsx";
 
 const ForgePage = () => {
-
-  const {user} = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const {postDraft, resetPostDraft} = usePostStore();
+  const { postDraft, resetPostDraft } = usePostStore();
+
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
-
 
   useEffect(() => {
     return () => {
       resetPostDraft(); // se limpia al salir de la página
     };
   }, []);
-  const handleCreatePost = async () => {
+
+  const validateStep1 = () => {
     if (!user) {
-      console.warn("Usuario no autenticado.");
-      return;
+      alert("Usuario no autenticado.");
+      return false;
     }
 
     if (
@@ -39,6 +41,40 @@ const ForgePage = () => {
       postDraft.routePoints.length < 2
     ) {
       alert("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (!validateStep1()) return;
+
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentStep(2);
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  const handleBackStep = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentStep(1);
+      setIsTransitioning(false);
+    }, 300);
+  };
+
+  const handleCreatePost = async () => {
+    if (!user) {
+      console.warn("Usuario no autenticado.");
+      return;
+    }
+
+    // Validar que todas las paradas tengan descripción
+    const missingDescriptions = postDraft.routePoints.some(point => !point.description?.trim());
+    if (missingDescriptions) {
+      alert("Por favor, añade una descripción a todas las paradas antes de crear la ruta.");
       return;
     }
 
@@ -57,10 +93,14 @@ const ForgePage = () => {
         likedBy: [],
       });
 
-      // 3. Crear la Route asociada
+      // 3. Crear la Route asociada con descripciones
       await createRoute({
         postId,
-        waypoints: postDraft.routePoints.map((p) => p.geoPoint),
+        waypoints: postDraft.routePoints.map((p) => ({
+          geoPoint: p.geoPoint,
+          address: p.address,
+          description: p.description || "",
+        })),
         images: [], // si luego usas imágenes de Google Places
       }, postId);
 
@@ -69,7 +109,7 @@ const ForgePage = () => {
         routeId: postId,
       });
 
-      // 4. Reset y redirección
+      // 5. Reset y redirección
       resetPostDraft();
       navigate(`/`);
     } catch (error) {
@@ -78,27 +118,53 @@ const ForgePage = () => {
     }
   };
 
-
   return (
-    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 ">
-      <div className="flex flex-row justify-between ">
-        <h1 className="text-2xl font-bold text-neutral mb-6">Crea tu ruta!</h1>
+    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative overflow-hidden">
+      {/* PASO 1 - Formulario Original */}
+      <div
+        className={`
+          transition-all duration-500 ease-in-out
+          ${currentStep === 1 && !isTransitioning
+          ? 'opacity-100 pointer-events-auto transform translate-y-0'
+          : 'opacity-0 pointer-events-none transform -translate-y-4'
+        }
+        `}
+      >
+        <div className="flex flex-row justify-between">
+          <h1 className="text-2xl font-bold text-neutral mb-6">Crea tu ruta!</h1>
+          <ForgeButtonSave
+            onClick={handleNextStep}
+            text="Describe tu ruta"
+          />
+        </div>
 
-        <ForgeButtonSave onClick={handleCreatePost}/>
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Columna izquierda */}
+          <div className="flex-1">
+            <ForgeImages />
+          </div>
 
+          {/* Columna derecha */}
+          <div className="flex-1">
+            <ForgeForm />
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Columna izquierda */}
-        <div className="flex-1">
-          <ForgeImages/>
-        </div>
-
-        {/* Columna derecha */}
-        <div className="flex-1">
-          <ForgeForm/>
-
-        </div>
+      {/* PASO 2 - Editor de Paradas */}
+      <div
+        className={`
+          absolute inset-0 transition-all duration-500 ease-in-out
+          ${currentStep === 2 && !isTransitioning
+          ? 'opacity-100 pointer-events-auto transform translate-y-0'
+          : 'opacity-0 pointer-events-none transform translate-y-4'
+        }
+        `}
+      >
+        <ForgeRouteEditor
+          onBack={handleBackStep}
+          onCreateRoute={handleCreatePost}
+        />
       </div>
     </div>
   );
