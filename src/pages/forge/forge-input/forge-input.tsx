@@ -13,6 +13,7 @@ interface Props {
   rows?: number;
   maxLength?: number;
   className?: string;
+  autoComplete?: string;
 }
 
 // Usamos forwardRef para que Autocomplete pueda acceder al <input>
@@ -29,6 +30,7 @@ const ForgeInput = forwardRef<HTMLInputElement, Props>(
       textarea = false,
       rows = 3,
       maxLength,
+      autoComplete,
       className = "",
     },
     ref
@@ -69,6 +71,7 @@ const ForgeInput = forwardRef<HTMLInputElement, Props>(
             placeholder={placeholder}
             className="input input-bordered focus:border-secondary focus:outline-none w-full"
             value={value}
+            autoComplete={autoComplete}
             onChange={onChange}
             disabled={disabled}
           />

@@ -231,8 +231,13 @@ const ForgeMap = () => {
       // Añade el nuevo punto
       setPostField("routePoints", [
         ...postDraft.routePoints,
-        {address, geoPoint},
+        {
+          address,
+          geoPoint,
+          images: []
+        },
       ]);
+
 
       // Vacía el input después de añadir el punto
       setPostField("address", "");
@@ -284,6 +289,7 @@ const ForgeMap = () => {
             value={postDraft.address}
             onChange={handleChange}
             className="w-[95%]"
+            autoComplete="off"
             disabled={postDraft.routePoints.length >= MAX_ROUTE_POINTS}
           />
           {showSuggestions && predictions.length > 0 && (

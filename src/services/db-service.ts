@@ -131,6 +131,9 @@ export const deletePostById = async (postId: string): Promise<void> => {
   try {
     const postRef = doc(db, "posts", postId);
     const postSnap = await getDoc(postRef);
+    const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
+    const routeSnapshot = await getDocs(routeQuery);
+
 
     if (!postSnap.exists()) {
       throw new Error("Post no encontrado");
@@ -146,12 +149,26 @@ export const deletePostById = async (postId: string): Promise<void> => {
       await deleteImagesFromSupabase(imagePaths);
     }
 
+    // 1.1 Eliminar imágenes de los waypoints (si existen)
+    for (const routeDoc of routeSnapshot.docs) {
+      const routeData = routeDoc.data() as Route;
+
+      for (const waypoint of routeData.waypoints || []) {
+        if (waypoint.images && Array.isArray(waypoint.images)) {
+          const waypointImagePaths = extractSupabasePaths(waypoint.images);
+          if (waypointImagePaths.length) {
+            console.log("🧼 Eliminando imágenes de parada:", waypointImagePaths);
+            await deleteImagesFromSupabase(waypointImagePaths);
+          }
+        }
+      }
+    }
+
     // 1. Eliminar el post
     await deleteDoc(postRef);
 
     // 2. Eliminar ruta asociada
-    const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
-    const routeSnapshot = await getDocs(routeQuery);
+
 
     const deleteRoutePromises = routeSnapshot.docs.map((routeDoc) =>
       deleteDoc(doc(db, "routes", routeDoc.id))

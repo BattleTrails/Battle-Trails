@@ -1,16 +1,19 @@
 import { create } from "zustand";
 import { GeoPoint } from "firebase/firestore";
 
+type Waypoint = {
+  geoPoint: GeoPoint;
+  address: string;
+  description?: string;
+  images: File[]; // asegúrate de que no sea opcional
+};
+
 type PostDraft = {
   title: string;
   description: string;
   images: File[];
   address: string;
-  routePoints: {
-    geoPoint: GeoPoint;
-    address: string;
-    description?: string;
-  }[];
+  routePoints: Waypoint[];
   distance?: string;
 };
 
@@ -19,6 +22,7 @@ type PostStore = {
   setPostField: <K extends keyof PostDraft>(field: K, value: PostDraft[K]) => void;
   setImages: (files: File[]) => void;
   setWaypointDescription: (index: number, description: string) => void;
+  setWaypointImages: (index: number, images: File[]) => void;
   resetPostDraft: () => void;
 };
 
@@ -45,8 +49,17 @@ export const usePostStore = create<PostStore>((set) => ({
         ...state.postDraft,
         routePoints: state.postDraft.routePoints.map((point, i) =>
           i === index ? { ...point, description } : point
-        )
-      }
+        ),
+      },
+    })),
+  setWaypointImages: (index, images) =>
+    set((state) => ({
+      postDraft: {
+        ...state.postDraft,
+        routePoints: state.postDraft.routePoints.map((point, i) =>
+          i === index ? { ...point, images } : point
+        ),
+      },
     })),
   resetPostDraft: () => set(() => ({
     postDraft: {

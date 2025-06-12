@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePostStore } from "@/store/usePostStore";
 import { ChevronLeft, MapPin, Edit3 } from "lucide-react";
+import ForgeImages from "@pages/forge/forge-images/forge-images.tsx";
 
 type Props = {
   onBack: () => void;
@@ -11,6 +12,8 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
   const { postDraft, setWaypointDescription } = usePostStore();
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState(0);
   const [currentDescription, setCurrentDescription] = useState("");
+  const { setWaypointImages } = usePostStore();
+
 
   // Función helper para obtener descripción segura
   const getWaypointDescription = (index: number): string => {
@@ -193,6 +196,16 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
                 maxLength={800}
                 style={{ minHeight: '300px' }}
               />
+              <div className="mt-6">
+                <h4 className="font-medium text-base mb-2 text-neutral">
+                  Imágenes para esta parada
+                </h4>
+                <ForgeImages
+                  images={selectedWaypoint.images || []}
+                  setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
+                  label="Añade imágenes específicas para esta parada"
+                />
+              </div>
 
               <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
                 <span>

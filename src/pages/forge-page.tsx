@@ -15,7 +15,7 @@ import ForgeRouteEditor from "@pages/forge/ForgeRouteDescription.tsx";
 const ForgePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { postDraft, resetPostDraft } = usePostStore();
+  const { postDraft, resetPostDraft, setImages } = usePostStore();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -93,16 +93,31 @@ const ForgePage = () => {
         likedBy: [],
       });
 
+      const waypointImageUrls = await Promise.all(
+        postDraft.routePoints.map(async (point, index) => {
+          if (!point.images || point.images.length === 0) return [];
+
+          try {
+            return await uploadImagesToSupabase(point.images, user.uid) // todas van al mismo bucket nivel usuario
+          } catch (err) {
+            console.error(`❌ Error al subir imágenes de la parada ${index}:`, err);
+            return [];
+          }
+        })
+      );
+
       // 3. Crear la Route asociada con descripciones
       await createRoute({
         postId,
-        waypoints: postDraft.routePoints.map((p) => ({
+        waypoints: postDraft.routePoints.map((p, i) => ({
           geoPoint: p.geoPoint,
           address: p.address,
           description: p.description || "",
-          images: [],
+          images: waypointImageUrls[i] || [],
         })),
       }, postId);
+
+
 
       // 4. Guardar el ID de la ruta en el post
       await updateDoc(doc(db, "posts", postId), {
@@ -141,7 +156,12 @@ const ForgePage = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Columna izquierda */}
           <div className="flex-1">
-            <ForgeImages />
+            <ForgeImages
+              images={postDraft.images}
+              setImages={setImages}
+              label="Añade imágenes generales de la ruta"
+            />
+
           </div>
 
           {/* Columna derecha */}
