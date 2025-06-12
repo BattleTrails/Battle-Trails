@@ -125,7 +125,7 @@ const DetailsPage = () => {
                       </div>
 
                   </div>
-                  <div className=" rounded overflow-auto">
+                  <div className=" rounded overflow-auto mb-4">
                       {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
 
                   </div>

@@ -24,7 +24,7 @@ const ForgeForm = () => {
       {/* Destino*/}
       <ForgeMap/>
 
-      <ForgeInput
+      {/*<ForgeInput
         label="Distancia"
         name="distance"
         placeholder="Calculada automáticamente"
@@ -32,7 +32,7 @@ const ForgeForm = () => {
         onChange={() => {
         }} // opcional: no hace nada
         disabled
-      />
+      />*/}
 
       <ForgeInput
         label="Descripción"
@@ -41,7 +41,7 @@ const ForgeForm = () => {
         value={postDraft.description}
         onChange={handleChange}
         textarea
-        maxLength={500}
+        maxLength={400}
         rows={4}
       />
 

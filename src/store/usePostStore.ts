@@ -5,6 +5,7 @@ type PostDraft = {
   title: string;
   description: string;
   images: File[];
+  address: string;
   routePoints: {
     geoPoint: GeoPoint;
     address: string;
@@ -25,6 +26,7 @@ export const usePostStore = create<PostStore>((set) => ({
   postDraft: {
     title: "",
     description: "",
+    address: "",
     images: [],
     routePoints: [],
     distance: "",
@@ -51,6 +53,7 @@ export const usePostStore = create<PostStore>((set) => ({
       title: "",
       description: "",
       images: [],
+      address: "",
       routePoints: [],
       distance: "",
     },

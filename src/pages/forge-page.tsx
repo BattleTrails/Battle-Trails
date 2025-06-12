@@ -100,8 +100,8 @@ const ForgePage = () => {
           geoPoint: p.geoPoint,
           address: p.address,
           description: p.description || "",
+          images: [],
         })),
-        images: [], // si luego usas imágenes de Google Places
       }, postId);
 
       // 4. Guardar el ID de la ruta en el post
@@ -119,7 +119,7 @@ const ForgePage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative overflow-hidden">
+    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative ">
       {/* PASO 1 - Formulario Original */}
       <div
         className={`

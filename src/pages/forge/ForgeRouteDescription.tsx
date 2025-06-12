@@ -113,7 +113,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
 
         <button
           onClick={handleCreateRoute}
-          className="btn btn-primary rounded-full px-6"
+          className="btn btn-neutral hover:bg-gray-300 hover:text-neutral rounded-full px-6"
         >
           Crear ruta
         </button>

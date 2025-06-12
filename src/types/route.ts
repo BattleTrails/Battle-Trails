@@ -6,7 +6,7 @@ export interface Route {
     geoPoint: GeoPoint;
     address: string;
     description?: string; // editable por el usuario
+    images?: string[];
   }[];
-  images: string[];
 }
 

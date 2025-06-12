@@ -60,7 +60,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
       container.addEventListener("scroll", handleScroll);
       return () => container.removeEventListener("scroll", handleScroll);
     }
-  }, [waypoints.length]); // solo depende del número de waypoints
+  }, [activeIndex, waypoints.length]); // solo depende del número de waypoints
 
   const handleStepClick = (index: number) => setActiveIndex(index);
   const handlePrevious = () => setActiveIndex((prev) => (prev - 1 + waypoints.length) % waypoints.length);
@@ -83,7 +83,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
         </div>
 
         {/* Desktop */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <div className="grid grid-cols-2 gap-12 items-center">
             <div className="space-y-6 md:pl-5">
               <div
