@@ -20,6 +20,9 @@ const ForgePage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
 
   useEffect(() => {
@@ -73,12 +76,17 @@ const ForgePage = () => {
 
     // Validar que todas las paradas tengan descripción
     const missingDescriptions = postDraft.routePoints.some(point => !point.description?.trim());
+    if (isSubmitting) return; // Previene doble click
+    setIsSubmitting(true);
+
     if (missingDescriptions) {
       alert("Por favor, añade una descripción a todas las paradas antes de crear la ruta.");
       return;
     }
 
     try {
+
+
       // 1. Subir imágenes a Supabase
       const imageUrls = await uploadImagesToSupabase(postDraft.images, user.uid);
 
@@ -160,6 +168,7 @@ const ForgePage = () => {
               images={postDraft.images}
               setImages={setImages}
               label="Añade imágenes generales de la ruta"
+              mode="main"
             />
 
           </div>
@@ -172,20 +181,16 @@ const ForgePage = () => {
       </div>
 
       {/* PASO 2 - Editor de Paradas */}
-      <div
-        className={`
-          absolute inset-0 transition-all duration-500 ease-in-out
-          ${currentStep === 2 && !isTransitioning
-          ? 'opacity-100 pointer-events-auto transform translate-y-0'
-          : 'opacity-0 pointer-events-none transform translate-y-4'
-        }
-        `}
-      >
-        <ForgeRouteEditor
-          onBack={handleBackStep}
-          onCreateRoute={handleCreatePost}
-        />
-      </div>
+      {/* PASO 2 - Editor de Paradas */}
+      {currentStep === 2 && !isTransitioning && (
+        <div className="absolute inset-0 transition-all duration-500 ease-in-out opacity-100 pointer-events-auto transform translate-y-0">
+          <ForgeRouteEditor
+            onBack={handleBackStep}
+            onCreateRoute={handleCreatePost}
+          />
+        </div>
+      )}
+
     </div>
   );
 };

@@ -192,20 +192,11 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
                 value={currentDescription}
                 onChange={handleDescriptionChange}
                 placeholder="Describe esta parada: historia, puntos de interés, recomendaciones..."
-                className="textarea textarea-bordered flex-1 resize-none text-base leading-relaxed"
+                className="textarea textarea-bordered flex-1 w-full resize-none text-base leading-relaxed"
                 maxLength={800}
-                style={{ minHeight: '300px' }}
+                style={{ minHeight: '200px' }}
               />
-              <div className="mt-6">
-                <h4 className="font-medium text-base mb-2 text-neutral">
-                  Imágenes para esta parada
-                </h4>
-                <ForgeImages
-                  images={selectedWaypoint.images || []}
-                  setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
-                  label="Añade imágenes específicas para esta parada"
-                />
-              </div>
+
 
               <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
                 <span>
@@ -214,6 +205,18 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
                 <span className="text-xs">
                   {currentDescription.trim() ? '✓ Descripción añadida' : '⚠ Sin descripción'}
                 </span>
+              </div>
+
+              <div className="mt-6">
+                <h4 className="font-medium text-base mb-2 text-neutral">
+                  Imágenes para esta parada
+                </h4>
+                <ForgeImages
+                  images={selectedWaypoint.images || []}
+                  setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
+                  label="Añade imágenes específicas para esta parada"
+                  mode="waypoint"
+                />
               </div>
             </div>
 

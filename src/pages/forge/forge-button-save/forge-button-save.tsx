@@ -7,14 +7,18 @@ type Props = {
 const ForgeButtonSave = ({ onClick, text = "Crear ruta", loading = false }: Props) => {
   return (
     <button
-      type="submit"
-      className={`btn btn-outline rounded-full px-6 ${loading ? 'loading' : ''}`}
+      type="button"
+      className="btn btn-outline rounded-full px-6 flex items-center justify-center gap-2"
       onClick={onClick}
       disabled={loading}
     >
-      {loading ? '' : text}
+      {loading && (
+        <span className="loading loading-spinner loading-sm"></span>
+      )}
+      {!loading && text}
     </button>
   );
+
 };
 
 export default ForgeButtonSave;
