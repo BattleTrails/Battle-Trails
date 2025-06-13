@@ -1,4 +1,4 @@
-import { Heart, Eye, Share2 } from "lucide-react";
+import {Heart, Eye, Share2, Edit3} from "lucide-react";
 import { MoreVertical, Trash2 } from "lucide-react";
 import mark from "@assets/iconslogo.svg";
 import { Post } from "@/types";
@@ -82,6 +82,12 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
                 className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-red-100 text-red-600"
               >
                 <Trash2 size={16} /> Eliminar ruta
+              </button>
+              <button
+                onClick={() => navigate(`/edit/${post.id}`)}
+                className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-blue-100 text-blue-600"
+              >
+                <Edit3 size={16} /> Editar ruta
               </button>
             </div>
           )}

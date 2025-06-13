@@ -6,14 +6,14 @@ import ForgeImages from "@pages/forge/forge-images/forge-images.tsx";
 type Props = {
   onBack: () => void;
   onCreateRoute: () => void;
+  isEditMode?: boolean;
 };
 
-const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
+const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) => {
   const { postDraft, setWaypointDescription } = usePostStore();
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState(0);
   const [currentDescription, setCurrentDescription] = useState("");
   const { setWaypointImages } = usePostStore();
-
 
   // Función helper para obtener descripción segura
   const getWaypointDescription = (index: number): string => {
@@ -107,7 +107,9 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-neutral">Describe las paradas</h1>
+            <h1 className="text-2xl font-bold text-neutral">
+              {isEditMode ? 'Editar las paradas' : 'Describe las paradas'}
+            </h1>
             <p className="text-sm text-gray-500">
               Progreso: {getDescriptionProgress()} paradas descritas
             </p>
@@ -118,7 +120,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
           onClick={handleCreateRoute}
           className="btn btn-neutral hover:bg-gray-300 hover:text-neutral rounded-full px-6"
         >
-          Crear ruta
+          {isEditMode ? 'Guardar cambios' : 'Crear ruta'}
         </button>
       </div>
 
@@ -197,7 +199,6 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
                 style={{ minHeight: '200px' }}
               />
 
-
               <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
                 <span>
                   {currentDescription.length}/800 caracteres
@@ -209,12 +210,15 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute }: Props) => {
 
               <div className="mt-6">
                 <h4 className="font-medium text-base mb-2 text-neutral">
-                  Imágenes para esta parada
+                  {isEditMode ? 'Nuevas imágenes para esta parada' : 'Imágenes para esta parada'}
                 </h4>
                 <ForgeImages
                   images={selectedWaypoint.images || []}
                   setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
-                  label="Añade imágenes específicas para esta parada"
+                  label={isEditMode
+                    ? "Añade nuevas imágenes (las actuales se mantendrán)"
+                    : "Añade imágenes específicas para esta parada"
+                  }
                   mode="waypoint"
                 />
               </div>

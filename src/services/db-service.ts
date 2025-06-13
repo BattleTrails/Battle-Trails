@@ -1,5 +1,5 @@
 import {db} from "@/config/firebaseConfig";
-import {addDoc, collection, doc, getDocs,getDoc, setDoc,query,where,deleteDoc} from "firebase/firestore";
+import {addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc} from "firebase/firestore";
 
 import {Post, Route, User} from "@/types";
 import {deleteImagesFromSupabase} from "@/services/supabase-storage-service.ts";
@@ -188,7 +188,30 @@ export const deletePostById = async (postId: string): Promise<void> => {
     throw error;
   }
 };
+export const updatePost = async (postId: string, updateData: Partial<{
+  title: string;
+  description: string;
+  images: string[];
+  locationName: string;
+}>): Promise<void> => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, updateData);
+};
 
+/**
+ * Actualiza una ruta existente en Firestore
+ */
+export const updateRoute = async (routeId: string, updateData: Partial<{
+  waypoints: Array<{
+    geoPoint: any;
+    address: string;
+    description: string;
+    images: string[];
+  }>;
+}>): Promise<void> => {
+  const routeRef = doc(db, "routes", routeId);
+  await updateDoc(routeRef, updateData);
+};
 
 /*export const deletePostsByUserId = async (userId: string): Promise<void> => {
   try {

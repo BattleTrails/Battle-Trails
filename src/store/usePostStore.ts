@@ -19,11 +19,16 @@ type PostDraft = {
 
 type PostStore = {
   postDraft: PostDraft;
+  isEditMode: boolean;
+  editingPostId: string | null;
   setPostField: <K extends keyof PostDraft>(field: K, value: PostDraft[K]) => void;
   setImages: (files: File[]) => void;
   setWaypointDescription: (index: number, description: string) => void;
   setWaypointImages: (index: number, images: File[]) => void;
   resetPostDraft: () => void;
+  // Nuevas funciones para modo edición
+  setEditMode: (isEdit: boolean, postId?: string) => void;
+  loadPostForEdit: (postData: PostDraft) => void;
 };
 
 export const usePostStore = create<PostStore>((set) => ({
@@ -35,14 +40,19 @@ export const usePostStore = create<PostStore>((set) => ({
     routePoints: [],
     distance: "",
   },
+  isEditMode: false,
+  editingPostId: null,
+
   setPostField: (field, value) =>
     set((state) => ({
       postDraft: { ...state.postDraft, [field]: value },
     })),
+
   setImages: (files) =>
     set((state) => ({
       postDraft: { ...state.postDraft, images: files },
     })),
+
   setWaypointDescription: (index, description) =>
     set((state) => ({
       postDraft: {
@@ -52,6 +62,7 @@ export const usePostStore = create<PostStore>((set) => ({
         ),
       },
     })),
+
   setWaypointImages: (index, images) =>
     set((state) => ({
       postDraft: {
@@ -61,6 +72,7 @@ export const usePostStore = create<PostStore>((set) => ({
         ),
       },
     })),
+
   resetPostDraft: () => set(() => ({
     postDraft: {
       title: "",
@@ -70,5 +82,18 @@ export const usePostStore = create<PostStore>((set) => ({
       routePoints: [],
       distance: "",
     },
+    isEditMode: false,
+    editingPostId: null,
+  })),
+
+  // Nuevas funciones para modo edición
+  setEditMode: (isEdit, postId) => set(() => ({
+    isEditMode: isEdit,
+    editingPostId: postId || null,
+  })),
+
+  loadPostForEdit: (postData) => set(() => ({
+    postDraft: postData,
+    isEditMode: true,
   })),
 }));
