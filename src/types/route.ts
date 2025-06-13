@@ -5,7 +5,7 @@ export interface Route {
   waypoints: {
     geoPoint: GeoPoint;
     address: string;
-    description?: string; // editable por el usuario
+    description?: string;
     images?: string[];
   }[];
 }

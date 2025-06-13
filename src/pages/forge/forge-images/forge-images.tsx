@@ -103,7 +103,7 @@ const ForgeImages = ({ mode, images, setImages, label = "Añade algunas imágene
 
           {/* Miniaturas (filtramos la primera si estamos en modo waypoint) */}
           <div className="flex gap-2 flex-wrap">
-            {images.filter((img, i) => mode === "waypoint" || i === 0)
+            {images.filter((_, i) => mode === "main" ? true : true)
               .map((img, i) => (
                 <div key={i} className="relative w-20 h-20 rounded overflow-hidden">
                   <img
