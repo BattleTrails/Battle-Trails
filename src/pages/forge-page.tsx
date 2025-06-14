@@ -12,6 +12,9 @@ import { db } from "@config/firebaseConfig.ts";
 import ForgeRouteEditor from "@pages/forge/ForgeRouteDescription.tsx";
 import clsx from "clsx";
 import {Post, Route} from "@/types";
+import { deleteImagesFromSupabase } from "@/services/supabase-storage-service";
+import {extractSupabasePaths} from "@/utils/extract-supabase-paths.ts";
+
 
 
 
@@ -27,11 +30,17 @@ const ForgePage = () => {
     setEditMode,
     loadPostForEdit
   } = usePostStore();
-
+// Estados para mantener las imágenes existentes
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [existingWaypointImages, setExistingWaypointImages] = useState<string[][]>([]);
   const [currentStep, setCurrentStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+  const [deletedWaypointImageUrls, setDeletedWaypointImageUrls] = useState<string[][]>([]);
+
+
 
   const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
 
@@ -40,25 +49,47 @@ const ForgePage = () => {
   const uploadWaypointImages = async (waypoints: typeof postDraft.routePoints, userId: string) => {
     return Promise.all(
       waypoints.map(async (point, index) => {
-        if (!point.images?.length) return [];
+        // En modo edición, empezar con las imágenes existentes
+        const existingImages = existingWaypointImages[index] || [];
+        const deletedImages = deletedWaypointImageUrls[index] || [];
+        const existingForThisWaypoint = existingImages.filter(img => !deletedImages.includes(img));
+
+
+        if (!point.images?.length) {
+          // Si no hay imágenes nuevas, mantener solo las existentes
+          return existingForThisWaypoint;
+        }
+
         try {
-          return await uploadImagesToSupabase(point.images, userId);
+          const newImageUrls = await uploadImagesToSupabase(point.images, userId);
+          // Combinar imágenes existentes con las nuevas
+          return [...existingForThisWaypoint, ...newImageUrls];
         } catch (err) {
           console.error(`❌ Error al subir imágenes de la parada ${index}:`, err);
-          return [];
+          return existingForThisWaypoint;
         }
       })
     );
   };
 
   const mapRouteToPostDraft = (route: null | Route) => {
-    return route?.waypoints?.map(wp => ({
+    if (!route?.waypoints) return [];
+
+    // Guardar las imágenes existentes de waypoints
+    const waypointImageUrls = route.waypoints.map(wp => wp.images || []);
+    setExistingWaypointImages(waypointImageUrls);
+
+    // INICIALIZA borrado vacío para cada parada
+    setDeletedWaypointImageUrls(route.waypoints.map(() => []));
+
+    return route.waypoints.map(wp => ({
       geoPoint: wp.geoPoint,
       address: wp.address,
       description: wp.description || "",
       images: [],
-    })) || [];
+    }));
   };
+
 
   useEffect(() => {
     const loadPostData = async () => {
@@ -73,6 +104,8 @@ const ForgePage = () => {
           }
 
           const route = await getRouteByPostId(postId);
+          // Guardar las imágenes existentes del post
+          setExistingImages(post.images || []);
 
           const postData = {
             title: post.title,
@@ -107,9 +140,15 @@ const ForgePage = () => {
     if (!postDraft.title.trim() || !postDraft.description.trim() || postDraft.routePoints.length < 2) {
       return showError("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
     }
-    if (!isEditMode && !postDraft.images.length) {
-      return showError("Por favor, añade al menos una imagen.");
+    const totalMainImages = [
+      ...existingImages.filter(img => !deletedImageUrls.includes(img)),
+      ...postDraft.images
+    ];
+
+    if (totalMainImages.length === 0) {
+      return showError("Debes mantener al menos una imagen principal.");
     }
+
     return true;
   };
 
@@ -131,19 +170,35 @@ const ForgePage = () => {
   };
 
   const handleUpdatePost = async (postId: string) => {
-    let imageUrls: string[] = [];
-    if (postDraft.images.length > 0) {
-      imageUrls = await uploadImagesToSupabase(postDraft.images, user!.uid);
+    // 1. Eliminar físicamente las imágenes borradas por el usuario
+    if (deletedImageUrls.length > 0) {
+      const imagePathsToDelete = extractSupabasePaths(deletedImageUrls);
+      await deleteImagesFromSupabase(imagePathsToDelete);
     }
+
+    // 2. Filtrar imágenes existentes que no han sido eliminadas
+    let finalImageUrls = existingImages.filter(img => !deletedImageUrls.includes(img));
+
+    // 3. Subir imágenes nuevas (si hay)
+    if (postDraft.images.length > 0) {
+      const newImageUrls = await uploadImagesToSupabase(postDraft.images, user!.uid);
+      finalImageUrls = [...finalImageUrls, ...newImageUrls];
+    }
+
+    // 4. Subir imágenes de waypoints (sin borrado aún)
     const waypointImageUrls = await uploadWaypointImages(postDraft.routePoints, user!.uid);
 
+    // 5. Guardar en Firestore
     const updateData: Partial<Post> = {
       title: postDraft.title,
       description: postDraft.description,
       locationName,
+      images: finalImageUrls,
     };
-    if (imageUrls.length > 0) {
-      updateData.images = imageUrls;
+    if (deletedWaypointImageUrls.length > 0) {
+      const allWaypointUrls = deletedWaypointImageUrls.flat();
+      const waypointPaths = extractSupabasePaths(allWaypointUrls);
+      await deleteImagesFromSupabase(waypointPaths);
     }
     await updatePost(postId, updateData);
     await updateRoute(postId, {
@@ -239,15 +294,26 @@ const ForgePage = () => {
 
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1">
-            <ForgeImages
-              images={postDraft.images}
-              setImages={setImages}
-              label={isEditMode
-                ? "Añade nuevas imágenes (las actuales se mantendrán)"
-                : "Añade imágenes generales de la ruta"
-              }
-              mode="main"
-            />
+
+            {!isEditMode || existingImages.length > 0 || postDraft.images.length > 0 ? (
+              <ForgeImages
+                images={postDraft.images}
+                setImages={setImages}
+                label={isEditMode
+                  ? "Edita las imágenes principales de la ruta"
+                  : "Añade imágenes generales de la ruta"
+                }
+                mode="main"
+                existingImages={isEditMode ? existingImages : []}
+                deletedImageUrls={deletedImageUrls}
+                setDeletedImageUrls={setDeletedImageUrls}
+              />
+            ) : (
+              <div className="h-40 flex items-center justify-center text-gray-500">
+                Cargando imágenes principales...
+              </div>
+            )}
+
           </div>
 
           <div className="flex-1">
@@ -262,6 +328,9 @@ const ForgePage = () => {
             onBack={handleBackStep}
             onCreateRoute={handleCreateOrUpdatePost}
             isEditMode={isEditMode}
+            existingWaypointImages={existingWaypointImages}
+            deletedWaypointImageUrls={deletedWaypointImageUrls}
+            setDeletedWaypointImageUrls={setDeletedWaypointImageUrls}
           />
         </div>
       )}

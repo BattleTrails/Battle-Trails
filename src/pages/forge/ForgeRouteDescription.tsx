@@ -7,13 +7,18 @@ type Props = {
   onBack: () => void;
   onCreateRoute: () => void;
   isEditMode?: boolean;
+  existingWaypointImages?: string[][];
+  deletedWaypointImageUrls?: string[][];
+  setDeletedWaypointImageUrls?: React.Dispatch<React.SetStateAction<string[][]>>;
 };
 
-const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) => {
-  const { postDraft, setWaypointDescription } = usePostStore();
+const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingWaypointImages = [], setDeletedWaypointImageUrls  }: Props) => {
+  const { postDraft, setWaypointDescription, setWaypointImages } = usePostStore();
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState(0);
   const [currentDescription, setCurrentDescription] = useState("");
-  const { setWaypointImages } = usePostStore();
+
+  // Estado para manejar las imágenes existentes de cada waypoint
+  const [waypointExistingImages, setWaypointExistingImages] = useState<string[][]>(existingWaypointImages);
 
   // Función helper para obtener descripción segura
   const getWaypointDescription = (index: number): string => {
@@ -23,11 +28,21 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) 
 
   // Effect para inicializar y sincronizar la descripción cuando cambian los routePoints
   useEffect(() => {
-    if (postDraft.routePoints?.length > 0) {
+    if (
+      isEditMode &&
+      existingWaypointImages.length > 0 &&
+      postDraft.routePoints.length > 0
+    ) {
+      // Inicializar imágenes para todas las paradas
+      setWaypointExistingImages(existingWaypointImages);
+
+      // Inicializar descripción de la parada actual
       const description = getWaypointDescription(selectedWaypointIndex);
       setCurrentDescription(description);
     }
-  }, [postDraft.routePoints, selectedWaypointIndex]);
+  }, [isEditMode, existingWaypointImages, postDraft.routePoints.length, selectedWaypointIndex]);
+
+
 
   const handleWaypointClick = (index: number) => {
     // Guardar descripción actual antes de cambiar
@@ -51,6 +66,28 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) 
     }
   };
 
+  // Función para manejar la eliminación de imágenes existentes
+  const handleRemoveExistingImage = (waypointIndex: number, imageIndex: number) => {
+    setWaypointExistingImages(prev => {
+      const updated = [...prev];
+      if (updated[waypointIndex]) {
+        const waypointImages = [...updated[waypointIndex]];
+        const imageToRemove = waypointImages[imageIndex];
+        waypointImages.splice(imageIndex, 1);
+        updated[waypointIndex] = waypointImages;
+
+        if (setDeletedWaypointImageUrls) {
+          setDeletedWaypointImageUrls(prev => {
+            const updatedDel = [...prev];
+            updatedDel[waypointIndex] = [...(updatedDel[waypointIndex] || []), imageToRemove];
+            return updatedDel;
+          });
+        }
+      }
+      return updated;
+    });
+  };
+
   const handleCreateRoute = () => {
     // Guardar la descripción actual antes de crear la ruta
     if (postDraft.routePoints?.length > 0) {
@@ -64,6 +101,18 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) 
     const withDescription = postDraft.routePoints.filter(point => point.description?.trim()).length;
     return `${withDescription}/${postDraft.routePoints.length}`;
   };
+// Verificación extra: ¿tenemos imágenes cargadas para la parada actual?
+  if (
+    !waypointExistingImages[selectedWaypointIndex] &&
+    isEditMode &&
+    existingWaypointImages.length > 0
+  ) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Cargando imágenes de la parada...</p>
+      </div>
+    );
+  }
 
   // Verificación de seguridad
   if (!postDraft.routePoints?.length) {
@@ -210,16 +259,21 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false }: Props) 
 
               <div className="mt-6">
                 <h4 className="font-medium text-base mb-2 text-neutral">
-                  {isEditMode ? 'Nuevas imágenes para esta parada' : 'Imágenes para esta parada'}
+                  {isEditMode ? 'Imágenes para esta parada' : 'Imágenes para esta parada'}
                 </h4>
                 <ForgeImages
                   images={selectedWaypoint.images || []}
                   setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
                   label={isEditMode
-                    ? "Añade nuevas imágenes (las actuales se mantendrán)"
+                    ? "Añadir más imágenes para esta parada"
                     : "Añade imágenes específicas para esta parada"
                   }
                   mode="waypoint"
+                  existingImages={waypointExistingImages[selectedWaypointIndex] || []}
+                  onRemoveExistingImage={(imageIndex) =>
+                    handleRemoveExistingImage(selectedWaypointIndex, imageIndex)
+                  }
+
                 />
               </div>
             </div>
