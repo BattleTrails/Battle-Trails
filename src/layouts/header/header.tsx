@@ -16,7 +16,7 @@ const Header = () => {
 
 
   const isHome = currentPath === "/";
-  const isForge = currentPath.startsWith("/new");
+  const isForge = currentPath.startsWith("/new")|| currentPath.startsWith("/edit");
   const isDetails = currentPath.includes("/post");
   const isProfile = currentPath.includes("/profile");
 

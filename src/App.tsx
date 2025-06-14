@@ -24,9 +24,11 @@ const App = () => {
         {index: true, element: <Home/>},
         {path: "test", element: <Test/>},
         {path: "new", element: <PrivateRoute><Forge/></PrivateRoute>},
+        {path: "/edit/:postId?", element: <PrivateRoute><Forge/></PrivateRoute>},
         {path: "profile", element: <Perfil/>},
         {path: "/profile/:userId", element: <ProfileUserPage/>},
         {path: "post/:postId", element: <PostDetails/> },
+
       ],
     },
     {

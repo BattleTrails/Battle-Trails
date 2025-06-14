@@ -10,6 +10,7 @@ import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import {getFormattedRouteMetaData} from "@/utils/route-data.ts";
 import {useAuthHandler} from "@hooks/useAuthHandler.ts";
 import {useJsApiLoader} from "@react-google-maps/api";
+import RouteTimeline from "@pages/route-timeline.tsx";
 
 const libraries: ("places")[] = ["places"];
 
@@ -40,7 +41,9 @@ const DetailsPage = () => {
                 const fetchedAuthor = await getUserById(fetchedPost.userId);
                 setAuthor({ username: fetchedAuthor.username });
                 if (!fetchedRoute) throw new Error("No se encontró la ruta.");
-                const meta = await getFormattedRouteMetaData(fetchedRoute.waypoints);
+                const meta = await getFormattedRouteMetaData(
+                  fetchedRoute.waypoints.map((point) => point.geoPoint)
+                );
                 setRouteInfo(meta);
 
             } catch (error) {
@@ -67,7 +70,7 @@ const DetailsPage = () => {
     return (
       <div>
           <div className="flex flex-col lg:flex-row">
-              <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory">
+              <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory ">
                   {post.images.map((src, index) => (
                     <div
                       key={index}
@@ -122,10 +125,15 @@ const DetailsPage = () => {
                       </div>
 
                   </div>
-                  <div className=" rounded overflow-auto">
-                      {route && <MapBaseDirections waypoints={route.waypoints} />}
+                  <div className=" rounded overflow-auto mb-4">
+                      {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
+
                   </div>
               </div>
+          </div>
+          <div>
+              {route?.waypoints && <RouteTimeline waypoints={route.waypoints} />}
+
           </div>
 
           <div className="mt-20 ml-5">

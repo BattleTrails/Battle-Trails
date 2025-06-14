@@ -2,8 +2,11 @@ import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 import {usePostStore} from "@/store/usePostStore.ts";
 import ForgeMap from "@components/ui/forge-map/forge-map.tsx";
 
+type Props = {
+  onRemoveWaypoint: (index: number) => void;
+};
 
-const ForgeForm = () => {
+const ForgeForm = ( { onRemoveWaypoint }: Props) => {
   const {postDraft, setPostField} = usePostStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -22,9 +25,9 @@ const ForgeForm = () => {
       />
 
       {/* Destino*/}
-      <ForgeMap/>
+      <ForgeMap onRemoveWaypoint={onRemoveWaypoint}/>
 
-      <ForgeInput
+      {/*<ForgeInput
         label="Distancia"
         name="distance"
         placeholder="Calculada automáticamente"
@@ -32,7 +35,7 @@ const ForgeForm = () => {
         onChange={() => {
         }} // opcional: no hace nada
         disabled
-      />
+      />*/}
 
       <ForgeInput
         label="Descripción"
@@ -41,7 +44,7 @@ const ForgeForm = () => {
         value={postDraft.description}
         onChange={handleChange}
         textarea
-        maxLength={500}
+        maxLength={400}
         rows={4}
       />
 
