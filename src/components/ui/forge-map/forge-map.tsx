@@ -36,7 +36,9 @@ interface Prediction {
   placeId: string;
   mainText: string;
 }
-
+type Props = {
+  onRemoveWaypoint: (index: number) => void;
+};
 
 interface AutocompleteSuggestion {
   placePrediction: {
@@ -48,7 +50,7 @@ interface AutocompleteSuggestion {
   };
 }
 
-const ForgeMap = () => {
+const ForgeMap = ( {onRemoveWaypoint} : Props ) => {
   const mapRef = useRef<google.maps.Map | null>(null);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -354,6 +356,7 @@ const ForgeMap = () => {
                       <button
                         type="button"
                         onClick={() => {
+                          onRemoveWaypoint(index);
                           handleDeletePoint(index);
                         }}
                         className="text-red-500 hover:text-red-700 text-sm font-medium"

@@ -28,7 +28,8 @@ const ForgePage = () => {
     setImages,
     isEditMode,
     setEditMode,
-    loadPostForEdit
+    loadPostForEdit,
+    setPostField,
   } = usePostStore();
 // Estados para mantener las imágenes existentes
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -39,6 +40,7 @@ const ForgePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
   const [deletedWaypointImageUrls, setDeletedWaypointImageUrls] = useState<string[][]>([]);
+
 
 
 
@@ -211,6 +213,33 @@ const ForgePage = () => {
     });
   };
 
+  const handleRemoveWaypoint = (index: number) => {
+    // 1. Marcar imágenes existentes para borrado
+    const imagesToDelete = existingWaypointImages[index] || [];
+    setDeletedWaypointImageUrls((prev) => {
+      const copy = [...prev];
+      copy.splice(index, 1, imagesToDelete);
+      return copy;
+    });
+
+    // 2. Eliminar parada del draft usando setPostField
+    const newRoutePoints = [
+      ...postDraft.routePoints.slice(0, index),
+      ...postDraft.routePoints.slice(index + 1)
+    ];
+    setPostField("routePoints", newRoutePoints);
+
+    // 3. Eliminar imágenes existentes asociadas a esa parada
+    setExistingWaypointImages((prev) => {
+      const copy = [...prev];
+      copy.splice(index, 1);
+      return copy;
+    });
+  };
+
+
+
+
   const handleCreateNewPost = async () => {
     const imageUrls = await uploadImagesToSupabase(postDraft.images, user!.uid);
     const postId = await createPost({
@@ -317,7 +346,7 @@ const ForgePage = () => {
           </div>
 
           <div className="flex-1">
-            <ForgeForm />
+            <ForgeForm onRemoveWaypoint={handleRemoveWaypoint} />
           </div>
         </div>
       </div>

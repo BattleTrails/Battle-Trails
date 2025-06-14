@@ -33,15 +33,19 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
       existingWaypointImages.length > 0 &&
       postDraft.routePoints.length > 0
     ) {
-      // Inicializar imágenes para todas las paradas
-      setWaypointExistingImages(existingWaypointImages);
+
 
       // Inicializar descripción de la parada actual
       const description = getWaypointDescription(selectedWaypointIndex);
       setCurrentDescription(description);
     }
-  }, [isEditMode, existingWaypointImages, postDraft.routePoints.length, selectedWaypointIndex]);
 
+  }, [isEditMode, existingWaypointImages, postDraft.routePoints.length, selectedWaypointIndex]);
+  useEffect(() => {
+    if (selectedWaypointIndex >= postDraft.routePoints.length) {
+      setSelectedWaypointIndex(Math.max(0, postDraft.routePoints.length - 1));
+    }
+  }, [selectedWaypointIndex, postDraft.routePoints.length]);
 
 
   const handleWaypointClick = (index: number) => {
@@ -103,9 +107,8 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
   };
 // Verificación extra: ¿tenemos imágenes cargadas para la parada actual?
   if (
-    !waypointExistingImages[selectedWaypointIndex] &&
     isEditMode &&
-    existingWaypointImages.length > 0
+    selectedWaypointIndex >= postDraft.routePoints.length
   ) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -113,6 +116,8 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
       </div>
     );
   }
+
+
 
   // Verificación de seguridad
   if (!postDraft.routePoints?.length) {
