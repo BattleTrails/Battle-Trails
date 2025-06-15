@@ -323,26 +323,18 @@ const ForgePage = () => {
 
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1">
-
-            {!isEditMode || existingImages.length > 0 || postDraft.images.length > 0 ? (
-              <ForgeImages
-                images={postDraft.images}
-                setImages={setImages}
-                label={isEditMode
-                  ? "Edita las imágenes principales de la ruta"
-                  : "Añade imágenes generales de la ruta"
-                }
-                mode="main"
-                existingImages={isEditMode ? existingImages : []}
-                deletedImageUrls={deletedImageUrls}
-                setDeletedImageUrls={setDeletedImageUrls}
-              />
-            ) : (
-              <div className="h-40 flex items-center justify-center text-gray-500">
-                Cargando imágenes principales...
-              </div>
-            )}
-
+            <ForgeImages
+              images={postDraft.images}
+              setImages={setImages}
+              label={isEditMode
+                ? "Edita las imágenes principales de la ruta"
+                : "Añade imágenes generales de la ruta"
+              }
+              mode="main"
+              existingImages={isEditMode ? existingImages : []}
+              deletedImageUrls={deletedImageUrls}
+              setDeletedImageUrls={setDeletedImageUrls}
+            />
           </div>
 
           <div className="flex-1">

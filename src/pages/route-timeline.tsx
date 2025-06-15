@@ -127,7 +127,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                   {/* Grid de imágenes */}
                   {currentWaypoint?.images && currentWaypoint.images.length > 0 && (
                     <div className="grid grid-cols-4 gap-3 mb-6">
-                      {currentWaypoint.images.slice(0, 3).map((image, imgIndex) => (
+                      {currentWaypoint.images.slice(0, 4).map((image, imgIndex) => (
                         <div
                           key={imgIndex}
                           className="aspect-square rounded-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105 shadow-md hover:shadow-lg"
@@ -263,7 +263,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                     {/* Grid de imágenes mobile */}
                     {waypoint.images && waypoint.images.length > 0 && (
                       <div className="grid grid-cols-4 gap-2">
-                        {waypoint.images.slice(0, 3).map((image, imgIndex) => (
+                        {waypoint.images.slice(0, 4).map((image, imgIndex) => (
                           <div
                             key={imgIndex}
                             className="aspect-square rounded-md overflow-hidden cursor-pointer"
