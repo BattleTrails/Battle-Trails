@@ -160,6 +160,18 @@ const ForgePage = () => {
 
   const handleNextStep = () => {
     if (!validateStep1()) return;
+    // Guardar el estado actual antes de cambiar de paso
+    if (postDraft.routePoints?.length > 0) {
+      postDraft.routePoints.forEach((point, index) => {
+        if (point.description) {
+          setPostField("routePoints", [
+            ...postDraft.routePoints.slice(0, index),
+            { ...point, description: point.description },
+            ...postDraft.routePoints.slice(index + 1)
+          ]);
+        }
+      });
+    }
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentStep(2);
@@ -168,6 +180,18 @@ const ForgePage = () => {
   };
 
   const handleBackStep = () => {
+    // Guardar el estado actual antes de volver
+    if (postDraft.routePoints?.length > 0) {
+      postDraft.routePoints.forEach((point, index) => {
+        if (point.description) {
+          setPostField("routePoints", [
+            ...postDraft.routePoints.slice(0, index),
+            { ...point, description: point.description },
+            ...postDraft.routePoints.slice(index + 1)
+          ]);
+        }
+      });
+    }
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentStep(1);
