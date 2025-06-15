@@ -22,7 +22,7 @@ const Header = () => {
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75] " : "";
+    : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75px] " : "";
 
   useEffect(() => {
     if (isDetails) {

@@ -7,6 +7,7 @@ import AuthImputs from "@pages/auth/auth-imputs/auth-imputs.tsx";
 import OAuthButton from "@pages/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@pages/auth/auth-button/auth-button.tsx";
 import {CircleArrowDown} from "lucide-react";
+import Alert from "@components/ui/alert/alert.tsx";
 
 const texts = {
   login: {
@@ -26,6 +27,8 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
   const navigate = useNavigate();
   const {login, register} = useAuth();
   const [name,setName] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"error" | "success" | "info">("error");
 
 
   const isValidName = (name: string): boolean => {
@@ -37,7 +40,8 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
 
   const handleSubmit = async () => {
     if (mode === "register" && !isValidName(name)) {
-      alert("El nombre debe tener solo letras y espacios, con mínimo 2 caracteres.");
+      setAlertMessage("El nombre debe tener solo letras y espacios, con mínimo 2 caracteres.");
+      setAlertType("error");
       return;
     }
 
@@ -57,9 +61,33 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
 
   return (
     <div className="flex flex-col w-[600px] h-[800px] justify-center gap-0 sm:gap-6 rounded-field bg-white text-primary ">
+      {alertMessage && (
+        <Alert 
+          message={alertMessage} 
+          onClose={() => setAlertMessage("")} 
+          type={alertType}
+        />
+      )}
       <AuthHeader mode={mode}/>
 
       <div className="flex flex-col items-center sm:gap-4 gap-0 ">
+        {mode === "register" && (
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-neutral">
+              Nombre
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-md border-neutral/20 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              placeholder="Tu nombre"
+              required
+            />
+          </div>
+        )}
+
         <AuthImputs
           setName={setName}
           mode={mode}
