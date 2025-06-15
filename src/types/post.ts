@@ -11,4 +11,5 @@ export interface Post {
   /*createdAt: Timestamp ;*/
   likes: number;
   likedBy: string[];
+  views: number;
 }
