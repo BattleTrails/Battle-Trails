@@ -1,8 +1,9 @@
-import {db} from "@/config/firebaseConfig"; 
-  import {addDoc, updateDoc, collection, doc, getDocs,getDoc, setDoc,query,where, deleteDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
 
+import { Post, Route, User } from "@/types";
+import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
 
-import {Post, Route, User} from "@/types";
 
 /**
  * Crea un nuevo post en Firestore y devuelve su ID.
@@ -20,95 +21,96 @@ export const createPost = async (postData: {
     ...postData,
     likes: 0,
     likedBy: [],
-    views: 0,
   });
 
   return docRef.id;
 };
 
 /**
- * Crea una ruta vinculada a un post ya existente.
+ * Obtiene el número actual de vistas de un post
+ * @param postId - ID del post
+ * @returns Promise con el número de vistas
  */
-export const createRoute = async (routeData: Route, postId: string): Promise<void> => {
-  const routeRef = doc(db, "routes", postId);
+export const getPostViews = async (postId: string): Promise<number> => {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postRef);
 
-  await setDoc(routeRef, {
-    ...routeData,
-    postId,
-  });
+    if (postSnap.exists()) {
+      const data = postSnap.data();
+      return data.views || 0;
+    }
+
+    return 0;
+  } catch (error) {
+    console.error('Error en getPostViews:', error);
+    return 0;
+  }
 };
 
-export const getPosts = async (): Promise<Post[]> => {
-  const snapshot = await getDocs(collection(db, "posts"));
+/**
+ * Incrementa el contador de vistas de un post solo si el usuario no lo ha visto antes
+ * @param postId - ID del post
+ * @param userId - ID del usuario o visitante único
+ * @returns Promise con el resultado de la operación
+ */
+export const incrementPostViewsUnique = async (
+  postId: string, 
+  userId: string
+): Promise<{ views: number; incremented: boolean }> => {
+  try {
+    console.log('👀 incrementPostViewsUnique llamada:', { 
+      postId, 
+      userId: userId.substring(0, 12) + '...' 
+    });
+    
+    const postRef = doc(db, 'posts', postId);
+    const viewDocId = `${postId}_${userId}`;
+    const postViewRef = doc(db, 'post_views', viewDocId);
+    
+    // Verificar si ya existe una vista de este usuario
+    const viewDoc = await getDoc(postViewRef);
+    
+    if (viewDoc.exists()) {
+      console.log('👀 Usuario ya ha visto este post anteriormente');
+      
+      // Obtener el conteo actual de vistas
+      const postDoc = await getDoc(postRef);
+      const currentViews = postDoc.exists() ? (postDoc.data().views || 0) : 0;
+      
+      return { views: currentViews, incremented: false };
+    }
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-
-    return {
-      id: doc.id,
-      userId: data.userId,
-      title: data.title,
-      description: data.description,
-      images: data.images,
-      locationName: data.locationName,
-      routeId: data.routeId,
-      likes: data.likes,
-      likedBy: data.likedBy,
-      views: data.views || 0,
-    };
-  });
+    
+    // Registrar la nueva vista del usuario
+    await setDoc(postViewRef, {
+      postId,
+      userId,
+      viewedAt: new Date().toISOString(),
+      userType: userId.startsWith('visitor_') ? 'visitor' : 'authenticated'
+    });
+    
+    // Incrementar el contador de vistas del post
+    await updateDoc(postRef, {
+      views: increment(1)
+    });
+    
+    // Obtener el documento actualizado para devolver el nuevo conteo
+    const updatedPost = await getDoc(postRef);
+    if (!updatedPost.exists()) {
+      throw new Error('Post no encontrado después del incremento');
+    }
+    
+    const newViews = updatedPost.data().views || 0;
+    console.log('✅ Nueva vista única registrada, total:', newViews);
+    
+    return { views: newViews, incremented: true };
+    
+  } catch (error) {
+    console.error('❌ Error en incrementPostViewsUnique:', error);
+    throw error;
+  }
 };
-
-export const getPostById = async (postId: string): Promise<Post> => {
-  const docRef = doc(db, "posts", postId);
-  const snap = await getDoc(docRef);
-  if (!snap.exists()) throw new Error("Post no encontrado");
-  return { id: snap.id, ...snap.data() } as Post;
-};
-
-export const getRouteByPostId = async (postId: string) => {
-  const q = query(collection(db, "routes"), where("postId", "==", postId));
-  const snapshot = await getDocs(q);
-  if (snapshot.empty) return null;
-
-  const doc = snapshot.docs[0];
-  return {
-    id: doc.id,
-    postId: doc.data().postId,
-    waypoints: doc.data().waypoints,
-    images: doc.data().images,
-  } as Route;
-};
-
-export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
-  const postsRef = collection(db, "posts");
-  const q = query(postsRef, where("userId", "==", userId));
-  const querySnapshot = await getDocs(q);
-
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Post[];
-};
-
-export const getUserById = async (userId: string): Promise<User> => {
-  const userRef = doc(db, "users", userId);
-  const userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) throw new Error("Usuario no encontrado");
-
-  const data = userSnap.data();
-  return {
-    id: userSnap.id,
-    name: data.name,
-    email: data.email,
-    role:data.role,
-    savedPosts:data.savedPosts,
-    profilePicture: data.profilePicture,
-  };
-};
-
-// ============== FUNCIONES PARA RUTAS GUARDADAS ==============
 
 /**
  * Guardar una ruta
@@ -159,6 +161,80 @@ export const isRouteSaved = async (userId: string, postId: string): Promise<bool
     return exists;
   } catch (error) {
     console.error('Error al verificar si la ruta está guardada:', error);
+    return false;
+  }
+};
+
+
+// Dar like a un post
+export const likePost = async (postId: string, userId: string): Promise<void> => {
+  try {
+    console.log(':fire: likePost llamada:', { postId, userId });
+    const postRef = doc(db, 'posts', postId);
+    
+    await updateDoc(postRef, {
+      likes: increment(1),
+      likedBy: arrayUnion(userId)
+    });
+    
+    console.log(':white_check_mark: likePost exitoso');
+  } catch (error) {
+    console.error(':x: Error in likePost:', error);
+    throw error;
+  }
+};
+
+// Quitar like de un post
+export const unlikePost = async (postId: string, userId: string): Promise<void> => {
+  try {
+    console.log(':fire: unlikePost llamada:', { postId, userId });
+    const postRef = doc(db, 'posts', postId);
+    
+    await updateDoc(postRef, {
+      likes: increment(-1),
+      likedBy: arrayRemove(userId)
+    });
+    
+    console.log(':white_check_mark: unlikePost exitoso');
+  } catch (error) {
+    console.error(':x: Error in unlikePost:', error);
+    throw error;
+  }
+};
+
+// Obtener el número de likes de un post
+export const getPostLikes = async (postId: string): Promise<number> => {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postRef);
+    
+    if (postSnap.exists()) {
+      const data = postSnap.data();
+      return data.likes || 0;
+    }
+    
+    return 0;
+  } catch (error) {
+    console.error('Error in getPostLikes:', error);
+    return 0;
+  }
+};
+
+// Verificar si un usuario ya le dio like a un post
+export const hasUserLikedPost = async (postId: string, userId: string): Promise<boolean> => {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postRef);
+    
+    if (postSnap.exists()) {
+      const data = postSnap.data();
+      const likedBy = data.likedBy || [];
+      return likedBy.includes(userId);
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error in hasUserLikedPost:', error);
     return false;
   }
 };
@@ -224,165 +300,6 @@ export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> =>
   }
 };
 
-
-// Dar like a un post
-export const likePost = async (postId: string, userId: string): Promise<void> => {
-  try {
-    console.log('🔥 likePost llamada:', { postId, userId });
-    const postRef = doc(db, 'posts', postId);
-    
-    await updateDoc(postRef, {
-      likes: increment(1),
-      likedBy: arrayUnion(userId)
-    });
-    
-    console.log('✅ likePost exitoso');
-  } catch (error) {
-    console.error('❌ Error in likePost:', error);
-    throw error;
-  }
-};
-
-// Quitar like de un post
-export const unlikePost = async (postId: string, userId: string): Promise<void> => {
-  try {
-    console.log('🔥 unlikePost llamada:', { postId, userId });
-    const postRef = doc(db, 'posts', postId);
-    
-    await updateDoc(postRef, {
-      likes: increment(-1),
-      likedBy: arrayRemove(userId)
-    });
-    
-    console.log('✅ unlikePost exitoso');
-  } catch (error) {
-    console.error('❌ Error in unlikePost:', error);
-    throw error;
-  }
-};
-
-// Obtener el número de likes de un post
-export const getPostLikes = async (postId: string): Promise<number> => {
-  try {
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    
-    if (postSnap.exists()) {
-      const data = postSnap.data();
-      return data.likes || 0;
-    }
-    
-    return 0;
-  } catch (error) {
-    console.error('Error in getPostLikes:', error);
-    return 0;
-  }
-};
-
-// Verificar si un usuario ya le dio like a un post
-export const hasUserLikedPost = async (postId: string, userId: string): Promise<boolean> => {
-  try {
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    
-    if (postSnap.exists()) {
-      const data = postSnap.data();
-      const likedBy = data.likedBy || [];
-      return likedBy.includes(userId);
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('Error in hasUserLikedPost:', error);
-    return false;
-  }
-};
-
-/**
- * Incrementa el contador de vistas de un post solo si el usuario no lo ha visto antes
- * @param postId - ID del post
- * @param userId - ID del usuario o visitante único
- * @returns Promise con el resultado de la operación
- */
-export const incrementPostViewsUnique = async (
-  postId: string, 
-  userId: string
-): Promise<{ views: number; incremented: boolean }> => {
-  try {
-    console.log('👀 incrementPostViewsUnique llamada:', { 
-      postId, 
-      userId: userId.substring(0, 12) + '...' 
-    });
-    
-    const postRef = doc(db, 'posts', postId);
-    const viewDocId = `${postId}_${userId}`;
-    const postViewRef = doc(db, 'post_views', viewDocId);
-    
-    // Verificar si ya existe una vista de este usuario
-    const viewDoc = await getDoc(postViewRef);
-    
-    if (viewDoc.exists()) {
-      console.log('👀 Usuario ya ha visto este post anteriormente');
-      
-      // Obtener el conteo actual de vistas
-      const postDoc = await getDoc(postRef);
-      const currentViews = postDoc.exists() ? (postDoc.data().views || 0) : 0;
-      
-      return { views: currentViews, incremented: false };
-    }
-    
-    // Registrar la nueva vista del usuario
-    await setDoc(postViewRef, {
-      postId,
-      userId,
-      viewedAt: new Date().toISOString(),
-      userType: userId.startsWith('visitor_') ? 'visitor' : 'authenticated'
-    });
-    
-    // Incrementar el contador de vistas del post
-    await updateDoc(postRef, {
-      views: increment(1)
-    });
-    
-    // Obtener el documento actualizado para devolver el nuevo conteo
-    const updatedPost = await getDoc(postRef);
-    if (!updatedPost.exists()) {
-      throw new Error('Post no encontrado después del incremento');
-    }
-    
-    const newViews = updatedPost.data().views || 0;
-    console.log('✅ Nueva vista única registrada, total:', newViews);
-    
-    return { views: newViews, incremented: true };
-    
-  } catch (error) {
-    console.error('❌ Error en incrementPostViewsUnique:', error);
-    throw error;
-  }
-};
-
-/**
- * Obtiene el número actual de vistas de un post
- * @param postId - ID del post
- * @returns Promise con el número de vistas
- */
-export const getPostViews = async (postId: string): Promise<number> => {
-  try {
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    
-    if (postSnap.exists()) {
-      const data = postSnap.data();
-      return data.views || 0;
-    }
-    
-    return 0;
-  } catch (error) {
-    console.error('Error en getPostViews:', error);
-    return 0;
-  }
-};
-
 /**
  * Verifica si un usuario específico ha visto un post
  * @param postId - ID del post
@@ -400,98 +317,238 @@ export const hasUserViewedPost = async (postId: string, userId: string): Promise
   }
 };
 
+
 /**
- * Obtiene estadísticas detalladas de las vistas de un post
- * @param postId - ID del post
- * @returns Promise con estadísticas de las vistas
+ * Crea una ruta vinculada a un post ya existente.
  */
-export const getPostViewStats = async (postId: string) => {
-  try {
-    const viewsQuery = query(
-      collection(db, 'post_views'),
-      where('postId', '==', postId)
-    );
-    
-    const querySnapshot = await getDocs(viewsQuery);
-    
-    const views = querySnapshot.docs.map(doc => ({
-      userId: doc.data().userId,
-      viewedAt: doc.data().viewedAt,
-      userType: doc.data().userType
-    }));
-    
-    const authenticatedViews = views.filter(v => v.userType === 'authenticated').length;
-    const visitorViews = views.filter(v => v.userType === 'visitor').length;
-    
+export const createRoute = async (routeData: Route, postId: string): Promise<void> => {
+  const routeRef = doc(db, "routes", postId);
+
+  await setDoc(routeRef, {
+    ...routeData,
+    postId,
+  });
+};
+
+export const getPosts = async (): Promise<Post[]> => {
+  const snapshot = await getDocs(collection(db, "posts"));
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+
     return {
-      totalViews: views.length,
-      authenticatedViews,
-      visitorViews,
-      views: views.sort((a, b) => 
-        new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
-      )
+      id: doc.id,
+      userId: data.userId,
+      title: data.title,
+      description: data.description,
+      images: data.images,
+      locationName: data.locationName,
+      routeId: data.routeId,
+      likes: data.likes,
+      likedBy: data.likedBy,
+      views: data.views,
     };
-  } catch (error) {
-    console.error('Error en getPostViewStats:', error);
-    return {
-      totalViews: 0,
-      authenticatedViews: 0,
-      visitorViews: 0,
-      views: []
-    };
-  }
+  });
+};
+
+export const getPostById = async (postId: string): Promise<Post> => {
+  const docRef = doc(db, "posts", postId);
+  const snap = await getDoc(docRef);
+  if (!snap.exists()) throw new Error("Post no encontrado");
+  return { id: snap.id, ...snap.data() } as Post;
+};
+
+export const getRouteByPostId = async (postId: string) => {
+  const q = query(collection(db, "routes"), where("postId", "==", postId));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+
+  const doc = snapshot.docs[0];
+  return {
+    id: doc.id,
+    postId: doc.data().postId,
+    waypoints: doc.data().waypoints,
+    images: doc.data().images,
+  } as Route;
+
+};
+
+export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  })) as Post[];
+};
+
+
+export const getUserById = async (userId: string): Promise<User> => {
+  const userRef = doc(db, "users", userId);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) throw new Error("Usuario no encontrado");
+
+  const data = userSnap.data();
+  return {
+    id: userSnap.id,
+    name: data.name,
+    email: data.email,
+    username: data.username,
+    profilePicture: data.profilePicture,
+  };
+};
+
+
+const extractSupabasePaths = (urls: string[]) => {
+  return urls
+    .map((url) => {
+      try {
+        const parsed = new URL(url);
+        const match = parsed.pathname.match(/\/storage\/v1\/object\/public\/posts\/(.+)/);
+        return match?.[1] || null;
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean) as string[];
 };
 
 /**
- * Limpia vistas duplicadas (función de mantenimiento)
- * @param postId - ID del post (opcional, si no se proporciona limpia todos)
+ * Elimina un post y su ruta asociada por postId.
  */
-export const cleanupDuplicateViews = async (postId?: string): Promise<void> => {
+export const deletePostById = async (postId: string): Promise<void> => {
   try {
-    console.log('🧹 Iniciando limpieza de vistas duplicadas...');
-    
-    let viewsQuery;
-    if (postId) {
-      viewsQuery = query(
-        collection(db, 'post_views'),
-        where('postId', '==', postId)
-      );
-    } else {
-      viewsQuery = collection(db, 'post_views');
+    const postRef = doc(db, "posts", postId);
+    const postSnap = await getDoc(postRef);
+    const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
+    const routeSnapshot = await getDocs(routeQuery);
+
+
+    if (!postSnap.exists()) {
+      throw new Error("Post no encontrado");
     }
-    
-    const querySnapshot = await getDocs(viewsQuery);
-    const viewsByUserAndPost = new Map<string, any>();
-    const duplicatesToDelete: string[] = [];
-    
-    // Identificar duplicados
-    querySnapshot.docs.forEach(doc => {
-      const data = doc.data();
-      const key = `${data.postId}_${data.userId}`;
-      
-      if (viewsByUserAndPost.has(key)) {
-        // Es un duplicado, marcar para eliminación
-        duplicatesToDelete.push(doc.id);
-      } else {
-        // Primera ocurrencia, guardar
-        viewsByUserAndPost.set(key, {
-          docId: doc.id,
-          ...data
-        });
+
+    const postData = postSnap.data() as Post;
+
+    // 0. Eliminar imágenes de Supabase si existen
+    if (postData.images && Array.isArray(postData.images)) {
+      const imagePaths = extractSupabasePaths(postData.images);
+      console.log("🔍 Imagenes en post:", postData.images);
+      console.log("🧼 Paths extraídos:", imagePaths);
+      await deleteImagesFromSupabase(imagePaths);
+    }
+
+    // 1.1 Eliminar imágenes de los waypoints (si existen)
+    for (const routeDoc of routeSnapshot.docs) {
+      const routeData = routeDoc.data() as Route;
+
+      for (const waypoint of routeData.waypoints || []) {
+        if (waypoint.images && Array.isArray(waypoint.images)) {
+          const waypointImagePaths = extractSupabasePaths(waypoint.images);
+          if (waypointImagePaths.length) {
+            console.log("🧼 Eliminando imágenes de parada:", waypointImagePaths);
+            await deleteImagesFromSupabase(waypointImagePaths);
+          }
+        }
       }
-    });
-    
-    // Eliminar duplicados
-    const deletePromises = duplicatesToDelete.map(docId => 
-      deleteDoc(doc(db, 'post_views', docId))
+    }
+
+    // 1. Eliminar el post
+    await deleteDoc(postRef);
+
+    // 2. Eliminar ruta asociada
+
+
+    const deleteRoutePromises = routeSnapshot.docs.map((routeDoc) =>
+      deleteDoc(doc(db, "routes", routeDoc.id))
     );
-    
-    await Promise.all(deletePromises);
-    
-    console.log(`🧹 Limpieza completada. Eliminados ${duplicatesToDelete.length} duplicados.`);
-    
+
+    await Promise.all(deleteRoutePromises);
+
+    // 3. (Futuro) Eliminar comentarios del post
+    // const commentsRef = collection(db, "posts", postId, "comments");
+    // const commentsSnap = await getDocs(commentsRef);
+    // const deleteComments = commentsSnap.docs.map((doc) => deleteDoc(doc.ref));
+    // await Promise.all(deleteComments);
+
+    console.log(`✅ Post ${postId} y ruta asociada eliminados correctamente`);
   } catch (error) {
-    console.error('Error en cleanupDuplicateViews:', error);
+    console.error("❌ Error al eliminar el post y ruta:", error);
     throw error;
   }
 };
+export const updatePost = async (postId: string, updateData: Partial<{
+  title: string;
+  description: string;
+  images: string[];
+  locationName: string;
+}>): Promise<void> => {
+  const postRef = doc(db, "posts", postId);
+  await updateDoc(postRef, updateData);
+};
+
+/**
+ * Actualiza una ruta existente en Firestore
+ */
+export const updateRoute = async (routeId: string, updateData: Partial<{
+  waypoints: Array<{
+    geoPoint: any;
+    address: string;
+    description: string;
+    images: string[];
+  }>;
+}>): Promise<void> => {
+  const routeRef = doc(db, "routes", routeId);
+  await updateDoc(routeRef, updateData);
+};
+
+/*export const deletePostsByUserId = async (userId: string): Promise<void> => {
+  try {
+    const postsRef = collection(db, "posts");
+    const userPostsQuery = query(postsRef, where("userId", "==", userId));
+    const snapshot = await getDocs(userPostsQuery);
+
+    if (snapshot.empty) {
+      console.log(`ℹ️ No se encontraron publicaciones del usuario ${userId}`);
+      return;
+    }
+
+    const deletePromises = snapshot.docs.map(async (docSnap) => {
+      const postId = docSnap.id;
+      const postData = docSnap.data() as Post;
+
+      // 0. Eliminar imágenes si las hay
+      if (postData.images && Array.isArray(postData.images)) {
+        const imagePaths = extractSupabasePaths(postData.images);
+        console.log("🔍 Imagenes en post:", postData.images);
+        console.log("🧼 Paths extraídos:", imagePaths);
+        await deleteImagesFromSupabase(imagePaths);
+      }
+
+      // 1. Eliminar el post
+      await deleteDoc(doc(db, "posts", postId));
+
+      // 2. Eliminar ruta asociada
+      const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
+      const routeSnap = await getDocs(routeQuery);
+
+      const deleteRoutes = routeSnap.docs.map((routeDoc) =>
+        deleteDoc(doc(db, "routes", routeDoc.id))
+      );
+
+      await Promise.all(deleteRoutes);
+
+      // 3. (opcional futuro) Eliminar comentarios
+    });
+
+    await Promise.all(deletePromises);
+    console.log(`✅ Publicaciones y rutas del usuario ${userId} eliminadas correctamente`);
+  } catch (error) {
+    console.error("❌ Error al eliminar publicaciones del usuario:", error);
+    throw error;
+  }
+};*/
+

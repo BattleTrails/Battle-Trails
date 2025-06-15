@@ -16,12 +16,13 @@ const Header = () => {
 
 
   const isHome = currentPath === "/";
-  const isForge = currentPath.startsWith("/new");
+  const isForge = currentPath.startsWith("/new")|| currentPath.startsWith("/edit");
   const isDetails = currentPath.includes("/post");
+  const isProfile = currentPath.includes("/profile");
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!h-[75px] " : isDetails ? "!h-[75px] !md:-[75] " : "";
+    : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75] " : "";
 
   useEffect(() => {
     if (isDetails) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getPostById, getRouteByPostId } from "@/services/db-service";
+import { Link, useParams } from "react-router-dom";
+import { getPostById, getRouteByPostId, getUserById } from "@/services/db-service";
 import { Post, Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
@@ -8,6 +8,11 @@ import { LocateFixed, Timer, Share2, Heart, Eye } from "lucide-react"; // ✅ Im
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
+import { useAuthHandler } from "@hooks/useAuthHandler.ts";
+import { useJsApiLoader } from "@react-google-maps/api";
+import RouteTimeline from "@pages/route-timeline.tsx";
+
+const libraries: ("places")[] = ["places"];
 import useSavedRoutes from "@/hooks/useSavedRoutes";
 import useLikes from "@/hooks/useLikes";
 import useViews from "@/hooks/useViews"; // ✅ Importar useViews
@@ -17,8 +22,13 @@ const DetailsPage = () => {
     const { postId } = useParams();
     const [post, setPost] = useState<Post | null>(null);
     const [route, setRoute] = useState<Route | null>(null);
+    const [author, setAuthor] = useState<{ username: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+         libraries,
+    });
 
     // Hook para manejar rutas guardadas
     const { isSaved, isLoading: isSaveLoading, toggleSave, canSave } = useSavedRoutes(postId || '');
@@ -41,9 +51,13 @@ const DetailsPage = () => {
                 setPost(fetchedPost);
                 const fetchedRoute = await getRouteByPostId(postId);
                 setRoute(fetchedRoute);
+                setPost(fetchedPost); //obtenemos el autor del post
+                const fetchedAuthor = await getUserById(fetchedPost.userId);
+                setAuthor({ username: fetchedAuthor.username });
                 if (!fetchedRoute) throw new Error("No se encontró la ruta.");
-                const meta = await getFormattedRouteMetaData(fetchedRoute.waypoints);
-
+                const meta = await getFormattedRouteMetaData(
+                    fetchedRoute.waypoints.map((point) => point.geoPoint)
+                );
                 setRouteInfo(meta);
 
             } catch (error) {
@@ -91,17 +105,20 @@ const DetailsPage = () => {
     };
 
     if (loading) {
-        return <p className="text-center mt-10 text-white/60">Cargando publicación...</p>;
+        return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
 
+    if (!isLoaded) {
+        return <p className="text-center translate-y-20 text-gray-700">Cargando mapa...</p>;
+    }
     if (!post) {
-        return <p className="text-center mt-10 text-red-500">No se encontró la publicación.</p>;
+        return <p className="text-center translate-y-20 text-red-500">No se encontró la publicación.</p>;
     }
 
     return (
         <div>
             <div className="flex flex-col lg:flex-row">
-                <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory">
+                <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory ">
                     {post.images.map((src, index) => (
                         <div
                             key={index}
@@ -149,8 +166,8 @@ const DetailsPage = () => {
                                     onClick={handleLike}
                                     disabled={!canLike || isLikeLoading}
                                     className={`p-2 rounded-full transition-all duration-200 ${canLike
-                                            ? 'hover:bg-red-50 cursor-pointer'
-                                            : 'cursor-not-allowed opacity-50'
+                                        ? 'hover:bg-red-50 cursor-pointer'
+                                        : 'cursor-not-allowed opacity-50'
                                         } ${isLiked ? 'text-red-500' : 'text-gray-600'}`}
                                     title={canLike ? (isLiked ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'}
                                 >
@@ -189,7 +206,9 @@ const DetailsPage = () => {
                     </div>
 
                     <div className=" rounded overflow-auto">
-                        {route && <MapBaseDirections waypoints={route.waypoints} />}
+
+                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
+
                     </div>
                 </div>
             </div>

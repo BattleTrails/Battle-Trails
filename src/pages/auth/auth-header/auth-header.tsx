@@ -20,7 +20,7 @@ const AuthHeader = ({mode}: AuthHeaderProps) => {
       >
         <button
           onClick={() => navigate("/")}
-          className="p-2 rounded-full hover:bg-neutral/10 transition"
+          className="p-2 rounded-full hover:bg-neutral/10 transition -translate-y-5"
           aria-label="Volver al inicio"
         >
           <House className="w-5 h-5"/>

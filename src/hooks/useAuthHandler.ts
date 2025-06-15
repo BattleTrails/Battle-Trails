@@ -8,14 +8,30 @@ import {
   signInWithPopup,
   signOut,
   User,
+  /*deleteUser,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,*/
 } from "firebase/auth";
-import {auth} from "@config/firebaseConfig"; // tu path original
+import {auth, db} from "@config/firebaseConfig";
 import { FirebaseError } from "firebase/app";
+import { /*deleteDoc,*/ doc, getDoc,  setDoc, } from "firebase/firestore";
+/*import {deletePostsByUserId} from "@/services/db-service.ts";*/
+
+const defaultAvatars = [
+  "/avatars/avatar-1.webp",
+  "/avatars/avatar-2.webp",
+  "/avatars/avatar-3.webp",
+  "/avatars/avatar-4.webp",
+  "/avatars/avatar-5.webp",
+];
 
 export const useAuthHandler = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true); // 👈 lo mantenemos para header
   const [errorMessage, setErrorMessage] = useState("");
+  const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -60,9 +76,26 @@ export const useAuthHandler = () => {
   };
 
 
-  const register = async (email: string, password: string): Promise<boolean> => {
+  const register = async (
+    email: string,
+    password: string,
+    name: string,
+    username: string
+  ): Promise<boolean> => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+      const uid = firebaseUser.uid;
+
+      /*const photo = firebaseUser.photoURL ;*/
+
+      await setDoc(doc(db, "users", uid), {
+        name,
+        username,
+        email,
+        profilePicture: randomAvatar,
+      });
+
       setErrorMessage("");
       return true;
     } catch (error) {
@@ -74,7 +107,29 @@ export const useAuthHandler = () => {
   const loginWithGoogle = async (): Promise<boolean> => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+
+      const uid = firebaseUser.uid;
+      const email = firebaseUser.email ?? "";
+      const displayName = firebaseUser.displayName ?? "Usuario";
+      const photo =  randomAvatar;
+
+      const username = displayName.trim().toLowerCase().replace(/\s+/g, "_");
+
+      // Creamos el documento en /users solo si no existe
+      const userRef = doc(db, "users", uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          name: displayName,
+          username,
+          email,
+          profilePicture: photo,
+        });
+      }
+
       setErrorMessage("");
       return true;
     } catch (error) {
@@ -82,6 +137,7 @@ export const useAuthHandler = () => {
       return false;
     }
   };
+
   const resetPassword = async (email: string): Promise<boolean> => {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -105,6 +161,54 @@ export const useAuthHandler = () => {
     }
   };
 
+  /*const deleteAccount = async (email?: string, password?: string): Promise<boolean> => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("No hay usuario autenticado");
+
+    const uid = user.uid;
+
+    try {
+
+      // 1. Reautenticación del usuario
+      await reauthenticateUser(email, password);
+      // 2. Borrar datos del usuario en Firestore y Supabase
+      await deletePostsByUserId(uid); // ⬅ incluye imágenes y rutas asociadas
+      await deleteDoc(doc(db, "users", uid));
+      await deleteUser(user);
+      console.log("✅ Cuenta eliminada correctamente");
+      setUser(null);
+      return true;
+    } catch (error: any) {
+      if (error.code === "auth/requires-recent-login") {
+        console.warn("⚠️ Se necesita una nueva autenticación");
+        throw new Error("Reautenticación requerida");
+      }
+      console.error("❌ Error al eliminar cuenta:", error);
+      throw error;
+    }
+  };
+
+   const reauthenticateUser = async (email?: string, password?: string): Promise<void> => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("No hay usuario autenticado");
+     setErrorMessage(""); // Limpieza de estado previo
+
+    const providerId = user.providerData[0]?.providerId;
+
+    if (providerId === "google.com") {
+      const provider = new GoogleAuthProvider();
+      await reauthenticateWithPopup(user, provider);
+    } else if (providerId === "password") {
+      if (!email || !password) {
+        throw new Error("Email y contraseña requeridos para reautenticarse.");
+      }
+      const credential = EmailAuthProvider.credential(email, password);
+      await reauthenticateWithCredential(user, credential);
+    } else {
+      throw new Error("Proveedor de autenticación no soportado para reautenticación.");
+    }
+  };*/
+
 
   const clearError = () => setErrorMessage("");
 
@@ -118,5 +222,8 @@ export const useAuthHandler = () => {
     loginWithGoogle,
     logout,
     resetPassword,
+    /*deleteAccount,
+    reauthenticateUser,*/
   };
 };
+

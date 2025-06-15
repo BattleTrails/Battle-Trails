@@ -59,16 +59,16 @@ const FilterBar = () => {
               // MOBILE
               "flex flex-col flex-1 items-center justify-center h-full",
               // DESKTOP override
-              "md:flex-row md:flex-none md:gap-2 md:px-4 md:py-2 md:rounded-full md:border-2 md:text-sm",
+              "md:flex-row md:flex-none md:gap-2 md:px-4 md:py-2 md:rounded-full md:border-1 md:text-sm font-light",
               isActive
-                ? "text-secondary md:border-secondary md:font-semibold"
+                ? "text-secondary md:border-secondary "
                 : "text-accent/60 md:border-transparent md:hover:border-white"
             )}
           >
-            <Icon className="w-5 h-5 mb-1 md:mb-0" />
+            <Icon className="w-5 h-5 mb-1 md:mb-0" strokeWidth={1}/>
             <span className="text-[11px] md:text-sm">{label}</span>
             {isActive && (
-              <div className="mt-1 h-[2px] w-6 bg-secondary rounded-full md:hidden" />
+              <div className="mt-1 h-[1px] w-6 bg-secondary rounded-full md:hidden" />
             )}
           </button>
         );

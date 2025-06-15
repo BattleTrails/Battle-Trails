@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Settings, Share2, CircleFadingPlus } from "lucide-react";
-import { motion } from "framer-motion";
 import {Link, useNavigate} from "react-router-dom";
+import { motion } from "framer-motion"
 import ModalSettings from "@/components/ui/modal-settings/modal-settings";
 import { useAuthHandler } from "@hooks/useAuthHandler.ts";
 import { getPostsByUserId, getUserById, getSavedRoutesByUserId } from "@/services/db-service.ts";
