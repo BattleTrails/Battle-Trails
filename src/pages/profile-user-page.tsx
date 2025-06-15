@@ -116,7 +116,7 @@ const ProfileUserPage = () => {
 
       <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
         {posts.map((post) => (
-          <Card key={post.id} post={post} />
+          <Card key={post.id} post={post} isEditable={true} />
         ))}
       </div>
     </div>

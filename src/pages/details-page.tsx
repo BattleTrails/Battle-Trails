@@ -212,6 +212,12 @@ const DetailsPage = () => {
                     </div>
                 </div>
             </div>
+            <RouteTimeline waypoints={route?.waypoints.map(wp => ({
+                geoPoint: wp.geoPoint,
+                address: wp.address,
+                description: wp.description,
+                images: wp.images
+            })) || []} />
 
             <div className="mt-20 ml-5">
                 <h2 className="mb-8 font-semibold text-3xl">Comentarios</h2>
