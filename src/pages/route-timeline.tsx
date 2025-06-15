@@ -122,7 +122,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900">{currentWaypoint?.address}</h3>
                   </div>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-6">{currentDescription}</p>
+                  <p className="text-gray-700 text-lg text-justify leading-relaxed mb-6">{currentDescription}</p>
 
                   {/* Grid de imágenes */}
                   {currentWaypoint?.images && currentWaypoint.images.length > 0 && (
@@ -255,7 +255,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                   <div key={index} className="bg-white p-4 rounded-lg border-gray-200">
                     <h4 className="text-base font-semibold text-gray-900 mb-1">Parada {index + 1}</h4>
                     <p className="text-sm text-gray-600 mb-2">{waypoint.address}</p>
-                    <p className="text-sm text-gray-700 mb-3">
+                    <p className=" text-sm text-gray-700 text-justify mb-3 ">
                       {waypoint.description ??
                         "Esta parada forma parte de una experiencia única que te permitirá conocer mejor la zona y sus atractivos."}
                     </p>

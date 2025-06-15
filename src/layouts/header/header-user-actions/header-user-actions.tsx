@@ -23,11 +23,6 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
   const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>(defaultAvatar);
 
-
-
-
-
-
   const goToAuth = () => navigate("/auth");
   const goToNewRoute = () => {
     navigate("/new");
@@ -35,7 +30,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
-  const isProfile = currentPath.includes("/profile");
+  const isProfile = currentPath.includes("/profile") || currentPath.includes("/post");
 
   const headerClass = isHome
     ? ""
@@ -83,11 +78,12 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
 
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
-          className={clsx("btn text-secondary bg-transparent border-0 shadow-none focus:shadow-none hover:shadow-none gap-2",
-            isScrolled || isProfile  ? "min-[1250px]:!hidden" : "min-[1250px]:flex",)}
+          className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2",
+            isScrolled || isProfile  ? "text-secondary min-[1250px]:!hidden" : " min-[1250px]:flex",)}
         >
-          <CircleFadingPlus/>
           <p>Añade tu ruta</p>
+          <CircleFadingPlus size={42} strokeWidth={1} className="text-secondary"/>
+          
         </button>
       </div>
 

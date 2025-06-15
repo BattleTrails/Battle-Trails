@@ -108,7 +108,7 @@ const DetailsPage = () => {
                       <h2 className="text-4xl font-bold">{post.title}</h2>
                   </div>
 
-                  <p className="whitespace-pre-line">{post.description}</p>
+                  <p className="whitespace-pre-line text-justify">{post.description}</p>
 
                   <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 ">
                       <div className="flex items-center gap-2">
