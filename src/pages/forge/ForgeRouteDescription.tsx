@@ -172,7 +172,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
       {/* Editor de doble columna */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[550px]">
         {/* Panel izquierdo - Lista de paradas */}
-        <div className="bg-base-200 rounded-xl p-4 overflow-y-auto">
+        <div className="hidden md:block bg-base-200 rounded-xl p-4 overflow-y-auto">
           <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
             <MapPin className="w-5 h-5" />
             Paradas de la ruta
