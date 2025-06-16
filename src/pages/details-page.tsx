@@ -132,7 +132,7 @@ const DetailsPage = () => {
                     ))}
                 </div>
 
-                <div className="w-full lg:w-[45%] flex flex-col justify-center gap-7 px-5 lg:px-20 pt-10 lg:pt-0">
+                <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px]">
                     <div className="flex gap-x-2 mb-6 items-center justify-between">
                         <div className="flex gap-x-4">
                             <button
@@ -153,13 +153,11 @@ const DetailsPage = () => {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            {/* ✅ Mostrar vistas */}
                             <div className="flex items-center gap-2 text-gray-600">
                                 <Eye className="w-5 h-5" />
                                 <span className="text-sm font-medium">{views}</span>
                             </div>
 
-                            {/* Likes */}
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={handleLike}
@@ -186,31 +184,31 @@ const DetailsPage = () => {
                         </div>
                     </div>
 
-                    <h2 className="text-4xl font-bold mb-4">{post.title}</h2>
-                    {author && (
-                        <p className="text-gray-600 mb-4">Publicado por: {author.username}</p>
-                    )}
-                    <p className="whitespace-pre-line">{post.description}</p>
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-4xl font-bold">{post.title}</h2>
+                        {author && (
+                            <p className="text-gray-600">Publicado por: {author.username}</p>
+                        )}
+                        <p className="text-gray-700 whitespace-pre-line">{post.description}</p>
 
-                    <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 mt-6">
-                        <div className="flex items-center gap-2">
-                            <LocateFixed />
-                            <span>{post.locationName}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <img src={IconDistance} alt="Distancia" className="w-6 h-6" />
-                            <span>{routeInfo?.distance ?? "—"}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Timer />
-                            <span>{routeInfo?.duration ?? "—"}</span>
+                        <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2">
+                            <div className="flex items-center gap-2">
+                                <LocateFixed />
+                                <span>{post.locationName}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <img src={IconDistance} alt="Distancia" className="w-6 h-6" />
+                                <span>{routeInfo?.distance ?? "—"}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Timer />
+                                <span>{routeInfo?.duration ?? "—"}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className=" rounded overflow-auto">
-
+                    <div className="rounded overflow-auto">
                         {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
-
                     </div>
                 </div>
             </div>
