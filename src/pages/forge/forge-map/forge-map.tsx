@@ -13,7 +13,7 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {GeoPoint} from "firebase/firestore";
 
 // Store global para estado del post
-import {usePostStore} from "@/store/usePostStore";
+import {usePostStore} from "@/store/usePostStore.ts";
 
 // Input reutilizable para direcciones
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";

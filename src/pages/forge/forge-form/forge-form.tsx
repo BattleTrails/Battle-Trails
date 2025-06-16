@@ -1,6 +1,6 @@
 import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
 import {usePostStore} from "@/store/usePostStore.ts";
-import ForgeMap from "@components/ui/forge-map/forge-map.tsx";
+import ForgeMap from "@pages/forge/forge-map/forge-map.tsx";
 
 type Props = {
   onRemoveWaypoint: (index: number) => void;
