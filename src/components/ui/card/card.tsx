@@ -153,7 +153,7 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
         <div className="flex justify-between text-sm">
           <div className="flex gap-4">
             <div className="flex items-center gap-1 font-light">
-              <Eye size={18} strokeWidth={1} /> {likedBy.length}
+              <Eye size={18} strokeWidth={1} /> {views}
             </div>
             <div
               className="flex items-center gap-1 font-light cursor-pointer"

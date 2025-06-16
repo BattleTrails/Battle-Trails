@@ -50,6 +50,17 @@ const DetailsPage = () => {
     // ✅ Hook para manejar vistas
     const { views, incrementView } = useViews(postId || '', post?.views);
 
+    // ✅ Incrementar vistas solo una vez cuando se carga la página
+    useEffect(() => {
+        const incrementViewsOnce = async () => {
+            if (postId && !loading) {
+                await incrementView();
+            }
+        };
+        
+        incrementViewsOnce();
+    }, [postId, loading, incrementView]);
+
     useEffect(() => {
         const fetchPost = async (): Promise<void> => {
             if (!postId) return;
@@ -77,13 +88,6 @@ const DetailsPage = () => {
 
         fetchPost();
     }, [postId]);
-
-    // ✅ Incrementar vistas automáticamente cuando se carga la página
-    useEffect(() => {
-        if (postId) {
-            incrementView();
-        }
-    }, [postId, incrementView]);
 
     const handleShare = () => {
         if (navigator.share) {

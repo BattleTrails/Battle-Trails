@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { incrementPostViewsUnique, getPostViews } from '@/services/db-service';
+import { incrementPostViewsUnique, getPostViews, hasUserViewedPost } from '@/services/db-service';
 import { useAuthHandler } from '@/hooks/useAuthHandler';
 
 interface UseViewsReturn {
@@ -11,65 +11,47 @@ interface UseViewsReturn {
 const useViews = (postId: string, initialViews?: number): UseViewsReturn => {
   const [views, setViews] = useState<number>(initialViews || 0);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasIncremented, setHasIncremented] = useState(false);
-  const { user } = useAuthHandler(); // Obtener el usuario actual
+  const [hasViewed, setHasViewed] = useState(false);
+  const { user } = useAuthHandler();
 
-  // Cargar las vistas actuales del post al montar el componente
+  // Check if user has already viewed the post
   useEffect(() => {
-    const loadViews = async () => {
+    const checkIfViewed = async () => {
       if (!postId) return;
       
       try {
-        setIsLoading(true);
+        const userId = user?.uid || getOrCreateVisitorId();
+        const viewed = await hasUserViewedPost(postId, userId);
+        setHasViewed(viewed);
         
-        // Si no tenemos initialViews, obtener las vistas actuales de la BD
-        if (initialViews === undefined) {
-          const currentViews = await getPostViews(postId);
-          setViews(currentViews);
-        } else {
-          setViews(initialViews);
-        }
+        // Load current views
+        const currentViews = await getPostViews(postId);
+        setViews(currentViews);
       } catch (error) {
-        console.error('❌ Error al cargar vistas:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('❌ Error al verificar vista:', error);
       }
     };
 
-    loadViews();
-  }, [postId, initialViews]);
+    checkIfViewed();
+  }, [postId, user]);
 
-  // Función para incrementar las vistas (solo una vez por usuario)
   const incrementView = useCallback(async () => {
-    if (!postId || hasIncremented) {
-      console.log('Vista ya incrementada en este render');
+    if (!postId || hasViewed || isLoading) {
       return;
     }
     
     setIsLoading(true);
     
     try {
-      // Generar un ID único para el usuario (autenticado o visitante)
       const userId = user?.uid || getOrCreateVisitorId();
-      
-      console.log('👀 Intentando registrar vista para:', { 
-        postId, 
-        userId: userId.substring(0, 12) + '...',
-        isAuthenticated: !!user 
-      });
-      
-      // Intentar incrementar la vista (la función verificará si ya existe)
       const result = await incrementPostViewsUnique(postId, userId);
       
       if (result.incremented) {
-        // Vista nueva registrada
         setViews(result.views);
-        setHasIncremented(true);
-        console.log('✅ Nueva vista registrada, total:', result.views);
+        setHasViewed(true);
       } else {
-        // Usuario ya había visto este post
         setViews(result.views);
-        console.log('👀 Usuario ya había visto este post, total views:', result.views);
+        setHasViewed(true);
       }
       
     } catch (error) {
@@ -77,12 +59,7 @@ const useViews = (postId: string, initialViews?: number): UseViewsReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [postId, hasIncremented, user]);
-
-  // Reset hasIncremented cuando cambia el postId
-  useEffect(() => {
-    setHasIncremented(false);
-  }, [postId]);
+  }, [postId, hasViewed, isLoading, user]);
 
   return {
     views,
@@ -91,32 +68,26 @@ const useViews = (postId: string, initialViews?: number): UseViewsReturn => {
   };
 };
 
-// Función para obtener o crear un ID único para visitantes no autenticados
+// Helper function to get or create visitor ID
 const getOrCreateVisitorId = (): string => {
   const STORAGE_KEY = 'unique_visitor_id';
   
-  // Intentar obtener de localStorage primero
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
-    console.log('👤 Usando visitor ID existente:', stored.substring(0, 12) + '...');
     return stored;
   }
   
-  // Generar nuevo ID único basado en características del dispositivo/navegador
   const fingerprint = generateBrowserFingerprint();
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 15);
   
   const visitorId = `visitor_${fingerprint}_${timestamp}_${random}`;
-  
-  // Guardar en localStorage para futuras visitas
   localStorage.setItem(STORAGE_KEY, visitorId);
   
-  console.log('👤 Nuevo visitor ID creado:', visitorId.substring(0, 12) + '...');
   return visitorId;
 };
 
-// Función para generar una huella digital del navegador
+// Helper function to generate browser fingerprint
 const generateBrowserFingerprint = (): string => {
   const components = [
     navigator.userAgent || '',
@@ -130,12 +101,11 @@ const generateBrowserFingerprint = (): string => {
   
   const fingerprint = components.join('|');
   
-  // Crear hash simple
   let hash = 0;
   for (let i = 0; i < fingerprint.length; i++) {
     const char = fingerprint.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convertir a 32-bit integer
+    hash = hash & hash;
   }
   
   return Math.abs(hash).toString(36);

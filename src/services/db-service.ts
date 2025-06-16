@@ -1,5 +1,5 @@
 import { db } from "@/config/firebaseConfig";
-import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
 
 import { Post, Route, User } from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
@@ -68,43 +68,42 @@ export const incrementPostViewsUnique = async (
     const viewDocId = `${postId}_${userId}`;
     const postViewRef = doc(db, 'post_views', viewDocId);
     
-    // Verificar si ya existe una vista de este usuario
-    const viewDoc = await getDoc(postViewRef);
-    
-    if (viewDoc.exists()) {
-      console.log('👀 Usuario ya ha visto este post anteriormente');
+    // Use a transaction to ensure atomicity
+    return await runTransaction(db, async (transaction) => {
+      // Check if view exists
+      const viewDoc = await transaction.get(postViewRef);
       
-      // Obtener el conteo actual de vistas
-      const postDoc = await getDoc(postRef);
-      const currentViews = postDoc.exists() ? (postDoc.data().views || 0) : 0;
+      if (viewDoc.exists()) {
+        console.log('👀 Usuario ya ha visto este post anteriormente');
+        const postDoc = await transaction.get(postRef);
+        const currentViews = postDoc.exists() ? (postDoc.data().views || 0) : 0;
+        return { views: currentViews, incremented: false };
+      }
       
-      return { views: currentViews, incremented: false };
-    }
-
-    
-    // Registrar la nueva vista del usuario
-    await setDoc(postViewRef, {
-      postId,
-      userId,
-      viewedAt: new Date().toISOString(),
-      userType: userId.startsWith('visitor_') ? 'visitor' : 'authenticated'
+      // Get current post data
+      const postDoc = await transaction.get(postRef);
+      if (!postDoc.exists()) {
+        throw new Error('Post no encontrado');
+      }
+      
+      const currentViews = postDoc.data().views || 0;
+      
+      // Register the new view
+      transaction.set(postViewRef, {
+        postId,
+        userId,
+        viewedAt: new Date().toISOString(),
+        userType: userId.startsWith('visitor_') ? 'visitor' : 'authenticated'
+      });
+      
+      // Increment the view counter
+      transaction.update(postRef, {
+        views: currentViews + 1
+      });
+      
+      console.log('✅ Nueva vista única registrada, total:', currentViews + 1);
+      return { views: currentViews + 1, incremented: true };
     });
-    
-    // Incrementar el contador de vistas del post
-    await updateDoc(postRef, {
-      views: increment(1)
-    });
-    
-    // Obtener el documento actualizado para devolver el nuevo conteo
-    const updatedPost = await getDoc(postRef);
-    if (!updatedPost.exists()) {
-      throw new Error('Post no encontrado después del incremento');
-    }
-    
-    const newViews = updatedPost.data().views || 0;
-    console.log('✅ Nueva vista única registrada, total:', newViews);
-    
-    return { views: newViews, incremented: true };
     
   } catch (error) {
     console.error('❌ Error en incrementPostViewsUnique:', error);

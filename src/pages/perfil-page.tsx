@@ -156,7 +156,7 @@ const PerfilPage = () => {
             }
 
             return (
-              <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-2 lg:pt-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {savedRoutes.map((post) => (
                     <Card key={post.id} post={post} isEditable={true} />
                   ))}
@@ -194,7 +194,7 @@ const PerfilPage = () => {
     return (
       <>
           <ModalSettings showModal={showModal} setShowModal={setShowModal} />
-          <div className="px-4 translate-y-25 sm:px-10">
+          <div className="px-4 pt-25 sm:px-10">
               {/* Header */}
               <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
                   <div className="w-28 aspect-square overflow-hidden rounded">
@@ -225,7 +225,7 @@ const PerfilPage = () => {
               </button>
 
               {/* Tabs principales */}
-              <div className="flex flex-col lg:flex-row items-center lg:items-end relative mt-5 mb-10">
+              <div className="flex flex-col lg:flex-row items-center lg:items-end relative mt-5 mb-8">
                   <div className="relative mt-8 flex gap-x-10 text-lg sm:text-xl w-full justify-center lg:justify-start">
                       {["guardados", "publicaciones"].map((tab) => (
                         <motion.button
