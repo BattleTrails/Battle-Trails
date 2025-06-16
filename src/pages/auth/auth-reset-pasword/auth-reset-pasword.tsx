@@ -40,21 +40,21 @@ const AuthResetPassword = ({mode}: Props) => {
       </button>
 
       <dialog ref={dialogRef} className="modal">
-        <div className="modal-box bg-primary/98">
+        <div className="modal-box bg-base-100 border-2 border-secondary/20 shadow-lg">
           <form method="dialog">
             <button
-              className=" btn-sm btn-circle text-accent cursor-pointer absolute right-2 top-2 shadow-none hover:shadow-none focus:shadow-none">
+              className="btn-sm btn-circle btn-ghost text-secondary hover:text-secondary-focus cursor-pointer absolute right-2 top-2">
               ✕
             </button>
           </form>
 
-          <h3 className=" text-accent font-bold text-lg mb-2">Restablecer contraseña</h3>
-          <p className="text-accent text-sm mb-4">Te enviaremos un correo con instrucciones.</p>
+          <h3 className="text-secondary font-bold text-lg mb-2">Restablecer contraseña</h3>
+          <p className="text-base-content/80 text-sm mb-4">Te enviaremos un correo con instrucciones.</p>
 
           <input
             type="email"
             placeholder="Tu correo electrónico"
-            className="input text-neutral input-bordered w-full mb-4 focus:ring-2 focus:ring-secondary"
+            className="input input-bordered w-full mb-4 bg-base-200 border-secondary/20 focus:border-secondary focus:ring-2 focus:ring-secondary/20"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -62,13 +62,13 @@ const AuthResetPassword = ({mode}: Props) => {
           <div className="flex justify-center">
             <button
               onClick={handleReset}
-              className="btn btn-secondary shadow-none hover:shadow-none focus:shadow-none"
+              className="btn btn-secondary hover:btn-secondary-focus transition-colors"
             >
               Enviar correo
             </button>
           </div>
 
-          {message && <p className="mt-3 text-sm text-accent text-center">{message}</p>}
+          {message && <p className="mt-3 text-sm text-secondary text-center">{message}</p>}
         </div>
       </dialog>
     </>

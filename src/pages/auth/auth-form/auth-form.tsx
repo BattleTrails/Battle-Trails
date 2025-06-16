@@ -71,22 +71,6 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
       <AuthHeader mode={mode}/>
 
       <div className="flex flex-col items-center sm:gap-4 gap-0 ">
-        {mode === "register" && (
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-neutral">
-              Nombre
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full rounded-md border-neutral/20 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              placeholder="Tu nombre"
-              required
-            />
-          </div>
-        )}
 
         <AuthImputs
           setName={setName}
