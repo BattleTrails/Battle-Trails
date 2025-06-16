@@ -10,6 +10,7 @@ import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
 import { useJsApiLoader } from "@react-google-maps/api";
 import RouteTimeline from "@pages/route-timeline.tsx";
+import LoginModal from "@/components/ui/login-modal/login-modal";
 
 const libraries: ("places")[] = ["places"];
 import useSavedRoutes from "@/hooks/useSavedRoutes";
@@ -24,9 +25,17 @@ const DetailsPage = () => {
     const [author, setAuthor] = useState<{ username: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [loginModalConfig, setLoginModalConfig] = useState<{
+        title: string;
+        message: string;
+    }>({
+        title: "Inicia sesión para continuar",
+        message: "Necesitas iniciar sesión para continuar con esta acción."
+    });
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-         libraries,
+        libraries,
     });
 
     // Hook para manejar rutas guardadas
@@ -92,14 +101,18 @@ const DetailsPage = () => {
 
     const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault();
-        e.stopPropagation(); // Evitar navegación si está dentro de un elemento clickeable
+        e.stopPropagation();
 
         console.log('🖱️ Botón de like clickeado en DetailsPage');
 
         if (canLike && !isLikeLoading) {
             await toggleLike();
         } else {
-            console.log('🚫 No se puede dar like:', { canLike, isLikeLoading });
+            setLoginModalConfig({
+                title: "Inicia sesión para dar like",
+                message: "Necesitas iniciar sesión para poder dar like a esta ruta."
+            });
+            setShowLoginModal(true);
         }
     };
 
@@ -143,13 +156,16 @@ const DetailsPage = () => {
                                 <Share2 className="w-6 h-6" />
                             </button>
 
-                            <SaveRouteButton postId={post.id} />
-
-                            {!canSave && (
-                                <span className="text-sm text-gray-500 self-center ml-2">
-                                    Inicia sesión para guardar
-                                </span>
-                            )}
+                            <SaveRouteButton 
+                                postId={post.id} 
+                                onShowLoginModal={() => {
+                                    setLoginModalConfig({
+                                        title: "Inicia sesión para guardar",
+                                        message: "Necesitas iniciar sesión para guardar esta ruta en tus favoritos."
+                                    });
+                                    setShowLoginModal(true);
+                                }}
+                            />
                         </div>
 
                         <div className="flex items-center gap-4">
@@ -161,11 +177,10 @@ const DetailsPage = () => {
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={handleLike}
-                                    disabled={!canLike || isLikeLoading}
-                                    className={`p-2 rounded-full transition-all duration-200 ${canLike
-                                        ? 'hover:bg-red-50 cursor-pointer'
-                                        : 'cursor-not-allowed opacity-50'
-                                        } ${isLiked ? 'text-red-500' : 'text-gray-600'}`}
+                                    disabled={isLikeLoading}
+                                    className={`p-2 rounded-full transition-all duration-200 ${
+                                        canLike ? 'hover:bg-red-50 cursor-pointer' : 'cursor-pointer'
+                                    } ${isLiked ? 'text-red-500' : 'text-gray-600'}`}
                                     title={canLike ? (isLiked ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'}
                                 >
                                     <Heart
@@ -174,12 +189,6 @@ const DetailsPage = () => {
                                     />
                                 </button>
                                 <span className="text-sm font-medium">{likes}</span>
-
-                                {!canLike && (
-                                    <span className="text-xs text-gray-500 ml-2">
-                                        Inicia sesión para dar like
-                                    </span>
-                                )}
                             </div>
                         </div>
                     </div>
@@ -230,6 +239,13 @@ const DetailsPage = () => {
                 <h2 className="pl-5 font-semibold text-3xl text-white mb-10">Rutas relacionadas</h2>
                 <Carouselcards />
             </div>
+
+            <LoginModal 
+                showModal={showLoginModal} 
+                setShowModal={setShowLoginModal}
+                title={loginModalConfig.title}
+                message={loginModalConfig.message}
+            />
         </div>
     );
 };
