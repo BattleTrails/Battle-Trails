@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Post } from "@/types";
 import { getPosts } from "@/services/db-service.ts";
-import Card from "@/components/ui/card/card";
+import Card from "@components/ui/card/card.tsx";
 
 const Carouselcards = () => {
   const [posts, setPosts] = useState<Post[]>([]);

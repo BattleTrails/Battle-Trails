@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Settings, Share2, CircleFadingPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import {Link, useNavigate} from "react-router-dom";
-import ModalSettings from "@/components/ui/modal-settings/modal-settings";
+import ModalSettings from "@pages/profile-page/modal-settings/modal-settings";
 import { useAuthHandler } from "@hooks/useAuthHandler.ts";
 import {  getUserById } from "@/services/db-service.ts";
 import Card from "@components/ui/card/card.tsx";
@@ -10,7 +10,7 @@ import { Post } from "@/types";
 import {collection, query, where, onSnapshot } from "firebase/firestore";
 import {db} from "@config/firebaseConfig.ts";
 
-const PerfilPage = () => {
+const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState<"guardados" | "publicaciones">("publicaciones");
     const [showModal, setShowModal] = useState(false);
     const { user } = useAuthHandler();
@@ -167,4 +167,4 @@ const PerfilPage = () => {
     );
 };
 
-export default PerfilPage;
+export default ProfilePage;
