@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { Eye, Flame, Gem, LocateFixed } from "lucide-react";
 import clsx from "clsx";
+import { useSearchStore, FilterType } from "@/store/useSearchStore";
 
 const FILTERS = [
-  { key: "populares", label: "Populares", icon: Flame },
-  { key: "cercanos", label: "Cercanos", icon: LocateFixed },
-  { key: "vistos", label: "Más vistos", icon: Eye },
-  { key: "descubre", label: "Joyas Ocultas", icon: Gem },
+  { key: "populares" as FilterType, label: "Populares", icon: Flame },
+  { key: "cercanos" as FilterType, label: "Cercanos", icon: LocateFixed },
+  { key: "vistos" as FilterType, label: "Más vistos", icon: Eye },
+  { key: "descubre" as FilterType, label: "Joyas Ocultas", icon: Gem },
 ];
 
 const VALID_COMBINATIONS: Record<string, string[]> = {
@@ -18,27 +18,7 @@ const VALID_COMBINATIONS: Record<string, string[]> = {
 };
 
 const FilterBar = () => {
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-
-  const toggleFilter = (key: string) => {
-    const isSelected = selectedFilters.includes(key);
-
-    if (isSelected) {
-      setSelectedFilters((prev) => prev.filter((f) => f !== key));
-    } else if (selectedFilters.length === 0) {
-      setSelectedFilters([key]);
-    } else {
-      const validWithCurrent = selectedFilters.every((f) =>
-        VALID_COMBINATIONS[f]?.includes(key)
-      );
-
-      if (validWithCurrent) {
-        setSelectedFilters((prev) => [...prev, key]);
-      } else {
-        setSelectedFilters([key]);
-      }
-    }
-  };
+  const { activeFilters, toggleFilter } = useSearchStore();
 
   return (
     <div
@@ -50,7 +30,7 @@ const FilterBar = () => {
       )}
     >
       {FILTERS.map(({ key, label, icon: Icon }) => {
-        const isActive = selectedFilters.includes(key);
+        const isActive = activeFilters.includes(key);
         return (
           <button
             key={key}

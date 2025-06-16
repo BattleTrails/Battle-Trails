@@ -1,15 +1,18 @@
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import debounce from "lodash/debounce";
 
 type Props = {
   onFocusChange?: (value: boolean) => void;
+  onSearch?: (query: string) => void;
 };
 
-const SearchBox = ({ onFocusChange }: Props) => {
+const SearchBox = ({ onFocusChange, onSearch }: Props) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const location = useLocation();
 
   const isHome = location.pathname === "/";
@@ -37,6 +40,14 @@ const SearchBox = ({ onFocusChange }: Props) => {
       ? "text-neutral-800 placeholder-neutral-800"
       : "";
 
+  // Crear la función debounce
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      onSearch?.(value);
+    }, 200),
+    [onSearch]
+  );
+
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     if (isExpanded) {
@@ -52,6 +63,11 @@ const SearchBox = ({ onFocusChange }: Props) => {
   useEffect(() => {
     onFocusChange?.(isExpanded);
   }, [isExpanded]);
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+    debouncedSearch(value);
+  };
 
   return (
     <div
@@ -89,6 +105,8 @@ const SearchBox = ({ onFocusChange }: Props) => {
 
         <input
           type="text"
+          value={searchValue}
+          onChange={(e) => handleSearch(e.target.value)}
           placeholder={showPlaceholder ? "Buscar rutas o lugares..." : ""}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -107,4 +125,4 @@ const SearchBox = ({ onFocusChange }: Props) => {
   );
 }
 
-  export default SearchBox;
+export default SearchBox;

@@ -36,10 +36,10 @@ const SaveRouteButton = ({ postId, onShowLoginModal }: SaveRouteButtonProps) => 
       <button
         onClick={handleClick}
         disabled={isLoading}
-        className={`p-2 rounded-full transition-all duration-200 border flex items-center gap-2 ${
+        className={`p-2 rounded-full transition-all duration-200 ${
           isSaved
-            ? "bg-black text-white border-black shadow-md"
-            : "bg-white text-gray-600 hover:bg-gray-100 border-none transition-all duration-300 ease-in-out"
+            ? "text-yellow-500 hover:bg-yellow-50"
+            : "text-gray-600 hover:bg-gray-100"
         } ${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         title={isSaved ? "Quitar de guardados" : "Guardar ruta"}
       >
