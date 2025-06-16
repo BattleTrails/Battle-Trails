@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getPostById, getRouteByPostId, getUserById } from "@/services/db-service";
 import { Post, Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
@@ -8,7 +8,6 @@ import { LocateFixed, Timer, Share2, Heart, Eye } from "lucide-react"; // ✅ Im
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
-import { useAuthHandler } from "@hooks/useAuthHandler.ts";
 import { useJsApiLoader } from "@react-google-maps/api";
 import RouteTimeline from "@pages/route-timeline.tsx";
 
@@ -31,7 +30,7 @@ const DetailsPage = () => {
     });
 
     // Hook para manejar rutas guardadas
-    const { isSaved, isLoading: isSaveLoading, toggleSave, canSave } = useSavedRoutes(postId || '');
+    const { canSave } = useSavedRoutes(postId || '');
 
     // Hook para manejar likes
     const { likes, isLiked, isLoading: isLikeLoading, toggleLike, canLike } = useLikes(
@@ -43,7 +42,7 @@ const DetailsPage = () => {
     const { views, incrementView } = useViews(postId || '', post?.views);
 
     useEffect(() => {
-        const fetchPost = async () => {
+        const fetchPost = async (): Promise<void> => {
             if (!postId) return;
 
             try {
@@ -188,6 +187,9 @@ const DetailsPage = () => {
                     </div>
 
                     <h2 className="text-4xl font-bold mb-4">{post.title}</h2>
+                    {author && (
+                        <p className="text-gray-600 mb-4">Publicado por: {author.username}</p>
+                    )}
                     <p className="whitespace-pre-line">{post.description}</p>
 
                     <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2 mt-6">

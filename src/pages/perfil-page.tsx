@@ -139,13 +139,16 @@ const PerfilPage = () => {
                       <p className="text-base sm:text-lg text-gray-700 mb-4">
                           Aún no has guardado ninguna ruta.
                       </p>
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-sm text-gray-500 mb-6">
                           Explora rutas y usa el botón de guardar para verlas aquí.
                       </p>
                       <button 
                         onClick={refreshSavedRoutes}
-                        className="text-blue-950 hover:underline text-sm"
+                        className="inline-flex items-center gap-2 text-blue-950 hover:text-blue-800 transition-colors"
                       >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
                           Actualizar
                       </button>
                   </div>
@@ -153,24 +156,10 @@ const PerfilPage = () => {
             }
 
             return (
-              <div>
-                  <div className="flex justify-between items-center mb-4">
-                      <p className="text-gray-600">
-                          {savedRoutes.length} ruta{savedRoutes.length !== 1 ? 's' : ''} guardada{savedRoutes.length !== 1 ? 's' : ''}
-                      </p>
-                      <button 
-                        onClick={refreshSavedRoutes}
-                        className="text-blue-950 hover:underline text-sm"
-                        disabled={savedRoutesLoading}
-                      >
-                          {savedRoutesLoading ? 'Actualizando...' : 'Actualizar'}
-                      </button>
-                  </div>
-                  <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
-                      {savedRoutes.map((post) => (
-                        <Card key={post.id} post={post} />
-                      ))}
-                  </div>
+              <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+                  {savedRoutes.map((post) => (
+                    <Card key={post.id} post={post} isEditable={true} />
+                  ))}
               </div>
             );
         } else {
@@ -237,7 +226,7 @@ const PerfilPage = () => {
 
               {/* Tabs principales */}
               <div className="flex flex-col lg:flex-row items-center lg:items-end relative mt-5 mb-10">
-                  <div className="relative mt-8 flex gap-x-10 text-lg sm:text-xl overflow-x-auto no-scrollbar">
+                  <div className="relative mt-8 flex gap-x-10 text-lg sm:text-xl w-full justify-center lg:justify-start">
                       {["guardados", "publicaciones"].map((tab) => (
                         <motion.button
                           key={tab}
@@ -251,8 +240,8 @@ const PerfilPage = () => {
                               <span className="flex items-center gap-2">
                                   Guardados
                                   {savedRoutes.length > 0 && (
-                                    <span className="bg-blue-950 text-white text-xs px-2 py-0.5 rounded-full">
-                                        {savedRoutes.length}
+                                    <span className="text-sm text-gray-500">
+                                        ({savedRoutes.length})
                                     </span>
                                   )}
                               </span>
@@ -260,8 +249,8 @@ const PerfilPage = () => {
                               <span className="flex items-center gap-2">
                                   Mis publicaciones
                                   {posts.length > 0 && (
-                                    <span className="bg-blue-950 text-white text-xs px-2 py-0.5 rounded-full">
-                                        {posts.length}
+                                    <span className="text-sm text-gray-500">
+                                        ({posts.length})
                                     </span>
                                   )}
                               </span>
