@@ -156,7 +156,7 @@ const PerfilPage = () => {
             }
 
             return (
-              <div className="grid grid-cols-1 pt-2 lg:pt-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {savedRoutes.map((post) => (
                     <Card key={post.id} post={post} isEditable={true} />
                   ))}
@@ -182,7 +182,7 @@ const PerfilPage = () => {
             }
 
             return (
-              <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {posts.map((post) => (
                     <Card key={post.id} post={post} isEditable={true} />
                   ))}
