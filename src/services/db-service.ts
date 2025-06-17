@@ -1,5 +1,5 @@
 import { db } from "@/config/firebaseConfig";
-import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction, GeoPoint } from "firebase/firestore";
 
 import { Post, Route, User } from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
@@ -494,7 +494,7 @@ export const updatePost = async (postId: string, updateData: Partial<{
  */
 export const updateRoute = async (routeId: string, updateData: Partial<{
   waypoints: Array<{
-    geoPoint: any;
+    geoPoint: GeoPoint;
     address: string;
     description: string;
     images: string[];
