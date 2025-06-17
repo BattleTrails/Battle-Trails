@@ -33,6 +33,7 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
 
   // Función para manejar el clic en la card y navegar al detalle del post
   const handleClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate(`/post/${post.id}`);
   };
 
