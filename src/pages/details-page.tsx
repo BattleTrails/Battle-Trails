@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getPostById, getRouteByPostId, getUserById } from "@/services/db-service";
 import { Post, Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
-import { LocateFixed, Timer } from "lucide-react";
+import { LocateFixed, Timer, ChevronDown } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
@@ -30,6 +30,7 @@ const DetailsPage = () => {
         title: "Inicia sesión para continuar",
         message: "Necesitas iniciar sesión para continuar con esta acción."
     });
+    const imagesContainerRef = useRef<HTMLDivElement>(null);
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
         libraries,
@@ -63,6 +64,35 @@ const DetailsPage = () => {
         fetchPost();
     }, [postId]);
 
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const chevron = container.querySelector('.scroll-chevron');
+        if (chevron) {
+            if (container.scrollTop > 0) {
+                chevron.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                chevron.classList.remove('opacity-0', 'pointer-events-none');
+            }
+        }
+    };
+
+    const handleChevronClick = () => {
+        if (imagesContainerRef.current) {
+            const container = imagesContainerRef.current;
+            const currentScroll = container.scrollTop;
+            const windowHeight = container.clientHeight;
+            
+            const nextScrollPosition = currentScroll + windowHeight;
+            
+            if (nextScrollPosition < container.scrollHeight) {
+                container.scrollTo({
+                    top: nextScrollPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    };
+
     if (loading) {
         return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
@@ -77,19 +107,24 @@ const DetailsPage = () => {
     return (
         <div>
             <div className="flex flex-col lg:flex-row">
-                <div className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory ">
+                <div 
+                    ref={imagesContainerRef}
+                    className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory scroll-container relative"
+                    onScroll={handleScroll}
+                >
                     {post.images.map((src, index) => (
-                        <div
-                            key={index}
-                            className="h-[55dvh] lg:h-screen w-full snap-start relative"
-                        >
-                            <img
-                                src={src}
-                                alt={`Imagen ${index + 1}`}
-                                className="h-full w-full object-cover"
-                            />
+                        <div key={index} className="h-[55dvh] lg:h-screen w-full snap-start relative">
+                            <img src={src} alt={`Imagen ${index + 1}`} className="h-full w-full object-cover" />
                         </div>
                     ))}
+                    {post.images.length > 1 && (
+                        <div 
+                            className="scroll-chevron absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-opacity duration-300 cursor-pointer hover:scale-110"
+                            onClick={handleChevronClick}
+                        >
+                            <ChevronDown className="w-8 h-8 text-white drop-shadow-lg animate-bounce" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px]">
