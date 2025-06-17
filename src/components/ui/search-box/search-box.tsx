@@ -1,22 +1,26 @@
-import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Search, X } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import debounce from "lodash.debounce";
 
 type Props = {
   onFocusChange?: (value: boolean) => void;
+  onSearch?: (query: string) => void;
 };
 
-const SearchBox = ({ onFocusChange }: Props) => {
+const SearchBox = ({ onFocusChange, onSearch }: Props) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isHome = location.pathname === "/";
   const isDetails = location.pathname.includes("/post");
   const isProfile = location.pathname.includes("/profile");
 
-  const isExpanded = isFocused || isHovered;
+  const isExpanded = isFocused || isHovered || searchValue.length > 0;
   const sharedTransition = "transition-all duration-400 ease-in-out";
 
   const iconColorClass = isHome
@@ -37,6 +41,14 @@ const SearchBox = ({ onFocusChange }: Props) => {
       ? "text-neutral-800 placeholder-neutral-800"
       : "";
 
+  // Crear la función debounce
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      onSearch?.(value);
+    }, 200),
+    [onSearch]
+  );
+
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     if (isExpanded) {
@@ -52,6 +64,41 @@ const SearchBox = ({ onFocusChange }: Props) => {
   useEffect(() => {
     onFocusChange?.(isExpanded);
   }, [isExpanded]);
+
+  // Efecto para manejar el parámetro de búsqueda en la URL
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const searchQuery = searchParams.get('search');
+    
+    if (searchQuery) {
+      setSearchValue(searchQuery);
+      onSearch?.(searchQuery);
+    } else if (isHome) {
+      setSearchValue("");
+      onSearch?.("");
+    }
+  }, [location.search, isHome, onSearch]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isHome && searchValue.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchValue.trim())}`);
+    }
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+    if (isHome) {
+      debouncedSearch(value);
+    }
+  };
+
+  const handleClear = () => {
+    setSearchValue("");
+    onSearch?.("");
+    if (!isHome) {
+      navigate("/");
+    }
+  };
 
   return (
     <div
@@ -89,6 +136,9 @@ const SearchBox = ({ onFocusChange }: Props) => {
 
         <input
           type="text"
+          value={searchValue}
+          onChange={(e) => handleSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={showPlaceholder ? "Buscar rutas o lugares..." : ""}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -102,9 +152,24 @@ const SearchBox = ({ onFocusChange }: Props) => {
           focus:w-72 hover:w-72
         `}
         />
+
+        {searchValue && (
+          <button
+            onClick={handleClear}
+            className={`
+              absolute right-2 top-1/2 -translate-y-1/2
+              p-1 rounded-full
+              ${sharedTransition}
+              ${isHome ? "text-white/70 hover:text-white" : "text-neutral-600 hover:text-neutral-800"}
+              hover:bg-black/5
+            `}
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-  export default SearchBox;
+export default SearchBox;

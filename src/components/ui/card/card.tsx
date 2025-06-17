@@ -2,9 +2,11 @@ import {Heart, Eye, Share2, Edit3} from "lucide-react";
 import { MoreVertical, Trash2 } from "lucide-react";
 import mark from "@assets/iconslogo.svg";
 import { Post } from "@/types";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {useState} from "react";
 import {deletePostById} from "@/services/db-service.ts";
+import useLikes from "@/hooks/useLikes";
+import useViews from "@/hooks/useViews"; // ✅ Importar useViews
 
 interface CardProps {
   post: Post;
@@ -14,9 +16,18 @@ interface CardProps {
 }
 
 const Card = ({ post, variant = "default",isEditable }: CardProps) => {
-  const { title, images, likes, likedBy } = post;
+  const { title, images, likes: initialLikes } = post;
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
+
+  // Hook para manejar likes - usar los likes actualizados del hook
+  const { likes, isLiked, isLoading: isLikeLoading, toggleLike, canLike } = useLikes(
+    post.id,
+    initialLikes
+  );
+
+  // ✅ Hook para manejar vistas
+  const { views } = useViews(post.id, post.views);
 
   // Función para manejar el clic en la card y navegar al detalle del post
   const handleClick = () => {
@@ -33,11 +44,44 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
     }
   };
 
+  // Función para manejar el like sin navegar
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Evitar navegación al hacer clic en like
+
+    console.log('🖱️ Botón de like clickeado en Card');
+
+    if (canLike && !isLikeLoading) {
+      await toggleLike();
+    } else {
+      console.log('🚫 No se puede dar like:', { canLike, isLikeLoading });
+    }
+  };
+
+  // Función para manejar compartir sin navegar
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evitar navegación al hacer clic en share
+
+    const url = `${window.location.origin}/post/${post.id}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: post.title || 'Ruta interesante',
+        text: post.description || 'Mira esta ruta que encontré',
+        url: url,
+      });
+    } else {
+      // Fallback: copiar al portapapeles
+      navigator.clipboard.writeText(url);
+      // Aquí podrías mostrar un toast de confirmación
+    }
+  };
+
   // Tamaños condicionales para que la card sea más grande en el post detalles
   const sizeClasses =
-  variant === "large"
-    ? "w-full h-[500px] max-w-[380px]" 
-    : "min-w-70 min-h-96";
+    variant === "large"
+      ? "w-full h-[500px] max-w-[380px]"
+      : "min-w-70 min-h-96";
 
   const titleClasses =
     variant === "large"
@@ -49,7 +93,7 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
 
   return (
     <div
-      className={`relative ${sizeClasses} rounded-2xl overflow-hidden shadow-md shrink-0`}
+      className={`relative ${sizeClasses} rounded-2xl overflow-hidden shadow-md shrink-0 cursor-pointer`}
       style={{
         backgroundImage: `url(${images?.[0] || "/placeholder.jpg"})`,
         backgroundSize: "cover",
@@ -109,13 +153,30 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
         <div className="flex justify-between text-sm">
           <div className="flex gap-4">
             <div className="flex items-center gap-1 font-light">
-              <Eye size={18} strokeWidth={1} /> {likedBy.length}
+              <Eye size={18} strokeWidth={1} /> {views}
             </div>
-            <div className="flex items-center gap-1 font-light">
-              <Heart size={18} strokeWidth={1} /> {likes}
+            <div
+              className="flex items-center gap-1 font-light cursor-pointer"
+              onClick={handleLike}
+              title={canLike ? (isLiked ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'}
+            >
+              <Heart
+                size={18}
+                strokeWidth={1}
+                className={`transition-all duration-200 ${isLiked ? 'fill-current text-red-500' : 'text-white'
+                  } ${!canLike ? 'opacity-50' : 'hover:text-red-300'} ${isLikeLoading ? 'opacity-50' : ''
+                  }`}
+              />
+              <span className={isLikeLoading ? 'opacity-50' : ''}>{likes}</span>
             </div>
           </div>
-          <Share2 size={18} strokeWidth={1} />
+          <button
+            onClick={handleShare}
+            className="hover:text-gray-300 transition-colors p-1"
+            title="Compartir ruta"
+          >
+            <Share2 size={18} strokeWidth={1} />
+          </button>
         </div>
       </div>
     </div>

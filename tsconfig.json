@@ -50,6 +50,9 @@
       ],
       "@routes/*": [
         "routes/*"
+      ],
+      "@store/*": [
+        "store/*"
       ]
     },
     "types": []

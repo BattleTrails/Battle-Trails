@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Settings, Share2, CircleFadingPlus } from "lucide-react";
+import { motion } from "framer-motion";
 import {Link, useNavigate} from "react-router-dom";
-import { motion } from "framer-motion"
 import ModalSettings from "@/components/ui/modal-settings/modal-settings";
 import { useAuthHandler } from "@hooks/useAuthHandler.ts";
 import { getPostsByUserId, getUserById, getSavedRoutesByUserId } from "@/services/db-service.ts";
@@ -23,7 +23,6 @@ const PerfilPage = () => {
     const [savedRoutes, setSavedRoutes] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [savedRoutesLoading, setSavedRoutesLoading] = useState(false);
-    const [savedRoutesLoaded, setSavedRoutesLoaded] = useState(false); // Nuevo estado
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -56,17 +55,11 @@ const PerfilPage = () => {
     useEffect(() => {
         const fetchSavedRoutes = async () => {
             if (!user || activeTab !== "guardados") return;
-            
-            // Si ya están cargadas, no volver a cargar
-            if (savedRoutesLoaded && savedRoutes.length > 0) return;
 
             setSavedRoutesLoading(true);
             try {
-                console.log('Cargando rutas guardadas para usuario:', user.uid); // Debug
                 const routes = await getSavedRoutesByUserId(user.uid);
-                console.log('Rutas guardadas obtenidas:', routes); // Debug
                 setSavedRoutes(routes);
-                setSavedRoutesLoaded(true);
             } catch (error) {
                 console.error("Error al cargar rutas guardadas:", error);
             } finally {
@@ -75,28 +68,7 @@ const PerfilPage = () => {
         };
 
         fetchSavedRoutes();
-    }, [user, activeTab, savedRoutesLoaded, savedRoutes.length]);
-
-    // Función para refrescar las rutas guardadas
-    const refreshSavedRoutes = async () => {
-        if (!user) return;
-        
-        setSavedRoutesLoading(true);
-        try {
-            const routes = await getSavedRoutesByUserId(user.uid);
-            setSavedRoutes(routes);
-        } catch (error) {
-            console.error("Error al refrescar rutas guardadas:", error);
-        } finally {
-            setSavedRoutesLoading(false);
-        }
-    };
-
-    // Resetear el estado cuando cambie el usuario
-    useEffect(() => {
-        setSavedRoutesLoaded(false);
-        setSavedRoutes([]);
-    }, [user]);
+    }, [user, activeTab]);
 
     if (loading || !profile) {
         return (
@@ -109,14 +81,6 @@ const PerfilPage = () => {
     const handleCreateRoute = () => {
         if (user) {
             navigate("/new");
-        }
-    };
-
-    const handleTabChange = (tab: "guardados" | "publicaciones") => {
-        setActiveTab(tab);
-        // Si cambiamos a guardados y no están cargadas, forzar la carga
-        if (tab === "guardados" && !savedRoutesLoaded) {
-            setSavedRoutesLoaded(false);
         }
     };
 
@@ -139,26 +103,17 @@ const PerfilPage = () => {
                       <p className="text-base sm:text-lg text-gray-700 mb-4">
                           Aún no has guardado ninguna ruta.
                       </p>
-                      <p className="text-sm text-gray-500 mb-6">
+                      <p className="text-sm text-gray-500">
                           Explora rutas y usa el botón de guardar para verlas aquí.
                       </p>
-                      <button 
-                        onClick={refreshSavedRoutes}
-                        className="inline-flex items-center gap-2 text-blue-950 hover:text-blue-800 transition-colors"
-                      >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                          Actualizar
-                      </button>
                   </div>
                 );
             }
 
             return (
-              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {savedRoutes.map((post) => (
-                    <Card key={post.id} post={post} isEditable={false} />
+                    <Card key={post.id} post={post} />
                   ))}
               </div>
             );
@@ -182,9 +137,9 @@ const PerfilPage = () => {
             }
 
             return (
-              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {posts.map((post) => (
-                    <Card key={post.id} post={post} isEditable={true} />
+                    <Card key={post.id} post={post} />
                   ))}
               </div>
             );
@@ -194,7 +149,7 @@ const PerfilPage = () => {
     return (
       <>
           <ModalSettings showModal={showModal} setShowModal={setShowModal} />
-          <div className="px-4 pt-25 sm:px-10">
+          <div className="px-4 translate-y-25 sm:px-10">
               {/* Header */}
               <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
                   <div className="w-28 aspect-square overflow-hidden rounded">
@@ -225,12 +180,12 @@ const PerfilPage = () => {
               </button>
 
               {/* Tabs principales */}
-              <div className="flex flex-col lg:flex-row items-center lg:items-end relative mt-5 mb-8">
-                  <div className="relative mt-8 flex gap-x-10 text-lg sm:text-xl w-full justify-center lg:justify-start">
+              <div className="flex flex-col lg:flex-row items-center lg:items-end relative mt-5 mb-10">
+                  <div className="relative mt-8 flex gap-x-10 text-lg sm:text-xl overflow-x-auto no-scrollbar">
                       {["guardados", "publicaciones"].map((tab) => (
                         <motion.button
                           key={tab}
-                          onClick={() => handleTabChange(tab as "guardados" | "publicaciones")}
+                          onClick={() => setActiveTab(tab as "guardados" | "publicaciones")}
                           className={`relative pb-1 transition-colors duration-300 whitespace-nowrap ${
                             activeTab === tab ? "text-black font-medium" : "text-gray-500"
                           }`}
@@ -240,8 +195,8 @@ const PerfilPage = () => {
                               <span className="flex items-center gap-2">
                                   Guardados
                                   {savedRoutes.length > 0 && (
-                                    <span className="text-sm text-gray-500">
-                                        ({savedRoutes.length})
+                                    <span className="bg-blue-950 text-white text-xs px-2 py-0.5 rounded-full">
+                                        {savedRoutes.length}
                                     </span>
                                   )}
                               </span>
@@ -249,8 +204,8 @@ const PerfilPage = () => {
                               <span className="flex items-center gap-2">
                                   Mis publicaciones
                                   {posts.length > 0 && (
-                                    <span className="text-sm text-gray-500">
-                                        ({posts.length})
+                                    <span className="bg-blue-950 text-white text-xs px-2 py-0.5 rounded-full">
+                                        {posts.length}
                                     </span>
                                   )}
                               </span>
