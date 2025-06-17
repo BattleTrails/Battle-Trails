@@ -7,7 +7,7 @@ import {useState} from "react";
 import {deletePostById} from "@/services/db-service.ts";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
 import useLikes from "@/hooks/useLikes";
-import useViews from "@/hooks/useViews"; // ✅ Importar useViews
+import useViews from "@/hooks/useViews";
 
 interface CardProps {
   post: Post;
@@ -16,19 +16,19 @@ interface CardProps {
   onDeleted?: (id: string) => void;
 }
 
-const Card = ({ post, variant = "default",isEditable }: CardProps) => {
+const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) => {
   const { title, images, likes: initialLikes } = post;
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // Hook para manejar likes - usar los likes actualizados del hook
+  // Hook para manejar likes
   const { likes, isLiked, isLoading: isLikeLoading, toggleLike, canLike } = useLikes(
     post.id,
     initialLikes
   );
 
-  // ✅ Hook para manejar vistas
+  // Hook para manejar vistas
   const { views } = useViews(post.id, post.views);
 
   // Función para manejar el clic en la card y navegar al detalle del post
@@ -41,6 +41,7 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
     try {
       await deletePostById(postId);
       console.log("Publicación eliminada correctamente");
+      onDeleted?.(postId);
     } catch (error) {
       console.error("Error al eliminar publicación:", error);
     }
@@ -49,7 +50,7 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
   // Función para manejar el like sin navegar
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Evitar navegación al hacer clic en like
+    e.stopPropagation();
 
     console.log('🖱️ Botón de like clickeado en Card');
 
@@ -62,7 +63,7 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
 
   // Función para manejar compartir sin navegar
   const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evitar navegación al hacer clic en share
+    e.stopPropagation();
 
     const url = `${window.location.origin}/post/${post.id}`;
 
@@ -80,75 +81,73 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
   };
 
   // Tamaños condicionales para que la card sea más grande en el post detalles
-  const sizeClasses =
-    variant === "large"
-      ? "w-full h-[500px] max-w-[380px]"
-      : "min-w-70 min-h-96";
+  const sizeClasses = variant === "large"
+    ? "w-full h-[500px] max-w-[380px]"
+    : "min-w-70 min-h-96";
 
-  const titleClasses =
-    variant === "large"
-      ? "text-xl font-medium line-clamp-2"
-      : "text-lg font-medium line-clamp-2";
+  const titleClasses = variant === "large"
+    ? "text-xl font-medium line-clamp-2"
+    : "text-lg font-medium line-clamp-2";
 
-  const locationClasses =
-    variant === "large" ? "text-base" : "text-sm";
+  const locationClasses = variant === "large" 
+    ? "text-base" 
+    : "text-sm";
 
   return (
-    <>
-      <div
-        className={`relative ${sizeClasses} rounded-2xl overflow-hidden shadow-md shrink-0 cursor-pointer`}
-        style={{
-          backgroundImage: `url(${images?.[0] || "/placeholder.jpg"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        onClick={handleClick}
-      >
-        {isEditable && (
-          <div className="absolute top-3 right-3 z-30">
-            <button onClick={(e) => {
-              e.stopPropagation(); // evitar que se dispare el navigate
-              setShowOptions(prev => !prev);
-            }}>
-              <MoreVertical className="text-white" size={20} />
-            </button>
+    <div
+      className={`relative ${sizeClasses} rounded-2xl overflow-hidden shadow-md shrink-0 cursor-pointer`}
+      style={{
+        backgroundImage: `url(${images?.[0] || "/placeholder.jpg"})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+      onClick={handleClick}
+    >
+      {isEditable && (
+        <div className="absolute top-3 right-3 z-30">
+          <button onClick={(e) => {
+            e.stopPropagation();
+            setShowOptions(prev => !prev);
+          }}>
+            <MoreVertical className="text-white" size={20} />
+          </button>
 
-            {showOptions && (
-              <div
-                className="absolute right-0 mt-2 bg-white text-black text-sm shadow-lg rounded w-36 z-40"
-                onClick={(e) => e.stopPropagation()}
+          {showOptions && (
+            <div
+              className="absolute right-0 mt-2 bg-white text-black text-sm shadow-lg rounded w-36 z-40"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => {
+                  setShowConfirmDialog(true);
+                  setShowOptions(false);
+                }}
+                className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-red-100 text-red-600"
               >
-                <button
-                  onClick={() => {
-                    setShowConfirmDialog(true);
-                    setShowOptions(false);
-                  }}
-                  className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-red-100 text-red-600"
-                >
-                  <Trash2 size={16} /> Eliminar ruta
-                </button>
-                <button
-                  onClick={() => navigate(`/edit/${post.id}`)}
-                  className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-blue-100 text-blue-600"
-                >
-                  <Edit3 size={16} /> Editar ruta
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-        {/* Overlay oscuro */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
-
-        {/* Contenido */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 text-white">
-          <div className="flex flex-col justify-center items-center mb-4 gap-4 text-center">
-            <h2 className={titleClasses}>{title}</h2>
-            <div className="flex w-full items-center gap-3">
-              <img src={mark} alt="" className="h-5" />
-              <p className={`${locationClasses} opacity-90 line-clamp-2 font-light`}>{post.locationName}</p>
+                <Trash2 size={16} /> Eliminar ruta
+              </button>
+              <button
+                onClick={() => navigate(`/edit/${post.id}`)}
+                className="flex items-center gap-2 w-full rounded px-4 py-2 hover:bg-blue-100 text-blue-600"
+              >
+                <Edit3 size={16} /> Editar ruta
+              </button>
             </div>
+          )}
+        </div>
+      )}
+      {/* Overlay oscuro */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent z-10" />
+
+      {/* Contenido */}
+      <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 text-white">
+        <div className="flex flex-col justify-center items-center mb-4 gap-4 text-center">
+          <h2 className={titleClasses}>{title}</h2>
+          <div className="flex w-full items-center gap-3">
+            <img src={mark} alt="" className="h-5" />
+            <p className={`${locationClasses} opacity-90 line-clamp-2 font-light`}>{post.locationName}</p>
           </div>
+        </div>
 
         <div className="flex justify-between text-sm">
           <div className="flex gap-4">
@@ -179,8 +178,18 @@ const Card = ({ post, variant = "default",isEditable }: CardProps) => {
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        onClose={() => setShowConfirmDialog(false)}
+        onConfirm={() => {
+          handleDeleteRoute(post.id);
+          setShowConfirmDialog(false);
+        }}
+        title="Eliminar ruta"
+        message="¿Estás seguro de que quieres eliminar esta ruta? Esta acción no se puede deshacer."
+      />
     </div>
-    </>
   );
 };
 

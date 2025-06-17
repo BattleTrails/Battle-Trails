@@ -1,6 +1,5 @@
 import { db } from "@/config/firebaseConfig";
 import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
-
 import { Post, Route, User } from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
 

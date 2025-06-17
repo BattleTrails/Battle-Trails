@@ -184,7 +184,14 @@ const ProfilePage = () => {
             return (
               <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
                   {posts.map((post) => (
-                    <Card key={post.id} post={post} isEditable={true} />
+                    <Card 
+                      key={post.id} 
+                      post={post} 
+                      isEditable={true} 
+                      onDeleted={(id) => {
+                        setPosts(posts.filter(post => post.id !== id));
+                      }}
+                    />
                   ))}
               </div>
             );
