@@ -16,7 +16,7 @@ interface CardProps {
 }
 
 const Card = ({ post, variant = "default",isEditable }: CardProps) => {
-  const { title, images, likes: initialLikes, likedBy } = post;
+  const { title, images, likes: initialLikes } = post;
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
 
