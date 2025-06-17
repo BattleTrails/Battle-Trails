@@ -45,6 +45,7 @@ const DetailsPage = () => {
                 setPost(fetchedPost);
                 const fetchedRoute = await getRouteByPostId(postId);
                 setRoute(fetchedRoute);
+                setPost(fetchedPost);
                 const fetchedAuthor = await getUserById(fetchedPost.userId);
                 setAuthor({ username: fetchedAuthor.username });
                 if (!fetchedRoute) throw new Error("No se encontró la ruta.");
