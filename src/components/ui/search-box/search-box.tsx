@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
 
 type Props = {
   onFocusChange?: (value: boolean) => void;

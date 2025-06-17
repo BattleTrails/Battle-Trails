@@ -4,7 +4,7 @@ import { getPostById, getRouteByPostId, getUserById } from "@/services/db-servic
 import { Post, Route } from "@/types";
 import Comments from "@/components/ui/comments/comments";
 import Carouselcards from "@/components/ui/carouselcards/carouselcards";
-import { LocateFixed, Timer, Share2, Heart, Eye } from "lucide-react"; // ✅ Importar Eye
+import { LocateFixed, Timer, Share2, Heart, Eye } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
@@ -13,9 +13,8 @@ import RouteTimeline from "@pages/route-timeline.tsx";
 import LoginModal from "@/components/ui/login-modal/login-modal";
 
 const libraries: ("places")[] = ["places"];
-import useSavedRoutes from "@/hooks/useSavedRoutes";
 import useLikes from "@/hooks/useLikes";
-import useViews from "@/hooks/useViews"; // ✅ Importar useViews
+import useViews from "@/hooks/useViews";
 import SaveRouteButton from "@/components/ui/save-route-button/save-route-button";
 
 const DetailsPage = () => {
@@ -38,8 +37,6 @@ const DetailsPage = () => {
         libraries,
     });
 
-    // Hook para manejar rutas guardadas
-    const { canSave } = useSavedRoutes(postId || '');
 
     // Hook para manejar likes
     const { likes, isLiked, isLoading: isLikeLoading, toggleLike, canLike } = useLikes(
