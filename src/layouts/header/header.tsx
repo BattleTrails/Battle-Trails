@@ -60,13 +60,14 @@ const Header = () => {
         <div
           className={clsx(
             "w-full max-w-md flex justify-center transition-transform duration-300",
-            "min-[1250px]:absolute min-[1250px]:top-1/2 min-[1250px]:left-1/2 min-[1250px]:-translate-y-1/2",
-            isScrolled && !isProfile
-              ? "min-[1250px]:translate-x-[240px]"
-              : "min-[1250px]:-translate-x-1/2"
+            "min-[1250px]:absolute min-[1250px]:top-1/2 min-[1250px]:-translate-y-1/2",
+            isScrolled && !isProfile && !isDetails
+              ? "min-[1250px]:left-1/2 min-[1250px]:translate-x-[240px]"
+              : isDetails
+                ? "min-[1250px]:left-[75%] min-[1250px]:-translate-x-1/2"
+                : "min-[1250px]:left-1/2 min-[1250px]:-translate-x-1/2"
           )}
         >
-
         <HeaderSearchBarWrapper
             setSearchOpen={setSearchOpen}
             currentPath={currentPath}
