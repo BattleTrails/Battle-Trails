@@ -109,7 +109,7 @@ const DetailsPage = () => {
             <div className="flex flex-col lg:flex-row">
                 <div 
                     ref={imagesContainerRef}
-                    className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory scroll-container relative"
+                    className="w-full lg:w-[50%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory scroll-container relative"
                     onScroll={handleScroll}
                 >
                     {post.images.map((src, index) => (
@@ -127,7 +127,7 @@ const DetailsPage = () => {
                     )}
                 </div>
 
-                <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px] lg:h-screen">
+                <div className="w-full lg:w-[50%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px] lg:h-screen">
                     <SocialInteractions 
                         postId={post.id}
                         initialLikes={post.likes}

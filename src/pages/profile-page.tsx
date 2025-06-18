@@ -126,7 +126,7 @@ const ProfilePage = () => {
                 return (
                   <div className="flex items-center justify-center py-10">
                       <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 border-2 border-blue-950 border-t-transparent rounded-full animate-spin"></div>
+                          <div className="w-6 h-6 border-2 border-neutral border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-gray-600">Cargando rutas guardadas...</span>
                       </div>
                   </div>
@@ -144,7 +144,7 @@ const ProfilePage = () => {
                       </p>
                       <button 
                         onClick={refreshSavedRoutes}
-                        className="inline-flex items-center gap-2 text-blue-950 hover:text-blue-800 transition-colors"
+                        className="inline-flex items-center gap-2 text-neutral hover:text-neutral-600 transition-colors"
                       >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -156,7 +156,7 @@ const ProfilePage = () => {
             }
 
             return (
-              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+              <div className="grid grid-cols-1 pt-2 lg:pt-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center">
                   {savedRoutes.map((post) => (
                     <Card key={post.id} post={post} isEditable={false} />
                   ))}
@@ -172,7 +172,7 @@ const ProfilePage = () => {
                       </p>
                       <Link 
                         to="/new"
-                        className="inline-flex items-center gap-2 bg-blue-950 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors"
+                        className="inline-flex items-center gap-2 bg-neutral text-white px-4 py-2 rounded-md hover:bg-neutral-500 transition-colors"
                       >
                           <CircleFadingPlus className="w-4 h-4" />
                           Crear tu primera ruta
@@ -211,11 +211,11 @@ const ProfilePage = () => {
                       <h2 className="text-2xl sm:text-4xl mb-1">{profile.name}</h2>
                       <span className="text-lg font-light sm:text-xl">@{profile.username}</span>
                       <div className="flex flex-wrap gap-3 mt-3 justify-center lg:justify-start w-full lg:w-fit">
-                          <button className="border border-b-blue-950 text-blue-950 px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
-                          <button onClick={() => setShowModal(true)} className="bg-blue-950 p-1.5 rounded-md">
+                          <button className="border border-b-neutral text-neutral px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
+                          <button onClick={() => setShowModal(true)} className="bg-neutral p-1.5 rounded-md">
                               <Settings color="white" strokeWidth={1} className="size-5" />
                           </button>
-                          <button className="bg-blue-950 p-1.5 rounded-md">
+                          <button className="bg-neutral p-1.5 rounded-md">
                               <Share2 color="white" strokeWidth={1} className="size-5" />
                           </button>
                       </div>
