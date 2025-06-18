@@ -106,10 +106,13 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
     >
       {isEditable && (
         <div className="absolute top-3 right-3 z-30">
-          <button onClick={(e) => {
-            e.stopPropagation();
-            setShowOptions(prev => !prev);
-          }}>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowOptions(prev => !prev);
+            }}
+            className="p-2 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 transition-all duration-200"
+          >
             <MoreVertical className="text-white" size={20} />
           </button>
 

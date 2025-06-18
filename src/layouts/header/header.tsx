@@ -64,7 +64,7 @@ const Header = () => {
             isScrolled && !isProfile && !isDetails
               ? "min-[1250px]:left-1/2 min-[1250px]:translate-x-[240px]"
               : isDetails
-                ? "min-[1250px]:left-[75%] min-[1250px]:-translate-x-1/2"
+                ? "lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-[75%] lg:-translate-x-1/2"
                 : "min-[1250px]:left-1/2 min-[1250px]:-translate-x-1/2"
           )}
         >

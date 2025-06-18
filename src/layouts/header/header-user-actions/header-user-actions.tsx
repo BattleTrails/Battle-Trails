@@ -37,18 +37,42 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
     ? ""
     : isForge ? "!pointer-events-none !hidden" : "";
 
+  // Función para cerrar el dropdown
+  const closeDropdown = () => {
+    // Eliminar el foco del elemento activo para cerrar el dropdown
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
-
+    closeDropdown(); // Cerrar dropdown después de logout
   };
+
   const goToProfile = () => {
     if (user) {
       navigate(`/profile`);
-
+      closeDropdown(); // Cerrar dropdown después de navegar
     }
   };
+
+  const handleAuthClick = () => {
+    goToAuth();
+    closeDropdown(); // Cerrar dropdown después de navegar
+  };
+
+  const handleNewRouteClick = () => {
+    if (user) {
+      goToNewRoute();
+    } else {
+      goToAuth();
+    }
+    closeDropdown(); // Cerrar dropdown después de navegar
+  };
+
+  
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -67,7 +91,6 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
     fetchUserProfile();
   }, [user]);
 
-
   return (
     <div
       className={`flex items-center justify-end 
@@ -77,7 +100,6 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
     >
       {/* Botón visible desde el breakpoint */}
       <div className={`${CLASS_BELOW_BP_HIDDEN} ${headerClass} `}>
-
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
           className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2 transition-all duration-300",
@@ -85,7 +107,6 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
         >
           <p>Añade tu ruta</p>
           <CircleFadingPlus size={42} strokeWidth={1} className="text-secondary"/>
-          
         </button>
       </div>
 
@@ -106,7 +127,6 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
               src={profilePicture}
               className="w-full h-full object-cover"
             /> : <CircleUserRound className="w-full h-full text-gray-400" strokeWidth={1} />}
-
           </div>
         </div>
 
@@ -121,7 +141,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
                 isScrolled && "!flex"
               )}>
                 <button
-                  onClick={() => (user ? goToNewRoute() : goToAuth())}
+                  onClick={handleNewRouteClick}
                   className="w-full text-left text-secondary"
                 >
                   Añade tu ruta
@@ -134,9 +154,11 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
                 <li className="pointer-events-none hover:bg-transparent">
                   <span className="text-sm font-medium text-neutral whitespace-nowrap">{userName}</span>
                 </li>
-                <li> <button onClick={goToProfile} className="w-full text-left">
-                  Perfil
-                </button></li>
+                <li>
+                  <button onClick={goToProfile} className="w-full text-left">
+                    Perfil
+                  </button>
+                </li>
                 <li>
                   <button onClick={handleLogout} className="w-full text-left">
                     Cerrar sesión
@@ -145,7 +167,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
               </>
             ) : (
               <li>
-                <button onClick={goToAuth} className="w-full text-left">
+                <button onClick={handleAuthClick} className="w-full text-left">
                   Iniciar sesión
                 </button>
               </li>
