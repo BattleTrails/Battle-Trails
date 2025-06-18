@@ -51,7 +51,7 @@ const ProfileUserPage = () => {
   }
 
   return (
-    <div className="px-4 pt-25 sm:px-10">
+    <div className="px-4 pt-25 sm:px-10 mb-10">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">

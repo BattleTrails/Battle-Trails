@@ -79,7 +79,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
           className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2",
-            isScrolled || isProfile  ? "text-secondary min-[1250px]:!hidden" : " min-[1250px]:flex",)}
+            isScrolled || isProfile  ? "text-accent min-[1250px]:!hidden" : " min-[1250px]:flex",)}
         >
           <p>Añade tu ruta</p>
           <CircleFadingPlus size={42} strokeWidth={1} className="text-secondary"/>
@@ -94,9 +94,8 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
           role="button"
           className={clsx(
             "btn-ghost btn-circle avatar border-0 shadow-none focus:shadow-none hover:shadow-none !p-0 transition-all duration-300",
-            // Aplica solo en pantallas >= 1250px
-
-            isScrolled && searchOpen && "min-[1250px]:opacity-0 min-[1250px]:-z-10 min-[1250px]:pointer-events-none"
+            // Cambio el breakpoint para que se oculte cuando sea menor o igual a 1340px
+            isScrolled && searchOpen && "max-[1340px]:opacity-0 max-[1340px]:-z-10 max-[1340px]:pointer-events-none"
           )}
         >
           <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer ml-auto">

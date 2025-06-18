@@ -283,7 +283,7 @@ const ProfilePage = () => {
               </div>
 
               {/* Contenido */}
-              <div className="mt-5">
+              <div className="mt-5 mb-10">
                   {renderContent()}
               </div>
           </div>

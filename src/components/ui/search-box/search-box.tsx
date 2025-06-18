@@ -14,6 +14,7 @@ const SearchBox = ({ onFocusChange, onSearch }: Props) => {
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,7 +22,18 @@ const SearchBox = ({ onFocusChange, onSearch }: Props) => {
   const isDetails = location.pathname.includes("/post");
   const isProfile = location.pathname.includes("/profile");
 
-  const isExpanded = isFocused || isHovered || searchValue.length > 0 || (!isScrolled && isHome);
+  // Detectar si es móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 860); // md breakpoint
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const isExpanded = isFocused || isHovered || searchValue.length > 0 || (!isScrolled && isHome && !isMobile);
   const sharedTransition = "transition-all duration-400 ease-in-out";
 
   const iconColorClass = isHome
