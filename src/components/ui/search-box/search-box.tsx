@@ -33,7 +33,7 @@ const SearchBox = ({ onFocusChange, onSearch }: Props) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const isExpanded = isFocused || isHovered || searchValue.length > 0 || (!isScrolled && isHome && !isMobile);
+  const isExpanded = isFocused || (isMobile ? false : isHovered) || searchValue.length > 0 || (!isScrolled && isHome && !isMobile);
   const sharedTransition = "transition-all duration-400 ease-in-out";
 
   const iconColorClass = isHome

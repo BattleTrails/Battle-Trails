@@ -22,6 +22,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
   const {user, loading} = useAuthHandler();
   const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>(defaultAvatar);
+  const [userName, setUserName] = useState<string>("");
 
   const goToAuth = () => navigate("/auth");
   const goToNewRoute = () => {
@@ -59,6 +60,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
       if (docSnap.exists()) {
         const data = docSnap.data();
         setProfilePicture(data.profilePicture);
+        setUserName(data.name || user.email || "Usuario");
       }
     };
 
@@ -74,12 +76,12 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
                         ${CLASS_OPACITY_TOGGLE}`}
     >
       {/* Botón visible desde el breakpoint */}
-      <div className={`${CLASS_BELOW_BP_HIDDEN} ${headerClass}`}>
+      <div className={`${CLASS_BELOW_BP_HIDDEN} ${headerClass} `}>
 
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
-          className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2",
-            isScrolled || isProfile  ? "text-accent min-[1250px]:!hidden" : " min-[1250px]:flex",)}
+          className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2 transition-all duration-300",
+            isScrolled || isProfile  ? "text-accent min-[1250px]:opacity-0 min-[1250px]:-z-10 min-[1250px]:pointer-events-none" : " min-[1250px]:flex min-[1250px]:opacity-100",)}
         >
           <p>Añade tu ruta</p>
           <CircleFadingPlus size={42} strokeWidth={1} className="text-secondary"/>
@@ -130,7 +132,7 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
             {user ? (
               <>
                 <li className="pointer-events-none hover:bg-transparent">
-                  <span className="text-sm text-neutral whitespace-nowrap">{user.email}</span>
+                  <span className="text-sm font-medium text-neutral whitespace-nowrap">{userName}</span>
                 </li>
                 <li> <button onClick={goToProfile} className="w-full text-left">
                   Perfil
