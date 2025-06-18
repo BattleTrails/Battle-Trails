@@ -127,7 +127,7 @@ const DetailsPage = () => {
                     )}
                 </div>
 
-                <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px]">
+                <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px] lg:h-screen">
                     <SocialInteractions 
                         postId={post.id}
                         initialLikes={post.likes}
@@ -169,8 +169,8 @@ const DetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="rounded overflow-auto mb-5">
-                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
+                    <div className="rounded overflow-hidden mb-5 h-[250px] lg:h-screen">
+                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)}  />}
                     </div>
                 </div>
             </div>

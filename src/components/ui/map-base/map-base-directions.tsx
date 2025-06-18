@@ -23,7 +23,7 @@ interface Props {
 
 const containerStyle = {
   width: "100%",
-  height: "250px",
+  height: "100%",
 };
 
 const geoPointToLatLng = (point: GeoPoint): { lat: number; lng: number } => ({
