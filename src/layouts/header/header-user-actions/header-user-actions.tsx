@@ -18,7 +18,7 @@ import {doc, getDoc} from "firebase/firestore";
 import {db} from "@config/firebaseConfig.ts";
 import defaultAvatar from "../../../../public/avatars/avatar-1.webp";
 
-const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: boolean; currentPath: string;isScrolled:boolean }) => {
+const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: boolean; currentPath: string;isScrolled:boolean; }) => {
   const {user, loading} = useAuthHandler();
   const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>(defaultAvatar);
@@ -31,7 +31,8 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
 
   const isHome = currentPath === "/";
   const isForge = currentPath.startsWith("/new");
-  const isProfile = currentPath.includes("/profile") || currentPath.includes("/post");
+  const isProfile = currentPath.includes("/profile") ;
+  const isDetails = currentPath.includes("/post");
 
   const headerClass = isHome
     ? ""
@@ -103,7 +104,10 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
           className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2 transition-all duration-300",
-            isScrolled || isProfile  ? "text-accent min-[1250px]:opacity-0 min-[1250px]:-z-10 min-[1250px]:pointer-events-none" : " min-[1250px]:flex min-[1250px]:opacity-100",)}
+            isScrolled || isProfile || !isDetails
+              ? "text-accent lg:opacity-0 lg:-z-10 lg:pointer-events-none"
+              : "sm:flex lg:hidden"
+          )}
         >
           <p>Añade tu ruta</p>
           <CircleFadingPlus size={42} strokeWidth={1} className="text-secondary"/>
