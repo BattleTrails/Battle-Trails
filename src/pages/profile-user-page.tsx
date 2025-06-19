@@ -51,7 +51,7 @@ const ProfileUserPage = () => {
   }
 
   return (
-    <div className="px-4 pt-25 sm:px-10">
+    <div className="px-4 pt-25 sm:px-10 mb-10">
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex flex-col lg:flex-row flex-wrap gap-6 items-center">
@@ -114,7 +114,7 @@ const ProfileUserPage = () => {
         <span className="text-xl font-light">Publicaciones</span>
       </div>
 
-      <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-20 justify-items-center lg:justify-items-start">
+      <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-20 justify-items-center">
         {posts.map((post) => (
           <Card key={post.id} post={post} isEditable={false} />
         ))}

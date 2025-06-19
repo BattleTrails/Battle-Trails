@@ -96,7 +96,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
 
   return (
     <>
-      <div ref={containerRef} className="py-16 bg-gradient-to-br from-gray-50 to-gray-100">
+      <div ref={containerRef} className="py-16 bg-gray-100 h-[100vh]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Descubre cada parada de esta ruta</h2>
@@ -107,7 +107,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
 
           {/* Desktop */}
           <div className="hidden lg:block">
-            <div className="grid grid-cols-2 gap-12 items-start">
+            <div className="grid grid-cols-2 gap-20 items-start">
               {/* Contenido de la parada activa */}
               <div className="space-y-6 md:pl-5">
                 <div
@@ -122,12 +122,12 @@ const RouteTimeline = ({ waypoints }: Props) => {
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900">{currentWaypoint?.address}</h3>
                   </div>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-6">{currentDescription}</p>
+                  <p className="text-gray-700 text-lg text-justify leading-relaxed mb-6">{currentDescription}</p>
 
                   {/* Grid de imágenes */}
                   {currentWaypoint?.images && currentWaypoint.images.length > 0 && (
                     <div className="grid grid-cols-4 gap-3 mb-6">
-                      {currentWaypoint.images.slice(0, 3).map((image, imgIndex) => (
+                      {currentWaypoint.images.slice(0, 4).map((image, imgIndex) => (
                         <div
                           key={imgIndex}
                           className="aspect-square rounded-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-105 shadow-md hover:shadow-lg"
@@ -255,7 +255,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                   <div key={index} className="bg-white p-4 rounded-lg border-gray-200">
                     <h4 className="text-base font-semibold text-gray-900 mb-1">Parada {index + 1}</h4>
                     <p className="text-sm text-gray-600 mb-2">{waypoint.address}</p>
-                    <p className="text-sm text-gray-700 mb-3">
+                    <p className=" text-sm text-gray-700 text-justify mb-3 ">
                       {waypoint.description ??
                         "Esta parada forma parte de una experiencia única que te permitirá conocer mejor la zona y sus atractivos."}
                     </p>
@@ -263,7 +263,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                     {/* Grid de imágenes mobile */}
                     {waypoint.images && waypoint.images.length > 0 && (
                       <div className="grid grid-cols-4 gap-2">
-                        {waypoint.images.slice(0, 3).map((image, imgIndex) => (
+                        {waypoint.images.slice(0, 4).map((image, imgIndex) => (
                           <div
                             key={imgIndex}
                             className="aspect-square rounded-md overflow-hidden cursor-pointer"

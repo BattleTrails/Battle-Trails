@@ -2,8 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getPostById, getRouteByPostId, getUserById } from "@/services/db-service";
 import { Post, Route } from "@/types";
-import Comments from "@/components/ui/comments/comments";
-import Carouselcards from "@/components/ui/carouselcards/carouselcards";
+import Comments from "@pages/details-page/comments/comments";
+import Carouselcards from "@pages/details-page/carouselcards/carouselcards";
 import { LocateFixed, Timer, ChevronDown } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
@@ -109,7 +109,7 @@ const DetailsPage = () => {
             <div className="flex flex-col lg:flex-row">
                 <div 
                     ref={imagesContainerRef}
-                    className="w-full lg:w-[55%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory scroll-container relative"
+                    className="w-full lg:w-[50%] h-[55dvh] lg:h-screen overflow-y-scroll snap-y snap-mandatory scroll-container relative"
                     onScroll={handleScroll}
                 >
                     {post.images.map((src, index) => (
@@ -127,7 +127,7 @@ const DetailsPage = () => {
                     )}
                 </div>
 
-                <div className="w-full lg:w-[45%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px]">
+                <div className="w-full lg:w-[50%] flex flex-col justify-start gap-7 px-5 lg:px-20 pt-[75px] lg:pt-[75px] lg:h-screen">
                     <SocialInteractions 
                         postId={post.id}
                         initialLikes={post.likes}
@@ -169,8 +169,8 @@ const DetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="rounded overflow-auto">
-                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)} />}
+                    <div className="rounded overflow-hidden mb-5 h-[250px] lg:h-screen">
+                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)}  />}
                     </div>
                 </div>
             </div>

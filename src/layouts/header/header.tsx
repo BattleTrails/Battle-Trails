@@ -7,6 +7,7 @@ import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
 import clsx from "clsx";
 
 
+
 const Header = () => {
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -22,7 +23,7 @@ const Header = () => {
 
   const headerClass = isHome
     ? ""
-    : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75] " : "";
+    : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75px] " : "";
 
   useEffect(() => {
     if (isDetails) {
@@ -44,7 +45,8 @@ const Header = () => {
     <div
       className={clsx(
         "fixed flex-col gap-5 transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4",
-        !isDetails && "backdrop-blur-sm",
+        isScrolled && !isDetails && !isProfile && "backdrop-blur-md bg-[rgba(30,30,30,0.4)] border-b border-white/10",
+        isScrolled && ( isProfile) && "backdrop-blur-md bg-[rgba(30,30,30,0.1)]",
         headerClass,
         isScrolled && "min-[1250px]:!h-[75px]"
       )
@@ -58,13 +60,14 @@ const Header = () => {
         <div
           className={clsx(
             "w-full max-w-md flex justify-center transition-transform duration-300",
-            "min-[1250px]:absolute min-[1250px]:top-1/2 min-[1250px]:left-1/2 min-[1250px]:-translate-y-1/2",
-            isScrolled
-              ? "min-[1250px]:translate-x-[240px]"
-              : "min-[1250px]:-translate-x-1/2"
+            "min-[1250px]:absolute min-[1250px]:top-1/2 min-[1250px]:-translate-y-1/2",
+            isScrolled && !isProfile && !isDetails
+              ? "min-[1250px]:left-1/2 min-[1250px]:translate-x-[240px]"
+              : isDetails
+                ? "lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-[75%] lg:-translate-x-1/2"
+                : "min-[1250px]:left-1/2 min-[1250px]:-translate-x-1/2"
           )}
         >
-
         <HeaderSearchBarWrapper
             setSearchOpen={setSearchOpen}
             currentPath={currentPath}

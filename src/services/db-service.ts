@@ -1,9 +1,21 @@
 import { db } from "@/config/firebaseConfig";
-import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction, GeoPoint } from "firebase/firestore";
-
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
 import { Post, Route, User } from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
 
+// Interfaces para los tipos
+interface PostView {
+  postId: string;
+  userId: string;
+  viewedAt: string;
+  userType: 'visitor' | 'authenticated';
+  docId?: string;
+}
+
+interface GeoPoint {
+  latitude: number;
+  longitude: number;
+}
 
 /**
  * Crea un nuevo post en Firestore y devuelve su ID.
@@ -21,6 +33,7 @@ export const createPost = async (postData: {
     ...postData,
     likes: 0,
     likedBy: [],
+    views: 0,
   });
 
   return docRef.id;
@@ -132,174 +145,6 @@ export const saveRoute = async (userId: string, postId: string): Promise<boolean
 };
 
 /**
- * Quitar una ruta guardada
- */
-export const unsaveRoute = async (userId: string, postId: string): Promise<boolean> => {
-  try {
-    console.log('Quitando ruta guardada de Firestore:', { userId, postId }); // Debug
-    const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
-    await deleteDoc(savedRouteRef);
-    console.log('Ruta eliminada de guardados exitosamente'); // Debug
-    return true;
-  } catch (error) {
-    console.error('Error al quitar la ruta guardada:', error);
-    throw error;
-  }
-};
-
-/**
- * Verificar si una ruta está guardada
- */
-export const isRouteSaved = async (userId: string, postId: string): Promise<boolean> => {
-  try {
-    console.log('Verificando si ruta está guardada:', { userId, postId }); // Debug
-    const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
-    const docSnap = await getDoc(savedRouteRef);
-    const exists = docSnap.exists();
-    console.log('Resultado verificación:', exists); // Debug
-    return exists;
-  } catch (error) {
-    console.error('Error al verificar si la ruta está guardada:', error);
-    return false;
-  }
-};
-
-
-// Dar like a un post
-export const likePost = async (postId: string, userId: string): Promise<void> => {
-  try {
-    console.log(':fire: likePost llamada:', { postId, userId });
-    const postRef = doc(db, 'posts', postId);
-    
-    await updateDoc(postRef, {
-      likes: increment(1),
-      likedBy: arrayUnion(userId)
-    });
-    
-    console.log(':white_check_mark: likePost exitoso');
-  } catch (error) {
-    console.error(':x: Error in likePost:', error);
-    throw error;
-  }
-};
-
-// Quitar like de un post
-export const unlikePost = async (postId: string, userId: string): Promise<void> => {
-  try {
-    console.log(':fire: unlikePost llamada:', { postId, userId });
-    const postRef = doc(db, 'posts', postId);
-    
-    await updateDoc(postRef, {
-      likes: increment(-1),
-      likedBy: arrayRemove(userId)
-    });
-    
-    console.log(':white_check_mark: unlikePost exitoso');
-  } catch (error) {
-    console.error(':x: Error in unlikePost:', error);
-    throw error;
-  }
-};
-
-// Obtener el número de likes de un post
-export const getPostLikes = async (postId: string): Promise<number> => {
-  try {
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    
-    if (postSnap.exists()) {
-      const data = postSnap.data();
-      return data.likes || 0;
-    }
-    
-    return 0;
-  } catch (error) {
-    console.error('Error in getPostLikes:', error);
-    return 0;
-  }
-};
-
-// Verificar si un usuario ya le dio like a un post
-export const hasUserLikedPost = async (postId: string, userId: string): Promise<boolean> => {
-  try {
-    const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    
-    if (postSnap.exists()) {
-      const data = postSnap.data();
-      const likedBy = data.likedBy || [];
-      return likedBy.includes(userId);
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('Error in hasUserLikedPost:', error);
-    return false;
-  }
-};
-
-/**
- * Obtener todas las rutas guardadas por un usuario
- */
-export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> => {
-  try {
-    console.log('Buscando rutas guardadas para usuario:', userId); // Debug
-    
-    const savedRoutesQuery = query(
-      collection(db, 'saved_routes'),
-      where('userId', '==', userId)
-    );
-    
-    const querySnapshot = await getDocs(savedRoutesQuery);
-    console.log('Documentos de rutas guardadas encontrados:', querySnapshot.docs.length); // Debug
-    
-    if (querySnapshot.empty) {
-      console.log('No hay rutas guardadas para este usuario');
-      return [];
-    }
-    
-    const savedRouteIds = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      console.log('Documento de ruta guardada:', data); // Debug
-      return data.postId;
-    });
-    
-    console.log('IDs de posts guardados:', savedRouteIds); // Debug
-    
-    // Obtener los posts completos de las rutas guardadas
-    const savedPosts = await Promise.allSettled(
-      savedRouteIds.map(async (postId) => {
-        try {
-          console.log('Obteniendo post:', postId); // Debug
-          const post = await getPostById(postId);
-          console.log('Post obtenido exitosamente:', post.title); // Debug
-          return post;
-        } catch (error) {
-          console.error(`Error al obtener post ${postId}:`, error);
-          return null;
-        }
-      })
-    );
-    
-    // Filtrar solo los posts que se obtuvieron exitosamente
-    const validPosts = savedPosts
-      .filter((result): result is PromiseFulfilledResult<Post> => 
-        result.status === 'fulfilled' && result.value !== null
-      )
-      .map(result => result.value);
-    
-    console.log('Posts válidos obtenidos:', validPosts.length); // Debug
-    console.log('Títulos de posts obtenidos:', validPosts.map(p => p.title)); // Debug
-    
-    return validPosts;
-    
-  } catch (error) {
-    console.error('Error al obtener rutas guardadas:', error);
-    return [];
-  }
-};
-
-/**
  * Verifica si un usuario específico ha visto un post
  * @param postId - ID del post
  * @param userId - ID del usuario o visitante
@@ -315,7 +160,6 @@ export const hasUserViewedPost = async (postId: string, userId: string): Promise
     return false;
   }
 };
-
 
 /**
  * Crea una ruta vinculada a un post ya existente.
@@ -345,7 +189,7 @@ export const getPosts = async (): Promise<Post[]> => {
       routeId: data.routeId,
       likes: data.likes,
       likedBy: data.likedBy,
-      views: data.views,
+      views: data.views || 0,
     };
   });
 };
@@ -369,7 +213,6 @@ export const getRouteByPostId = async (postId: string) => {
     waypoints: doc.data().waypoints,
     images: doc.data().images,
   } as Route;
-
 };
 
 export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
@@ -383,7 +226,6 @@ export const getPostsByUserId = async (userId: string): Promise<Post[]> => {
   })) as Post[];
 };
 
-
 export const getUserById = async (userId: string): Promise<User> => {
   const userRef = doc(db, "users", userId);
   const userSnap = await getDoc(userRef);
@@ -396,10 +238,107 @@ export const getUserById = async (userId: string): Promise<User> => {
     name: data.name,
     email: data.email,
     username: data.username,
+    role: data.role,
+    savedPosts: data.savedPosts,
     profilePicture: data.profilePicture,
   };
 };
 
+/**
+ * Obtiene estadísticas detalladas de las vistas de un post
+ * @param postId - ID del post
+ * @returns Promise con estadísticas de las vistas
+ */
+export const getPostViewStats = async (postId: string) => {
+  try {
+    const viewsQuery = query(
+      collection(db, 'post_views'),
+      where('postId', '==', postId)
+    );
+    
+    const querySnapshot = await getDocs(viewsQuery);
+    
+    const views = querySnapshot.docs.map(doc => ({
+      userId: doc.data().userId,
+      viewedAt: doc.data().viewedAt,
+      userType: doc.data().userType
+    }));
+    
+    const authenticatedViews = views.filter(v => v.userType === 'authenticated').length;
+    const visitorViews = views.filter(v => v.userType === 'visitor').length;
+    
+    return {
+      totalViews: views.length,
+      authenticatedViews,
+      visitorViews,
+      views: views.sort((a, b) => 
+        new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
+      )
+    };
+  } catch (error) {
+    console.error('Error en getPostViewStats:', error);
+    return {
+      totalViews: 0,
+      authenticatedViews: 0,
+      visitorViews: 0,
+      views: []
+    };
+  }
+};
+
+/**
+ * Limpia vistas duplicadas (función de mantenimiento)
+ * @param postId - ID del post (opcional, si no se proporciona limpia todos)
+ */
+export const cleanupDuplicateViews = async (postId?: string): Promise<void> => {
+  try {
+    console.log('🧹 Iniciando limpieza de vistas duplicadas...');
+    
+    let viewsQuery;
+    if (postId) {
+      viewsQuery = query(
+        collection(db, 'post_views'),
+        where('postId', '==', postId)
+      );
+    } else {
+      viewsQuery = collection(db, 'post_views');
+    }
+    
+    const querySnapshot = await getDocs(viewsQuery);
+    const viewsByUserAndPost = new Map<string, PostView>();
+    const duplicatesToDelete: string[] = [];
+    
+    // Identificar duplicados
+    querySnapshot.docs.forEach(doc => {
+      const data = doc.data() as PostView;
+      const key = `${data.postId}_${data.userId}`;
+      
+      if (viewsByUserAndPost.has(key)) {
+        // Es un duplicado, marcar para eliminación
+        duplicatesToDelete.push(doc.id);
+      } else {
+        // Primera ocurrencia, guardar
+        viewsByUserAndPost.set(key, {
+          ...data,
+          docId: doc.id
+        });
+      }
+    });
+    
+    // Eliminar duplicados
+    const deletePromises = duplicatesToDelete.map(docId => 
+      deleteDoc(doc(db, 'post_views', docId))
+    );
+    
+    await Promise.all(deletePromises);
+    
+    console.log(`🧹 Limpieza completada. Eliminados ${duplicatesToDelete.length} duplicados.`);
+    
+  } catch (error) {
+    console.error('Error en cleanupDuplicateViews:', error);
+    throw error;
+  }
+};
 
 const extractSupabasePaths = (urls: string[]) => {
   return urls
@@ -424,7 +363,6 @@ export const deletePostById = async (postId: string): Promise<void> => {
     const postSnap = await getDoc(postRef);
     const routeQuery = query(collection(db, "routes"), where("postId", "==", postId));
     const routeSnapshot = await getDocs(routeQuery);
-
 
     if (!postSnap.exists()) {
       throw new Error("Post no encontrado");
@@ -459,8 +397,6 @@ export const deletePostById = async (postId: string): Promise<void> => {
     await deleteDoc(postRef);
 
     // 2. Eliminar ruta asociada
-
-
     const deleteRoutePromises = routeSnapshot.docs.map((routeDoc) =>
       deleteDoc(doc(db, "routes", routeDoc.id))
     );
@@ -479,6 +415,7 @@ export const deletePostById = async (postId: string): Promise<void> => {
     throw error;
   }
 };
+
 export const updatePost = async (postId: string, updateData: Partial<{
   title: string;
   description: string;
@@ -550,4 +487,171 @@ export const updateRoute = async (routeId: string, updateData: Partial<{
     throw error;
   }
 };*/
+
+// Dar like a un post
+export const likePost = async (postId: string, userId: string): Promise<void> => {
+  try {
+    console.log('🔥 likePost llamada:', { postId, userId });
+    const postRef = doc(db, 'posts', postId);
+    
+    await updateDoc(postRef, {
+      likes: increment(1),
+      likedBy: arrayUnion(userId)
+    });
+    
+    console.log('✅ likePost exitoso');
+  } catch (error) {
+    console.error('❌ Error in likePost:', error);
+    throw error;
+  }
+};
+
+// Quitar like de un post
+export const unlikePost = async (postId: string, userId: string): Promise<void> => {
+  try {
+    console.log('🔥 unlikePost llamada:', { postId, userId });
+    const postRef = doc(db, 'posts', postId);
+    
+    await updateDoc(postRef, {
+      likes: increment(-1),
+      likedBy: arrayRemove(userId)
+    });
+    
+    console.log('✅ unlikePost exitoso');
+  } catch (error) {
+    console.error('❌ Error in unlikePost:', error);
+    throw error;
+  }
+};
+
+// Obtener el número de likes de un post
+export const getPostLikes = async (postId: string): Promise<number> => {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postRef);
+    
+    if (postSnap.exists()) {
+      const data = postSnap.data();
+      return data.likes || 0;
+    }
+    
+    return 0;
+  } catch (error) {
+    console.error('Error in getPostLikes:', error);
+    return 0;
+  }
+};
+
+// Verificar si un usuario ya le dio like a un post
+export const hasUserLikedPost = async (postId: string, userId: string): Promise<boolean> => {
+  try {
+    const postRef = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postRef);
+    
+    if (postSnap.exists()) {
+      const data = postSnap.data();
+      const likedBy = data.likedBy || [];
+      return likedBy.includes(userId);
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error in hasUserLikedPost:', error);
+    return false;
+  }
+};
+
+/**
+ * Quitar una ruta guardada
+ */
+export const unsaveRoute = async (userId: string, postId: string): Promise<boolean> => {
+  try {
+    console.log('Quitando ruta guardada de Firestore:', { userId, postId }); // Debug
+    const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
+    await deleteDoc(savedRouteRef);
+    console.log('Ruta eliminada de guardados exitosamente'); // Debug
+    return true;
+  } catch (error) {
+    console.error('Error al quitar la ruta guardada:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verificar si una ruta está guardada
+ */
+export const isRouteSaved = async (userId: string, postId: string): Promise<boolean> => {
+  try {
+    console.log('Verificando si ruta está guardada:', { userId, postId }); // Debug
+    const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
+    const docSnap = await getDoc(savedRouteRef);
+    const exists = docSnap.exists();
+    console.log('Resultado verificación:', exists); // Debug
+    return exists;
+  } catch (error) {
+    console.error('Error al verificar si la ruta está guardada:', error);
+    return false;
+  }
+};
+
+/**
+ * Obtener todas las rutas guardadas por un usuario
+ */
+export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> => {
+  try {
+    console.log('Buscando rutas guardadas para usuario:', userId); // Debug
+    
+    const savedRoutesQuery = query(
+      collection(db, 'saved_routes'),
+      where('userId', '==', userId)
+    );
+    
+    const querySnapshot = await getDocs(savedRoutesQuery);
+    console.log('Documentos de rutas guardadas encontrados:', querySnapshot.docs.length); // Debug
+    
+    if (querySnapshot.empty) {
+      console.log('No hay rutas guardadas para este usuario');
+      return [];
+    }
+    
+    const savedRouteIds = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      console.log('Documento de ruta guardada:', data); // Debug
+      return data.postId;
+    });
+    
+    console.log('IDs de posts guardados:', savedRouteIds); // Debug
+    
+    // Obtener los posts completos de las rutas guardadas
+    const savedPosts = await Promise.allSettled(
+      savedRouteIds.map(async (postId) => {
+        try {
+          console.log('Obteniendo post:', postId); // Debug
+          const post = await getPostById(postId);
+          console.log('Post obtenido exitosamente:', post.title); // Debug
+          return post;
+        } catch (error) {
+          console.error(`Error al obtener post ${postId}:`, error);
+          return null;
+        }
+      })
+    );
+    
+    // Filtrar solo los posts que se obtuvieron exitosamente
+    const validPosts = savedPosts
+      .filter((result): result is PromiseFulfilledResult<Post> => 
+        result.status === 'fulfilled' && result.value !== null
+      )
+      .map(result => result.value);
+    
+    console.log('Posts válidos obtenidos:', validPosts.length); // Debug
+    console.log('Títulos de posts obtenidos:', validPosts.map(p => p.title)); // Debug
+    
+    return validPosts;
+    
+  } catch (error) {
+    console.error('Error al obtener rutas guardadas:', error);
+    return [];
+  }
+};
 

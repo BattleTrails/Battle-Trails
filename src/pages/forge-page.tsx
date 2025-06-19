@@ -14,9 +14,7 @@ import clsx from "clsx";
 import {Post, Route} from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service";
 import {extractSupabasePaths} from "@/utils/extract-supabase-paths.ts";
-
-
-
+import Alert from "@components/ui/alert/alert.tsx";
 
 const ForgePage = () => {
   const { user } = useAuth();
@@ -31,7 +29,6 @@ const ForgePage = () => {
     loadPostForEdit,
     setPostField,
   } = usePostStore();
-// Estados para mantener las imágenes existentes
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [existingWaypointImages, setExistingWaypointImages] = useState<string[][]>([]);
   const [currentStep, setCurrentStep] = useState(1);
@@ -40,13 +37,15 @@ const ForgePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
   const [deletedWaypointImageUrls, setDeletedWaypointImageUrls] = useState<string[][]>([]);
-
-
-
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertType, setAlertType] = useState<"error" | "success" | "info">("error");
 
   const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
 
-  const showError = (msg: string) => alert(msg);
+  const showError = (msg: string) => {
+    setAlertMessage(msg);
+    setAlertType("error");
+  };
 
   const uploadWaypointImages = async (waypoints: typeof postDraft.routePoints, userId: string) => {
     return Promise.all(
@@ -138,9 +137,13 @@ const ForgePage = () => {
   }, [resetPostDraft]);
 
   const validateStep1 = () => {
-    if (!user) return showError("Usuario no autenticado.");
+    if (!user) {
+      showError("Usuario no autenticado.");
+      return false;
+    }
     if (!postDraft.title.trim() || !postDraft.description.trim() || postDraft.routePoints.length < 2) {
-      return showError("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
+      showError("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
+      return false;
     }
     const totalMainImages = [
       ...existingImages.filter(img => !deletedImageUrls.includes(img)),
@@ -148,7 +151,8 @@ const ForgePage = () => {
     ];
 
     if (totalMainImages.length === 0) {
-      return showError("Debes mantener al menos una imagen principal.");
+      showError("Debes mantener al menos una imagen principal.");
+      return false;
     }
 
     return true;
@@ -156,6 +160,18 @@ const ForgePage = () => {
 
   const handleNextStep = () => {
     if (!validateStep1()) return;
+    // Guardar el estado actual antes de cambiar de paso
+    if (postDraft.routePoints?.length > 0) {
+      postDraft.routePoints.forEach((point, index) => {
+        if (point.description) {
+          setPostField("routePoints", [
+            ...postDraft.routePoints.slice(0, index),
+            { ...point, description: point.description },
+            ...postDraft.routePoints.slice(index + 1)
+          ]);
+        }
+      });
+    }
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentStep(2);
@@ -164,6 +180,18 @@ const ForgePage = () => {
   };
 
   const handleBackStep = () => {
+    // Guardar el estado actual antes de volver
+    if (postDraft.routePoints?.length > 0) {
+      postDraft.routePoints.forEach((point, index) => {
+        if (point.description) {
+          setPostField("routePoints", [
+            ...postDraft.routePoints.slice(0, index),
+            { ...point, description: point.description },
+            ...postDraft.routePoints.slice(index + 1)
+          ]);
+        }
+      });
+    }
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentStep(1);
@@ -304,7 +332,15 @@ const ForgePage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative ">
+    <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative">
+      {alertMessage && (
+        <Alert 
+          message={alertMessage} 
+          onClose={() => setAlertMessage("")} 
+          type={alertType}
+        />
+      )}
+      
       <div
         className={clsx("transition-all duration-500 ease-in-out", {
           "opacity-100 pointer-events-auto translate-y-0": step1Visible,
@@ -323,26 +359,18 @@ const ForgePage = () => {
 
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1">
-
-            {!isEditMode || existingImages.length > 0 || postDraft.images.length > 0 ? (
-              <ForgeImages
-                images={postDraft.images}
-                setImages={setImages}
-                label={isEditMode
-                  ? "Edita las imágenes principales de la ruta"
-                  : "Añade imágenes generales de la ruta"
-                }
-                mode="main"
-                existingImages={isEditMode ? existingImages : []}
-                deletedImageUrls={deletedImageUrls}
-                setDeletedImageUrls={setDeletedImageUrls}
-              />
-            ) : (
-              <div className="h-40 flex items-center justify-center text-gray-500">
-                Cargando imágenes principales...
-              </div>
-            )}
-
+            <ForgeImages
+              images={postDraft.images}
+              setImages={setImages}
+              label={isEditMode
+                ? "Edita las imágenes principales de la ruta"
+                : "Añade imágenes generales de la ruta"
+              }
+              mode="main"
+              existingImages={isEditMode ? existingImages : []}
+              deletedImageUrls={deletedImageUrls}
+              setDeletedImageUrls={setDeletedImageUrls}
+            />
           </div>
 
           <div className="flex-1">

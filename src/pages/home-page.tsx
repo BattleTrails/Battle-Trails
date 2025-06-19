@@ -185,7 +185,7 @@ const HomePage = () => {
           {locationError && activeFilters.includes('cercanos') && (
             <p className="text-red-500 text-sm">{locationError}</p>
           )}
-          <div className="grid grid-cols-1 pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-17">
+          <div className="grid grid-cols-1 pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10">
             {distanceFilteredPosts.map((post) => (
               <Card key={post.id} post={post}/>
             ))}

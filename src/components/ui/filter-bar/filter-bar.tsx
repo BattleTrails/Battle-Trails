@@ -9,16 +9,14 @@ const FILTERS = [
   { key: "descubre" as FilterType, label: "Joyas Ocultas", icon: Gem },
 ];
 
-const VALID_COMBINATIONS: Record<string, string[]> = {
-  populares: ["cercanos", "vistos"],
-  cercanos: ["populares", "descubre"],
-  explorados: ["vistos"],
-  vistos: ["populares", "explorados"],
-  descubre: ["cercanos"],
-};
 
 const FilterBar = () => {
   const { activeFilters, toggleFilter } = useSearchStore();
+
+  const handleFilterClick = (filter: FilterType) => {
+    toggleFilter(filter);
+    window.scrollTo({ top: 0 });
+  };
 
   return (
     <div
@@ -34,7 +32,7 @@ const FilterBar = () => {
         return (
           <button
             key={key}
-            onClick={() => toggleFilter(key)}
+            onClick={() => handleFilterClick(key)}
             className={clsx(
               // MOBILE
               "flex flex-col flex-1 items-center justify-center h-full",
