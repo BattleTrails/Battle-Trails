@@ -16,6 +16,7 @@ const ProfileUserPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOptions, setShowOptions] = useState(false);
+  const [showShareFeedback, setShowShareFeedback] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -41,6 +42,20 @@ const ProfileUserPage = () => {
 
     fetchUserData();
   }, [userId]);
+
+  const handleShareProfile = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Perfil de ${profile?.name}`,
+        text: `Mira el perfil de @${profile?.username} en Battle Trails`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      setShowShareFeedback(true);
+      setTimeout(() => setShowShareFeedback(false), 2000);
+    }
+  };
 
   if (loading || !profile) {
     return (
@@ -72,9 +87,12 @@ const ProfileUserPage = () => {
         </div>
 
         <div className="flex gap-x-3 mt-3 items-start justify-center sm:justify-end">
-          <button className="bg-neutral p-1.5 rounded-md">
+          <button className="bg-neutral p-1.5 rounded-md" onClick={handleShareProfile}>
             <Share2 color="white" strokeWidth={1} className="size-5" />
           </button>
+          {showShareFeedback && (
+            <span className="ml-2 text-green-600 text-sm">¡Enlace copiado!</span>
+          )}
           <button className="bg-neutral p-1.5 rounded-md">
             <Bell color="white" strokeWidth={1} className="size-5" />
           </button>

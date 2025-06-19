@@ -24,6 +24,7 @@ const ProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [savedRoutesLoading, setSavedRoutesLoading] = useState(false);
     const [savedRoutesLoaded, setSavedRoutesLoaded] = useState(false); // Nuevo estado
+    const [showShareFeedback, setShowShareFeedback] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -117,6 +118,21 @@ const ProfilePage = () => {
         // Si cambiamos a guardados y no están cargadas, forzar la carga
         if (tab === "guardados" && !savedRoutesLoaded) {
             setSavedRoutesLoaded(false);
+        }
+    };
+
+    const handleShareProfile = () => {
+        const profileUrl = user ? `${window.location.origin}/profile/${user.uid}` : window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: `Perfil de ${profile?.name}`,
+                text: `Mira el perfil de @${profile?.username} en Battle Trails`,
+                url: profileUrl,
+            });
+        } else {
+            navigator.clipboard.writeText(profileUrl);
+            setShowShareFeedback(true);
+            setTimeout(() => setShowShareFeedback(false), 2000);
         }
     };
 
@@ -215,7 +231,7 @@ const ProfilePage = () => {
                           <button onClick={() => setShowModal(true)} className="bg-neutral p-1.5 rounded-md">
                               <Settings color="white" strokeWidth={1} className="size-5" />
                           </button>
-                          <button className="bg-neutral p-1.5 rounded-md">
+                          <button className="bg-neutral p-1.5 rounded-md" onClick={handleShareProfile}>
                               <Share2 color="white" strokeWidth={1} className="size-5" />
                           </button>
                       </div>
@@ -287,6 +303,9 @@ const ProfilePage = () => {
                   {renderContent()}
               </div>
           </div>
+          {showShareFeedback && (
+              <span className="ml-2 text-green-600 text-sm">¡Enlace copiado!</span>
+          )}
       </>
     );
 };
