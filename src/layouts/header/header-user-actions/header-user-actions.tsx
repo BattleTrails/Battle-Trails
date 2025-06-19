@@ -103,10 +103,15 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
       <div className={`${CLASS_BELOW_BP_HIDDEN} ${headerClass} `}>
         <button
           onClick={() => (user ? goToNewRoute() : goToAuth())}
-          className={clsx("btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2 transition-all duration-300",
-            isScrolled || isProfile || !isDetails
-              ? "text-accent lg:opacity-0 lg:-z-10 lg:pointer-events-none"
-              : "sm:flex lg:hidden"
+          className={clsx(
+            "btn text-accent bg-transparent border-0 font-medium space-x-2 shadow-none focus:shadow-none hover:shadow-none gap-2 transition-all duration-300",
+            isHome
+              ? (isScrolled
+                  ? "lg:opacity-0 lg:-z-10 lg:pointer-events-none"
+                  : "lg:flex")
+              : (isScrolled || isProfile || !isDetails
+                  ? "text-accent lg:opacity-0 lg:-z-10 lg:pointer-events-none"
+                  : "sm:flex lg:hidden")
           )}
         >
           <p>Añade tu ruta</p>
@@ -137,11 +142,11 @@ const HeaderUserActions = ({searchOpen, currentPath,isScrolled}: { searchOpen: b
         {!loading && (
           <ul
             className="menu menu-sm dropdown-content bg-base-100 rounded-field z-10 mt-3 w-fit min-w-[160px] p-2 gap-1 shadow">
-            {/* Botón mobile visible solo por debajo del breakpoint */}
+            {/* Botón mobile visible solo por debajo del breakpoint o en desktop si isHome && isScrolled */}
             {!isForge && (
               <li className={clsx(
                 "flex",
-                CLASS_MIN_BP_HIDDEN,
+                (isHome && isScrolled) ? "lg:flex" : CLASS_MIN_BP_HIDDEN,
                 isScrolled && "!flex"
               )}>
                 <button
