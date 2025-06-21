@@ -96,7 +96,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
 
   return (
     <>
-      <div ref={containerRef} className="py-16 bg-gray-100 h-[100vh]">
+      <div ref={containerRef} className="py-16 bg-gray-100 min-h-[100vh]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Descubre cada parada de esta ruta</h2>
@@ -231,7 +231,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
           </div>
 
           {/* Mobile */}
-          <div className="block lg:hidden relative h-[500px]">
+          <div className="block lg:hidden relative h-[80vh]">
             <div className="absolute left-4 top-0 bottom-0 rounded w-1 bg-gray-300 z-0"></div>
             <div className="absolute left-4 top-0 w-1 bg-secondary rounded z-10 mobile-progress-bar transition-all duration-200" style={{ height: "0%" }}></div>
 
