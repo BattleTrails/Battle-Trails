@@ -115,7 +115,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 {loading ? (
                     <div>Cargando comentarios...</div>
                 ) : comments.length === 0 ? (
-                    <div className="text-neutral-400">Sé el primero en comentar.</div>
+                    <div className="text-neutral-400 text-center">Sé el primero en comentar.</div>
                 ) : (
                     comments.map((comment) => (
                         <div key={comment.id} className="flex items-start gap-x-4 group relative">
