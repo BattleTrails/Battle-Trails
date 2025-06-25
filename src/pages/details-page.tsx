@@ -181,15 +181,15 @@ const DetailsPage = () => {
                 images: wp.images
             })) || []} />
 
-            <div className="mt-20 ml-5">
-                <h2 className="mb-8 font-semibold text-3xl">Comentarios</h2>
+            <div className="mt-20  w-[80%] mx-auto">
+                <h2 className="mb-8  font-semibold text-3xl text-center">Comentarios</h2>
                 <div className="px-0 lg:px-20">
                     <Comments />
                 </div>
             </div>
 
             <div className="mt-20 bg-[#1E1E1E] py-12">
-                <h2 className="pl-5 font-semibold text-3xl text-white mb-10">Rutas relacionadas</h2>
+                <h2 className="pl-5 font-semibold text-3xl text-white mb-10 text-center">Rutas relacionadas</h2>
                 <Carouselcards />
             </div>
 
