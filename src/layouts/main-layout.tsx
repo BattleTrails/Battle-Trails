@@ -20,7 +20,7 @@ const MainLayout = () => {
       <main className="flex-1  ">
         <Outlet/> {/* Renderiza las páginas */}
       </main>
-      <Footer/>
+      {!isForge && <Footer/>}
     </div>
   );
 };

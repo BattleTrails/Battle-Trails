@@ -170,4 +170,13 @@ html {
 
 /* Aplicación global */
 
+/* Utilidad para ocultar scrollbar (horizontal y vertical) */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari y Opera */
+}
+
 
