@@ -191,7 +191,7 @@ const DetailsPage = () => {
             </div>
 
             <div className="mt-20 bg-[#1E1E1E] py-12">
-                <h2 className="pl-5 font-semibold text-3xl text-white mb-10 text-center">Rutas relacionadas</h2>
+                <h2 className=" font-semibold text-3xl text-white mb-10 text-center">Rutas relacionadas</h2>
                 <Carouselcards />
             </div>
 
