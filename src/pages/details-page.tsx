@@ -12,6 +12,7 @@ import { useJsApiLoader } from "@react-google-maps/api";
 import RouteTimeline from "@pages/route-timeline.tsx";
 import LoginModal from "@/components/ui/login-modal/login-modal";
 import SocialInteractions from "@/components/ui/social-interactions/social-interactions";
+import { useAuthHandler } from "@/hooks/useAuthHandler";
 
 const libraries: ("places")[] = ["places"];
 
@@ -35,6 +36,7 @@ const DetailsPage = () => {
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
         libraries,
     });
+    const { user: authUser, loading: authLoading } = useAuthHandler();
 
     useEffect(() => {
         const fetchPost = async (): Promise<void> => {
@@ -93,7 +95,7 @@ const DetailsPage = () => {
         }
     };
 
-    if (loading) {
+    if (loading || authLoading) {
         return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
 
@@ -143,8 +145,8 @@ const DetailsPage = () => {
                         {author && (
                             <p className="text-gray-600">
                                 Publicado por:{" "}
-                                <a 
-                                    href={`/profile/${post.userId}`}
+                                <a
+                                    href={authUser && authUser.uid === post.userId ? "/profile" : `/profile/${post.userId}`}
                                     className="text-secondary hover:underline cursor-pointer"
                                 >
                                     {author.username}
@@ -181,10 +183,10 @@ const DetailsPage = () => {
                 images: wp.images
             })) || []} />
 
-            <div className="mt-20  w-[80%] mx-auto">
+            <div className="mt-20 w-[90%] md:w-[80%] lg:w-[70%] mx-auto">
                 <h2 className="mb-8  font-semibold text-3xl text-center">Comentarios</h2>
                 <div className="px-0 lg:px-20">
-                    <Comments />
+                    <Comments postId={post.id} />
                 </div>
             </div>
 

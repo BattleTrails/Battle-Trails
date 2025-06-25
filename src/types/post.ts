@@ -7,6 +7,7 @@ export interface Post {
   locationName: string;
   routeId: string;
   /*createdAt: Timestamp ;*/
+  
   likes: number;
   likedBy: string[];
   views: number;
