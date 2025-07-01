@@ -4,7 +4,8 @@ import { Comment } from "@/types/comment";
 import { db } from "@/config/firebaseConfig";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { useAuthHandler } from "@/hooks/useAuthHandler";
-import { Trash2, MoreVertical ,Send} from "lucide-react";
+import { Trash2, MoreVertical, Send } from "lucide-react";
+import { User } from "@/types/user";
 
 interface CommentsProps {
     postId: string;
@@ -17,6 +18,27 @@ const Comments = ({ postId }: CommentsProps) => {
     const [sending, setSending] = useState(false);
     const { user } = useAuthHandler();
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    const [userProfile, setUserProfile] = useState<User | null>(null);
+
+    // Cargar información del usuario desde Firestore
+    useEffect(() => {
+        const loadUserProfile = async () => {
+            if (!user) {
+                setUserProfile(null);
+                return;
+            }
+
+            try {
+                const dbUser = await getUserById(user.uid);
+                setUserProfile(dbUser);
+            } catch (error) {
+                console.error("Error al cargar perfil del usuario:", error);
+                setUserProfile(null);
+            }
+        };
+
+        loadUserProfile();
+    }, [user]);
 
     // Suscripción en tiempo real a los comentarios
     useEffect(() => {
@@ -45,21 +67,18 @@ const Comments = ({ postId }: CommentsProps) => {
     }, [postId]);
 
     const handleComment = async () => {
-        if (!comment.trim() || !user) return;
+        if (!comment.trim() || !user || !userProfile) return;
         setSending(true);
         try {
-            // Obtener el usuario desde la base de datos
-            const dbUser = await getUserById(user.uid);
             await addCommentToPost(
                 postId,
                 user.uid,
                 comment,
-                dbUser.name || "Usuario",
-                dbUser.profilePicture || "/public/avatars/avatar-1.webp"
+                userProfile.name || "Usuario",
+                userProfile.profilePicture || "/avatars/avatar-1.webp"
             );
             setComment("");
         } catch (e) {
-            // Aquí podrías mostrar un toast de error
             console.error("Error al enviar comentario:", e);
         } finally {
             setSending(false);
@@ -81,7 +100,7 @@ const Comments = ({ postId }: CommentsProps) => {
             {user ? (
                 <div className="flex items-center gap-3 mb-8">
                     <img
-                        src={user.photoURL || "/public/avatars/avatar-1.webp"}
+                        src={userProfile?.profilePicture || "/avatars/avatar-1.webp"}
                         alt="Tu avatar"
                         className="w-10 h-10 rounded-full object-cover border border-neutral-700"
                     />
@@ -104,7 +123,7 @@ const Comments = ({ postId }: CommentsProps) => {
                         disabled={!comment.trim() || sending}
                         onClick={handleComment}
                     >
-                        {sending ? "..."  : <Send className="w-4 h-6" />}
+                        {sending ? "..." : <Send className="w-4 h-6" />}
                     </button>
                 </div>
             ) : (
@@ -119,7 +138,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 ) : (
                     comments.map((comment) => (
                         <div key={comment.id} className="flex items-start gap-x-4 group relative">
-                            <div className="w-15  lg:w-20  aspect-square overflow-hidden rounded-full">
+                            <div className="w-15 lg:w-20 aspect-square overflow-hidden rounded-full">
                                 <img
                                     src={comment.image}
                                     alt={`foto de perfil de ${comment.name}`}
@@ -142,7 +161,7 @@ const Comments = ({ postId }: CommentsProps) => {
                                         <MoreVertical className="w-5 h-5" />
                                     </button>
                                     {openMenuId === comment.id && (
-                                        <div className="absolute right-0 mt-2 bg-accent   rounded shadow-lg z-10 min-w-[100px]">
+                                        <div className="absolute right-0 mt-2 bg-accent rounded shadow-lg z-10 min-w-[100px]">
                                             <button
                                                 className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-100/10 rounded"
                                                 onClick={() => { setOpenMenuId(null); handleDeleteComment(comment.id); }}
