@@ -5,4 +5,6 @@ export interface Comment {
   userId: string;
   text: string;
   createdAt: Timestamp;
+  name: string;
+  image: string;
 }

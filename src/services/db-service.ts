@@ -1,7 +1,9 @@
 import { db } from "@/config/firebaseConfig";
-import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getDoc, setDoc, query, where, deleteDoc, updateDoc, increment, arrayUnion, arrayRemove, runTransaction, orderBy } from "firebase/firestore";
 import { Post, Route, User } from "@/types";
 import { deleteImagesFromSupabase } from "@/services/supabase-storage-service.ts";
+import { Comment } from "@/types/comment";
+import { Timestamp } from "firebase/firestore";
 
 // Interfaces para los tipos
 interface PostView {
@@ -653,5 +655,39 @@ export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> =>
     console.error('Error al obtener rutas guardadas:', error);
     return [];
   }
+};
+
+// Obtener comentarios de un post
+export const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
+  const q = query(
+    collection(db, "comments"),
+    where("postId", "==", postId),
+    orderBy("createdAt", "desc")
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Comment));
+};
+
+// Añadir comentario a un post
+export const addCommentToPost = async (
+  postId: string,
+  userId: string,
+  text: string,
+  name: string,
+  image: string
+) => {
+  await addDoc(collection(db, "comments"), {
+    postId,
+    userId,
+    text,
+    name,
+    image,
+    createdAt: Timestamp.now(),
+  });
+};
+
+// Eliminar comentario por id
+export const deleteCommentById = async (commentId: string): Promise<void> => {
+  await deleteDoc(doc(db, "comments", commentId));
 };
 
