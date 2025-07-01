@@ -83,15 +83,15 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
 
   // Tamaños condicionales para que la card sea más grande en el post detalles
   const sizeClasses = variant === "large"
-    ? "w-full h-[500px] max-w-[380px]"
+    ? "w-full h-[380px] max-w-[320px]"
     : "min-w-70 min-h-96";
 
   const titleClasses = variant === "large"
-    ? "text-xl font-medium line-clamp-2"
+    ? "text-lg font-medium line-clamp-2"
     : "text-lg font-medium line-clamp-2";
 
   const locationClasses = variant === "large" 
-    ? "text-base" 
+    ? "text-sm" 
     : "text-sm";
 
   return (

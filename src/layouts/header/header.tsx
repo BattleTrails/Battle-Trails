@@ -45,8 +45,8 @@ const Header = () => {
     <div
       className={clsx(
         "fixed flex-col gap-5 transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4",
-        isScrolled && !isDetails && !isProfile && "backdrop-blur-md bg-[rgba(30,30,30,0.4)] border-b border-white/10",
-        isScrolled && ( isProfile) && "backdrop-blur-md bg-[rgba(30,30,30,0.1)]",
+        isScrolled && !isDetails && !isProfile && !isForge && "backdrop-blur-md bg-[rgba(30,30,30,0.4)] border-b border-white/10",
+        isScrolled && (isProfile || isForge) && "backdrop-blur-md bg-[rgba(30,30,30,0.1)]",
         headerClass,
         isScrolled && "min-[1250px]:!h-[75px]"
       )
