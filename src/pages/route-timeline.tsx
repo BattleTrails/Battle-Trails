@@ -218,7 +218,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                             }`}
                           />
                           <div className="min-w-0">
-                            <h4 className="font-semibold text-gray-900 mb-1 text-sm">Parada {index + 1} <span className="text-xs text-gray-600 line-clamp-2">{waypoint.address}</span></h4>
+                            <h4 className="font-semibold text-gray-900 mb-1 text-sm">{waypoint.address} <span className="text-xs text-gray-600 line-clamp-2">Parada {index + 1}</span></h4>
 
                           </div>
                         </div>

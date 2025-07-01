@@ -163,10 +163,19 @@ const HomePage = () => {
           })
         );
 
-        // Ordenar por distancia y tomar el percentil superior
-        const sortedByDistance = postsWithDistances.sort((a, b) => a.distance - b.distance);
-        const topDistanceCount = Math.ceil(statsFilteredPosts.length * PERCENTILES.CERCANOS);
-        setDistanceFilteredPosts(sortedByDistance.slice(0, topDistanceCount).map(d => d.post));
+        // Filtrar por distancia máxima de 100km
+        const MAX_DISTANCE_KM = 100;
+        const filteredByDistance = postsWithDistances.filter(d => d.distance <= MAX_DISTANCE_KM);
+        if (filteredByDistance.length > 0) {
+            // Ordenar por distancia ascendente
+            const sortedByDistance = filteredByDistance.sort((a, b) => a.distance - b.distance);
+            setDistanceFilteredPosts(sortedByDistance.map(d => d.post));
+        } else {
+            // Si no hay posts a menos de 100km, aplicar el 30% más cercano
+            const sortedByDistance = postsWithDistances.sort((a, b) => a.distance - b.distance);
+            const topDistanceCount = Math.ceil(statsFilteredPosts.length * PERCENTILES.CERCANOS);
+            setDistanceFilteredPosts(sortedByDistance.slice(0, topDistanceCount).map(d => d.post));
+        }
       } catch (error) {
         console.error("Error al aplicar filtro de cercanía:", error);
         setDistanceFilteredPosts(statsFilteredPosts);

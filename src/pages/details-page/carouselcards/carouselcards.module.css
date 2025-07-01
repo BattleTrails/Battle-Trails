@@ -1,15 +1,25 @@
-/* swiper-navigation.css o similar */
+/* Estilos mínimos para el carrusel nativo y los bullets */
 
-.custom-swiper .swiper-button-next,
-.custom-swiper .swiper-button-prev {
-  color: white;           /* color de flechas */
-  border-radius: 9999px;
-  width: 40px;
-  height: 40px;
+.carouselScroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-.custom-swiper .swiper-button-next::after,
-.custom-swiper .swiper-button-prev::after {
-  font-size: 18px; /* tamaño del icono */
-  font-weight: bold;
+.bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D4AF37;
+  opacity: 0.4;
+  margin: 0 4px;
+  border: none;
+  transition: opacity 0.2s, transform 0.2s;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.bulletActive {
+  opacity: 1;
+  transform: scale(1.2);
+  background: #D4AF37;
 }
