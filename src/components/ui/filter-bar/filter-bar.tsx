@@ -15,7 +15,7 @@ const FilterBar = () => {
 
   const handleFilterClick = (filter: FilterType) => {
     toggleFilter(filter);
-    window.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
