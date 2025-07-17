@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -49,6 +50,8 @@ export const useAuthHandler = () => {
     "auth/invalid-email": "El formato del correo no es válido.",
     "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
     "auth/missing-password": "Entrada de contraseña vacía.",
+    "auth/user-disabled": "Esta cuenta ha sido deshabilitada.",
+    "auth/too-many-requests": "Demasiados intentos fallidos. Inténtalo más tarde.",
     /*"auth/cancelled-popup-request": "Se ha cancelado la ventana de inicio de sesión.",*/
     /*"auth/popup-closed-by-user": "Has cerrado la ventana de inicio de sesión.",*/
   };
@@ -66,7 +69,17 @@ export const useAuthHandler = () => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Verificar si el email está verificado
+      if (!user.emailVerified) {
+        setErrorMessage("Por favor, verifica tu correo electrónico antes de iniciar sesión.");
+        // Cerrar sesión automáticamente si no está verificado
+        await signOut(auth);
+        return false;
+      }
+      
       setErrorMessage("");
       return true;
     } catch (error) {
@@ -81,7 +94,7 @@ export const useAuthHandler = () => {
     password: string,
     name: string,
     username: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; user?: any }> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
@@ -94,13 +107,18 @@ export const useAuthHandler = () => {
         username,
         email,
         profilePicture: randomAvatar,
+        emailVerified: false,
+        createdAt: new Date().toISOString(),
       });
 
+      // Enviar email de verificación
+      await sendEmailVerification(firebaseUser);
+
       setErrorMessage("");
-      return true;
+      return { success: true, user: firebaseUser };
     } catch (error) {
       handleError(error);
-      return false;
+      return { success: false };
     }
   };
 
