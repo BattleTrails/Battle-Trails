@@ -8,6 +8,7 @@ import OAuthButton from "@pages/auth/o-auth-button/o-auth-button.tsx";
 import AuthButton from "@pages/auth/auth-button/auth-button.tsx";
 import {CircleArrowDown} from "lucide-react";
 import Alert from "@components/ui/alert/alert.tsx";
+import EmailVerificationModal from "@components/ui/email-verification-modal/email-verification-modal.tsx";
 
 const texts = {
   login: {
@@ -29,6 +30,7 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
   const [name,setName] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"error" | "success" | "info">("error");
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
 
   const isValidName = (name: string): boolean => {
@@ -49,12 +51,16 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
 
     const username = name.trim().toLowerCase().replace(/\s+/g, "_");
 
-    const success =
-      mode === "login"
-        ? await login(email, password)
-        : await register(email, password, name, username);
-
-    if (success) navigate("/");
+    if (mode === "login") {
+      const success = await login(email, password);
+      if (success) navigate("/");
+    } else {
+      const result = await register(email, password, name, username);
+      if (result.success) {
+        setShowVerificationModal(true);
+      }
+    }
+    
     setLoading(false);
   };
 
@@ -107,6 +113,13 @@ const AuthForm = ({mode, onModeChange,}: { mode: AuthMode; onModeChange: (newMod
 
 
       </div>
+
+      {/* Modal de verificación de email */}
+      <EmailVerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        email={email}
+      />
     </div>
   );
 };

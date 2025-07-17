@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -14,6 +15,11 @@ import {auth} from "@config/firebaseConfig.ts";
 // Registro con email y password
 export const registerWithEmail = (email: string, password: string) => {
   return createUserWithEmailAndPassword(auth, email, password);
+};
+
+// Enviar email de verificación
+export const sendVerificationEmail = (user: User) => {
+  return sendEmailVerification(user);
 };
 
 // Login con email y password
