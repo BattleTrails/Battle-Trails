@@ -94,7 +94,7 @@ export const useAuthHandler = () => {
     password: string,
     name: string,
     username: string
-  ): Promise<{ success: boolean; user?: any }> => {
+  ): Promise<{ success: boolean; user?: User }> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;

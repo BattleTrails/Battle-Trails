@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Mail, RefreshCw } from "lucide-react";
-import { sendEmailVerification } from "firebase/auth";
-import { auth } from "@config/firebaseConfig";
+import { X, Mail } from "lucide-react";
 
 interface EmailVerificationModalProps {
   isOpen: boolean;
@@ -11,8 +9,7 @@ interface EmailVerificationModalProps {
 }
 
 const EmailVerificationModal = ({ isOpen, onClose, email }: EmailVerificationModalProps) => {
-  const [isResending, setIsResending] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
+  
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -26,20 +23,7 @@ const EmailVerificationModal = ({ isOpen, onClose, email }: EmailVerificationMod
     setModalRoot(root);
   }, []);
 
-  const handleResendEmail = async () => {
-    if (!auth.currentUser) return;
-    
-    setIsResending(true);
-    try {
-      await sendEmailVerification(auth.currentUser);
-      setResendSuccess(true);
-      setTimeout(() => setResendSuccess(false), 3000);
-    } catch (error) {
-      console.error("Error al reenviar email:", error);
-    } finally {
-      setIsResending(false);
-    }
-  };
+  
 
   if (!isOpen || !modalRoot) return null;
 
@@ -86,35 +70,6 @@ const EmailVerificationModal = ({ isOpen, onClose, email }: EmailVerificationMod
             </div>
           </div>
 
-          {/* Resend button */}
-          <div className="pt-2">
-            <button
-              onClick={handleResendEmail}
-              disabled={isResending}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isResending ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Reenviando...
-                </>
-              ) : (
-                <>
-                  <Mail className="w-4 h-4" />
-                  Reenviar correo
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Success message */}
-          {resendSuccess && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-800 text-sm">
-                ✅ Correo reenviado correctamente
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Footer */}
