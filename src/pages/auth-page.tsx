@@ -14,7 +14,8 @@
 import AuthForm from "@pages/auth/auth-form/auth-form.tsx";
 import { useAuth } from "@context/auth-context.tsx";
 import AuthAlert from "@pages/auth/auth-alert/auth-alert.tsx";
-import { useState, useCallback, memo } from "react";
+import EmailVerificationModal from "@components/ui/email-verification-modal/email-verification-modal.tsx";
+import { useState, useCallback, memo, useEffect } from "react";
 import clsx from "clsx";
 import banner from "@assets/authimgs/banner-cell-phone-map-1.webp";
 import { AuthMode } from "@/types";
@@ -101,6 +102,20 @@ const AuthPage = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isFormVisible, setIsFormVisible] = useState(true);
   const [isSliding, setIsSliding] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+
+  // Mostrar modal cuando hay error de email no verificado
+  useEffect(() => {
+    if (errorMessage && errorMessage.includes("verifica tu correo electrónico")) {
+      setShowVerificationModal(true);
+    }
+  }, [errorMessage]);
+
+  // Función para extraer email del mensaje de error (si es necesario)
+  const getEmailFromError = () => {
+    // Por ahora retornamos string vacío, pero podríamos extraer el email del contexto
+    return "";
+  };
 
   /**
    * Maneja el cambio entre modos de autenticación
@@ -127,52 +142,65 @@ const AuthPage = () => {
   }, []);
 
   return (
-    <div 
-      className="relative w-screen h-screen bg-base overflow-hidden lg:flex lg:items-center lg:justify-center"
-      role="main"
-      aria-label="Página de autenticación"
-    >
-      {/* Alerta de error */}
-      {errorMessage && (
-        <div className="absolute top-6 right-6 z-50">
-          <AuthAlert message={errorMessage} onClose={clearError} />
-        </div>
-      )}
-
-      {/* Contenedor del formulario con animaciones */}
-      <div
-        onTransitionEnd={handleSlideTransitionEnd}
-        className={clsx(
-          "absolute top-0 h-full flex items-center justify-center transition-all duration-500 z-10",
-          "w-full lg:w-1/2",
-          {
-            "left-0": true,
-            "lg:left-0": mode === "login",
-            "lg:left-1/2": mode === "register"
-          }
-        )}
+    <>
+      <div 
+        className="relative w-screen h-screen bg-base overflow-hidden lg:flex lg:items-center lg:justify-center"
+        role="main"
+        aria-label="Página de autenticación"
       >
+        {/* Alerta de error */}
+        {errorMessage && (
+          <div className="absolute top-6 right-6 z-50">
+            <AuthAlert message={errorMessage} onClose={clearError} />
+          </div>
+        )}
+
+        {/* Contenedor del formulario con animaciones */}
         <div
+          onTransitionEnd={handleSlideTransitionEnd}
           className={clsx(
-            "flex items-center justify-center transition-opacity duration-300",
-            "w-[95%] sm:w-11/12 md:w-3/4 lg:w-1/2",
-            "px-2 sm:px-4",
-            isFormVisible
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+            "absolute top-0 h-full flex items-center justify-center transition-all duration-500 z-10",
+            "w-full lg:w-1/2",
+            {
+              "left-0": true,
+              "lg:left-0": mode === "login",
+              "lg:left-1/2": mode === "register"
+            },
+            isSliding && "pointer-events-none"
           )}
         >
-          <AuthForm mode={mode} onModeChange={handleModeChange} />
+          <div
+            className={clsx(
+              "flex items-center justify-center transition-opacity duration-300",
+              "w-[95%] sm:w-11/12 md:w-3/4 lg:w-1/2",
+              "px-2 sm:px-4",
+              isFormVisible
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            )}
+          >
+            <AuthForm mode={mode} onModeChange={handleModeChange} />
+          </div>
         </div>
+
+        {/* Banner lateral */}
+        <Banner 
+          mode={mode}
+          isFormVisible={isFormVisible}
+          onModeChange={handleModeChange}
+        />
       </div>
 
-      {/* Banner lateral */}
-      <Banner 
-        mode={mode}
-        isFormVisible={isFormVisible}
-        onModeChange={handleModeChange}
+      {/* Modal de verificación de email para login fallido - Fuera del contenedor principal */}
+      <EmailVerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => {
+          setShowVerificationModal(false);
+          clearError();
+        }}
+        email={getEmailFromError()}
       />
-    </div>
+    </>
   );
 };
 
