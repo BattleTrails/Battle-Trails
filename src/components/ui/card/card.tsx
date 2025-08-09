@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import {useState} from "react";
 import {deletePostById} from "@/services/db-service.ts";
 import ConfirmDialog from "../confirm-dialog/confirm-dialog";
+import LoginModal from "../login-modal/login-modal";
 import useLikes from "@/hooks/useLikes";
 import useViews from "@/hooks/useViews";
 
@@ -21,6 +22,7 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
   const navigate = useNavigate();
   const [showOptions, setShowOptions] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Hook para manejar likes
   const { likes, isLiked, isLoading: isLikeLoading, toggleLike, canLike } = useLikes(
@@ -57,6 +59,10 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
 
     if (canLike && !isLikeLoading) {
       await toggleLike();
+    } else if (!canLike) {
+      // Mostrar modal de login si el usuario no está autenticado
+      setShowLoginModal(true);
+      console.log('🚫 Usuario no autenticado, mostrando modal de login');
     } else {
       console.log('🚫 No se puede dar like:', { canLike, isLikeLoading });
     }
@@ -192,6 +198,13 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
         }}
         title="Eliminar ruta"
         message="¿Estás seguro de que quieres eliminar esta ruta? Esta acción no se puede deshacer."
+      />
+
+      <LoginModal 
+        showModal={showLoginModal} 
+        setShowModal={setShowLoginModal}
+        title="Inicia sesión para dar like"
+        message="Necesitas iniciar sesión para poder dar like a las rutas."
       />
     </div>
   );
