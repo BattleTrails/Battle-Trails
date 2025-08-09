@@ -295,10 +295,10 @@ const RouteTimeline = ({ waypoints }: Props) => {
           <div className="relative top-0 max-w-4xl  w-fit">
             <button
               onClick={() => setModalImage(null)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 transition-colors"
+              className="absolute top-2 right-2 text-white hover:text-gray-300 transition-colors bg-black/30 backdrop-blur-sm hover:bg-black/50 rounded-full p-1"
               aria-label="Cerrar modal"
             >
-              <X className="w-8 h-8" />
+              <X className="w-7 h-7" />
             </button>
             <img
               src={modalImage}
