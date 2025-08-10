@@ -89,7 +89,7 @@ const SocialInteractions = ({ postId, initialLikes, initialViews, onShowLoginMod
                         onClick={handleLike}
                         disabled={isLikeLoading}
                         className={`p-2 rounded-full transition-all duration-200 ${
-                            canLike ? 'hover:bg-red-50 cursor-pointer' : 'cursor-pointer'
+                        'hover:bg-red-50 cursor-pointer' 
                         } ${isLiked ? 'text-red-500' : 'text-gray-600'}`}
                         title={canLike ? (isLiked ? 'Quitar like' : 'Dar like') : 'Inicia sesión para dar like'}
                     >
