@@ -153,7 +153,7 @@ const DetailsPage = () => {
                                 </a>
                             </p>
                         )}
-                        <p className="text-gray-700 whitespace-pre-line">{post.description}</p>
+                        <p className="text-gray-700 whitespace-pre-line text-justify">{post.description}</p>
 
                         <div className="flex shadow px-4 rounded gap-8 items-center justify-between py-2">
                             <div className="flex items-center gap-2">
