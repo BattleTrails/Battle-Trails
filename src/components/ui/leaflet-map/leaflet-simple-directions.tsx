@@ -1,15 +1,25 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { GeoPoint } from "firebase/firestore";
-import { LatLngTuple } from "leaflet";
+import { LatLngTuple, Icon } from "leaflet";
+import { markerIcons } from "@assets/markers";
 
 interface Props {
   waypoints: GeoPoint[];
   addresses?: string[];
 }
 
+// Icono personalizado numerado
+const createCustomIcon = (iconUrl: string, size: [number, number] = [40, 40]) => {
+  return new Icon({
+    iconUrl,
+    iconSize: size,
+    iconAnchor: [size[0] / 2, size[1]],
+    popupAnchor: [0, -size[1]],
+    className: "custom-marker",
+  });
+};
+
 const LeafletSimpleDirections = ({ waypoints, addresses = [] }: Props) => {
-  console.log("LeafletSimpleDirections - waypoints:", waypoints);
-  console.log("LeafletSimpleDirections - addresses:", addresses);
 
   if (waypoints.length === 0) {
     return (
@@ -34,24 +44,30 @@ const LeafletSimpleDirections = ({ waypoints, addresses = [] }: Props) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {waypoints.map((waypoint, index) => (
-          <Marker
-            key={`${waypoint.latitude}-${waypoint.longitude}-${index}`}
-            position={[waypoint.latitude, waypoint.longitude]}
-          >
-            <Popup>
-              <div>
-                <strong>Punto {index + 1}</strong>
-                <br />
-                {addresses[index] || "Sin dirección"}
-                <br />
-                <small>
-                  {waypoint.latitude.toFixed(6)}, {waypoint.longitude.toFixed(6)}
-                </small>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        {waypoints.map((waypoint, index) => {
+          const markerIcon = markerIcons[index] || markerIcons[markerIcons.length - 1];
+          const customIcon = createCustomIcon(markerIcon);
+
+          return (
+            <Marker
+              key={`${waypoint.latitude}-${waypoint.longitude}-${index}`}
+              position={[waypoint.latitude, waypoint.longitude]}
+              icon={customIcon}
+            >
+              <Popup>
+                <div>
+                  <strong>Punto {index + 1}</strong>
+                  <br />
+                  {addresses[index] || "Sin dirección"}
+                  <br />
+                  <small>
+                    {waypoint.latitude.toFixed(6)}, {waypoint.longitude.toFixed(6)}
+                  </small>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
