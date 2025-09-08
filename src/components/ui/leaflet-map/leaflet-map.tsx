@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { Icon, LatLngBounds, LatLngTuple } from "leaflet";
+import { Icon, LatLngBounds, LeafletMouseEvent } from "leaflet";
 import { GeoPoint } from "firebase/firestore";
 import { markerIcons } from "@assets/markers";
 
@@ -54,7 +54,7 @@ const MapClickHandler = ({ onMapClick }: MapClickHandlerProps) => {
   useEffect(() => {
     if (!onMapClick) return;
 
-    const handleClick = (e: any) => {
+    const handleClick = (e: LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
       onMapClick(lat, lng);
     };
@@ -79,11 +79,10 @@ interface LeafletMapProps {
   zoom?: number;
   height?: string;
   showMarkers?: boolean;
-  showRoutes?: boolean;
   className?: string;
 }
 
-const LeafletMap = ({
+const LeafletMapComponent = ({
   waypoints,
   addresses = [],
   onMarkerClick,
@@ -92,7 +91,6 @@ const LeafletMap = ({
   zoom = 8,
   height = "250px",
   showMarkers = true,
-  showRoutes = false,
   className = ""
 }: LeafletMapProps) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
@@ -162,5 +160,29 @@ const LeafletMap = ({
     </div>
   );
 };
+
+// Memo para evitar rerenders cuando cambian props irrelevantes (por ejemplo, texto del formulario)
+const LeafletMap = memo(
+  LeafletMapComponent,
+  (prev, next) => {
+    const sameCenter = prev.center?.[0] === next.center?.[0] && prev.center?.[1] === next.center?.[1];
+    const sameZoom = prev.zoom === next.zoom;
+    const sameHeight = prev.height === next.height;
+    const sameFlags = prev.showMarkers === next.showMarkers;
+    const sameClass = prev.className === next.className;
+
+    // Comparar waypoints por valor
+    const prevW = prev.waypoints;
+    const nextW = next.waypoints;
+    if (prevW.length !== nextW.length) return false;
+    const sameWaypoints = prevW.every((p, i) => p.latitude === nextW[i].latitude && p.longitude === nextW[i].longitude);
+
+    // Direcciones solo afectan a Popups; si su longitud cambia, actualizamos
+    const sameAddressesLen = (prev.addresses?.length || 0) === (next.addresses?.length || 0);
+
+    // Callbacks: no forzamos re-render por cambios de referencia
+    return sameCenter && sameZoom && sameHeight && sameFlags && sameClass && sameWaypoints && sameAddressesLen;
+  }
+);
 
 export default LeafletMap;
