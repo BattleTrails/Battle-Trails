@@ -56,7 +56,7 @@ const LeafletSimpleDirections = ({ waypoints, addresses = [] }: Props) => {
             >
               <Popup>
                 <div>
-                  <strong>Punto {index + 1}</strong>
+                  <strong>Parada {index + 1}</strong>
                   <br />
                   {addresses[index] || "Sin dirección"}
                   <br />

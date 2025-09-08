@@ -7,7 +7,7 @@ import Carouselcards from "@pages/details-page/carouselcards/carouselcards";
 import { LocateFixed, Timer, ChevronDown } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 
-import LeafletSimpleDirections from "@components/ui/leaflet-map/leaflet-simple-directions";
+import LeafletMapDirections from "@components/ui/leaflet-map/leaflet-map-directions";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
 import RouteTimeline from "@pages/route-timeline.tsx";
 import LoginModal from "@/components/ui/login-modal/login-modal";
@@ -167,7 +167,7 @@ const DetailsPage = () => {
                             <>
                                 {console.log("DetailsPage - route:", route)}
                                 {console.log("DetailsPage - waypoints:", route.waypoints.map(wp => wp.geoPoint))}
-                                <LeafletSimpleDirections 
+                                <LeafletMapDirections 
                                     waypoints={route.waypoints.map(wp => wp.geoPoint)} 
                                     addresses={route.waypoints.map(wp => wp.address)}
                                 />
