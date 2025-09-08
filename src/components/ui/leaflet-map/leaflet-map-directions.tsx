@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from "react-leaflet";
 import { Icon, LatLngBounds, LatLngTuple } from "leaflet";
 import { GeoPoint } from "firebase/firestore";
 import { markerIcons } from "@assets/markers";
+import { fetchDrivingRoute } from "@/services/routing-service";
 
 // Configuración de iconos personalizados
 const createCustomIcon = (iconUrl: string, size: [number, number] = [40, 40]) => {
@@ -79,7 +80,31 @@ const LeafletMapDirections = ({
     return [waypoints[0].latitude, waypoints[0].longitude] as LatLngTuple;
   }, [center, waypoints]);
 
-  // Ya no se dibuja línea de ruta; solo marcadores y bounds
+  // Estado y efecto para solicitar y pintar la ruta OSRM
+  const [routeCoords, setRouteCoords] = useState<LatLngTuple[] | null>(null);
+  const [routeError, setRouteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let aborted = false;
+    const run = async () => {
+      setRouteError(null);
+      setRouteCoords(null);
+      if (waypoints.length < 2) return;
+      try {
+        const res = await fetchDrivingRoute(waypoints);
+        if (aborted) return;
+        const coords = res.coordinates.map((c) => [c[0], c[1]] as LatLngTuple);
+        setRouteCoords(coords);
+      } catch {
+        if (aborted) return;
+        setRouteError("No se pudo calcular la ruta");
+      }
+    };
+    run();
+    return () => {
+      aborted = true;
+    };
+  }, [waypoints]);
 
   const handleMarkerClick = (index: number) => {
     setActiveMarker(activeMarker === index ? null : index);
@@ -154,7 +179,10 @@ const LeafletMapDirections = ({
         {/* Ajustar límites del mapa */}
         <MapBounds waypoints={waypoints} />
 
-        {/* Sin línea de ruta */}
+        {/* Línea de ruta si está disponible */}
+        {routeCoords && (
+          <Polyline positions={routeCoords} pathOptions={{ color: "#2563eb", weight: 5, opacity: 0.8 }} />
+        )}
 
         {/* Marcadores personalizados */}
         {showMarkers && waypoints.map((waypoint, index) => {
@@ -243,7 +271,10 @@ const LeafletMapDirections = ({
           </div>
           <div className="text-xs text-gray-600 mt-1">
             <div>Puntos: {waypoints.length}</div>
-            <div>Distancia total: {calculateTotalDistance()}</div>
+            <div>
+              Distancia total: {calculateTotalDistance()}
+              {routeError && <span className="ml-2 text-red-500">({routeError})</span>}
+            </div>
           </div>
         </div>
       )}

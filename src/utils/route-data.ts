@@ -1,4 +1,5 @@
 import { GeoPoint } from "firebase/firestore";
+import { fetchDrivingRoute } from "@/services/routing-service";
 
 // Calcular distancia entre dos puntos en metros usando la fórmula de Haversine
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -30,20 +31,28 @@ export const getFormattedRouteMetaData = async (
     throw new Error("Se necesitan al menos 2 puntos para calcular la ruta.");
   }
 
-  // Calcular distancia total sumando las distancias entre puntos consecutivos
+  // Intentar obtener distancia/tiempo por ruta de conducción (OSRM)
   let totalDistance = 0;
-  for (let i = 0; i < waypoints.length - 1; i++) {
-    const distance = calculateDistance(
-      waypoints[i].latitude,
-      waypoints[i].longitude,
-      waypoints[i + 1].latitude,
-      waypoints[i + 1].longitude
-    );
-    totalDistance += distance;
+  let totalDuration = 0;
+  try {
+    const routing = await fetchDrivingRoute(waypoints);
+    totalDistance = routing.total.distanceMeters; // metros
+    totalDuration = routing.total.durationSeconds; // segundos
+  } catch (e) {
+    // Fallback a cálculo geodésico + velocidad de senderismo si OSRM falla
+    let fallbackDistance = 0;
+    for (let i = 0; i < waypoints.length - 1; i++) {
+      const distance = calculateDistance(
+        waypoints[i].latitude,
+        waypoints[i].longitude,
+        waypoints[i + 1].latitude,
+        waypoints[i + 1].longitude
+      );
+      fallbackDistance += distance;
+    }
+    totalDistance = fallbackDistance;
+    totalDuration = calculateDuration(totalDistance);
   }
-
-  // Calcular duración total
-  const totalDuration = calculateDuration(totalDistance);
 
   // Formatear distancia
   const distance = totalDistance < 1000

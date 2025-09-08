@@ -1,5 +1,5 @@
 // Hooks de React
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 
 // Tipado de coordenadas GeoPoint desde Firestore
 import {GeoPoint} from "firebase/firestore";
@@ -31,7 +31,7 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
   const MAX_ROUTE_POINTS = 10;
 
   // Verificar si una ubicación ya existe en la ruta
-  const isDuplicateLocation = (newGeoPoint: GeoPoint): boolean => {
+  const isDuplicateLocation = useCallback((newGeoPoint: GeoPoint): boolean => {
     return postDraft.routePoints.some(point => {
       const distance = calculateDistance(
         point.geoPoint.latitude,
@@ -41,7 +41,7 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
       );
       return distance < 100; // Menos de 100 metros se considera duplicado
     });
-  };
+  }, [postDraft.routePoints]);
 
   // Calcular distancia entre dos puntos en metros
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -95,7 +95,7 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
 
     // Actualizar centro del mapa
     setMapCenter([result.lat, result.lng]);
-  }, [postDraft.routePoints, setPostField]);
+  }, [postDraft.routePoints, setPostField, isDuplicateLocation]);
 
   // Manejar click en marcador
   const handleMarkerClick = (index: number) => {
@@ -154,7 +154,7 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
     } finally {
       setIsProcessingClick(false);
     }
-  }, [postDraft.routePoints, setPostField, isProcessingClick]);
+  }, [postDraft.routePoints, setPostField, isProcessingClick, isDuplicateLocation]);
 
   // Eliminar un punto concreto
   const handleDeletePoint = (index: number) => {
@@ -181,9 +181,9 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
     return `Busca tu parada ${postDraft.routePoints.length + 1}...`;
   })();
 
-  // Obtener coordenadas de waypoints para el mapa
-  const waypoints = postDraft.routePoints.map(point => point.geoPoint);
-  const addresses = postDraft.routePoints.map(point => point.address);
+  // Obtener coordenadas de waypoints para el mapa (memorizado para no recalcular en cada tecla)
+  const waypoints = useMemo(() => postDraft.routePoints.map(point => point.geoPoint), [postDraft.routePoints]);
+  const addresses = useMemo(() => postDraft.routePoints.map(point => point.address), [postDraft.routePoints]);
 
   return (
     <div className="space-y-4">
@@ -209,40 +209,7 @@ const ForgeMap = ({ onRemoveWaypoint }: Props) => {
           className="rounded-lg"
         />
 
-        {/* Overlay con información del marcador activo */}
-        {activeMarkerIndex !== null && (
-          <div className="absolute top-3 left-3 right-3 z-10">
-            <div className="bg-white rounded-lg shadow-lg p-3 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-600">
-                      {activeMarkerIndex + 1}
-                    </span>
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {postDraft.routePoints[activeMarkerIndex]?.address}
-                    </p>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {postDraft.routePoints[activeMarkerIndex]?.geoPoint.latitude.toFixed(6)}, 
-                    {postDraft.routePoints[activeMarkerIndex]?.geoPoint.longitude.toFixed(6)}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onRemoveWaypoint(activeMarkerIndex);
-                    handleDeletePoint(activeMarkerIndex);
-                  }}
-                  className="text-red-500 hover:text-red-700 p-1"
-                  title="Eliminar punto"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        
 
         {/* Instrucciones */}
         {postDraft.routePoints.length === 0 && (
