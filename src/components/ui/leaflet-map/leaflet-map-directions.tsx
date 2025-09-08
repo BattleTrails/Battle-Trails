@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Icon, LatLngBounds, LatLngTuple } from "leaflet";
 import { GeoPoint } from "firebase/firestore";
 import { markerIcons } from "@assets/markers";
@@ -64,7 +64,6 @@ const LeafletMapDirections = ({
   zoom = 8,
   height = "100%",
   showMarkers = true,
-  showRoute = true,
   className = ""
 }: LeafletMapDirectionsProps) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
@@ -80,10 +79,7 @@ const LeafletMapDirections = ({
     return [waypoints[0].latitude, waypoints[0].longitude] as LatLngTuple;
   }, [center, waypoints]);
 
-  // Convertir waypoints a coordenadas para el polyline
-  const routeCoordinates = useMemo(() => {
-    return waypoints.map(waypoint => [waypoint.latitude, waypoint.longitude] as LatLngTuple);
-  }, [waypoints]);
+  // Ya no se dibuja línea de ruta; solo marcadores y bounds
 
   const handleMarkerClick = (index: number) => {
     setActiveMarker(activeMarker === index ? null : index);
@@ -158,15 +154,7 @@ const LeafletMapDirections = ({
         {/* Ajustar límites del mapa */}
         <MapBounds waypoints={waypoints} />
 
-        {/* Línea de ruta */}
-        {showRoute && routeCoordinates.length > 1 && (
-          <Polyline
-            positions={routeCoordinates}
-            color="#4285F4"
-            weight={5}
-            opacity={0.8}
-          />
-        )}
+        {/* Sin línea de ruta */}
 
         {/* Marcadores personalizados */}
         {showMarkers && waypoints.map((waypoint, index) => {
