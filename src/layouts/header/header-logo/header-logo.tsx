@@ -31,8 +31,8 @@ const HeaderLogo = ({searchOpen, onClick, currentPath}: {
         ${CLASS_OPACITY_TOGGLE} z-10`}
       onClick={onClick}
     >
-      <BtLogoMd className={`${CLASS_LOGO_LARGE} h-10 ${logoColor}`}/>
-      <BtLogoSm className={`${CLASS_LOGO_SMALL} h-8 ${logoColor}`}/>
+      <BtLogoMd className={`${CLASS_LOGO_LARGE} h-10 ${logoColor}`} glass={isDetails}/>
+      <BtLogoSm className={`${CLASS_LOGO_SMALL} h-8 ${logoColor}`} glass={isDetails}/>
     </div>
   );
 };

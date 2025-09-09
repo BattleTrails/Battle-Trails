@@ -1,13 +1,5 @@
-// Importación de componentes de Google Maps y hooks
-import {
-  GoogleMap,
-  Marker,
-  useJsApiLoader,
-  OverlayView
-} from "@react-google-maps/api";
-
 // Hooks de React
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 
 // Tipado de coordenadas GeoPoint desde Firestore
 import {GeoPoint} from "firebase/firestore";
@@ -15,70 +7,31 @@ import {GeoPoint} from "firebase/firestore";
 // Store global para estado del post
 import {usePostStore} from "@/store/usePostStore.ts";
 
-// Input reutilizable para direcciones
-import ForgeInput from "@pages/forge/forge-input/forge-input.tsx";
+// Componentes Leaflet
+import LeafletMap from "@/components/ui/leaflet-map/leaflet-map";
+import LeafletSearch from "@/components/ui/leaflet-search/leaflet-search";
 
-// Debounce para controlar llamadas al Autocomplete
-import debounce from "lodash.debounce";
+// Servicio de geocodificación
+import { GeocodingResult, latLngToGeoPoint, reverseGeocode } from "@/services/geocoding-service";
 
 // Icono para eliminar puntos
 import {X} from "lucide-react";
 
-// Icono SVG para los marcadores
-import { markerIcons } from "@assets/markers";
-
-// Configuración del mapa
-const containerStyle = {width: "100%", height: "250px"};
-const libraries: ("places")[] = ["places"];
-
-// Tipos para las predicciones del autocomplete
-interface Prediction {
-  placeId: string;
-  mainText: string;
-}
 type Props = {
   onRemoveWaypoint: (index: number) => void;
 };
 
-interface AutocompleteSuggestion {
-  placePrediction: {
-    placeId: string;
-    structuredFormat?: {
-      mainText?: { text: string };
-    };
-    text?: { text: string };
-  };
-}
-
-const ForgeMap = ( {onRemoveWaypoint} : Props ) => {
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
-  const {postDraft, setPostField} = usePostStore();
+const ForgeMap = ({ onRemoveWaypoint }: Props) => {
+  const { postDraft, setPostField } = usePostStore();
   const [activeMarkerIndex, setActiveMarkerIndex] = useState<number | null>(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 40.4168, lng: -3.7038 });
-
-  // Carga del script de Google Maps
-  const {isLoaded} = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
-
-  // Conversión de GeoPoint a LatLng
-  const geoPointToLatLng = (geo: GeoPoint) => ({
-    lat: geo.latitude,
-    lng: geo.longitude,
-  });
-
-
-
+  const [mapCenter, setMapCenter] = useState<[number, number]>([40.4168, -3.7038]);
+  const [isProcessingClick, setIsProcessingClick] = useState(false);
 
   // Límite máximo de paradas
   const MAX_ROUTE_POINTS = 10;
 
   // Verificar si una ubicación ya existe en la ruta
-  const isDuplicateLocation = (newGeoPoint: GeoPoint): boolean => {
+  const isDuplicateLocation = useCallback((newGeoPoint: GeoPoint): boolean => {
     return postDraft.routePoints.some(point => {
       const distance = calculateDistance(
         point.geoPoint.latitude,
@@ -88,7 +41,7 @@ const ForgeMap = ( {onRemoveWaypoint} : Props ) => {
       );
       return distance < 100; // Menos de 100 metros se considera duplicado
     });
-  };
+  }, [postDraft.routePoints]);
 
   // Calcular distancia entre dos puntos en metros
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -106,152 +59,102 @@ const ForgeMap = ( {onRemoveWaypoint} : Props ) => {
     return R * c;
   };
 
-  // Recalcular los límites del mapa cada vez que cambian los puntos
+  // Actualizar centro del mapa cuando se añaden puntos
   useEffect(() => {
-    if (!mapRef.current || postDraft.routePoints.length === 0) return;
-
-    const bounds = new google.maps.LatLngBounds();
-    postDraft.routePoints.forEach(({geoPoint}) => {
-      bounds.extend(geoPointToLatLng(geoPoint));
-    });
-
-    // Asegura un zoom mínimo
-    const listener = mapRef.current.addListener("bounds_changed", () => {
-      const zoom = mapRef.current!.getZoom();
-      if (zoom && zoom < 7) mapRef.current!.setZoom(10);
-      google.maps.event.removeListener(listener);
-    });
+    if (postDraft.routePoints.length > 0) {
+      const lastPoint = postDraft.routePoints[postDraft.routePoints.length - 1];
+      setMapCenter([lastPoint.geoPoint.latitude, lastPoint.geoPoint.longitude]);
+    }
   }, [postDraft.routePoints]);
 
-  // Petición debounced al backend de autocomplete
-  const fetchPredictions = useCallback(
-    debounce(async (input: string) => {
-      if (!input.trim()) return;
-      try {
-        const res = await fetch(import.meta.env.VITE_AUTOCOMPLETE_ENDPOINT, {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({input}),
-        });
-
-        const data = await res.json();
-
-        const places = (data?.suggestions as AutocompleteSuggestion[])?.map(
-          (s) => ({
-            placeId: s.placePrediction.placeId,
-            mainText:
-              s.placePrediction.structuredFormat?.mainText?.text ??
-              s.placePrediction.text?.text ??
-              "",
-          })
-        ) ?? [];
-
-        setPredictions(places);
-        setShowSuggestions(true);
-      } catch (err) {
-        console.error("Error obteniendo predicciones:", err);
-      }
-    }, 500),
-    []
-  );
-
-  // Limpia el debounce al desmontar
-  useEffect(() => {
-    return () => {
-      fetchPredictions.cancel();
-    };
-  }, [fetchPredictions]);
-
-  // Manejo del input del usuario
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
-    setPostField("address", value);
-
-    if (isSelecting) return;
-
-    if (!value.trim()) {
-      setPredictions([]);
-      setShowSuggestions(false);
+  // Manejar selección de lugar desde la búsqueda
+  const handlePlaceSelect = useCallback((result: GeocodingResult) => {
+    // Verificar límite máximo de paradas
+    if (postDraft.routePoints.length >= MAX_ROUTE_POINTS) {
+      alert(`No puedes añadir más de ${MAX_ROUTE_POINTS} paradas en una ruta`);
       return;
     }
 
-    setShowSuggestions(true);
-    fetchPredictions(value);
+    const geoPoint = latLngToGeoPoint(result.lat, result.lng);
+
+    // Verificar si la ubicación ya existe
+    if (isDuplicateLocation(geoPoint)) {
+      alert("Esta ubicación ya está añadida a tu ruta");
+      return;
+    }
+
+    // Añadir el nuevo punto
+    setPostField("routePoints", [
+      ...postDraft.routePoints,
+      {
+        address: result.displayName,
+        geoPoint,
+        images: []
+      },
+    ]);
+
+    // Actualizar centro del mapa
+    setMapCenter([result.lat, result.lng]);
+  }, [postDraft.routePoints, setPostField, isDuplicateLocation]);
+
+  // Manejar click en marcador
+  const handleMarkerClick = (index: number) => {
+    setActiveMarkerIndex(activeMarkerIndex === index ? null : index);
   };
 
-  // Cuando el usuario selecciona una predicción
-  const handleSelectSuggestion = async (prediction: Prediction) => {
-    setIsSelecting(true);
+  // Manejar click en el mapa para añadir punto
+  const handleMapClick = useCallback(async (lat: number, lng: number) => {
+    // Verificar límite máximo de paradas
+    if (postDraft.routePoints.length >= MAX_ROUTE_POINTS) {
+      alert(`No puedes añadir más de ${MAX_ROUTE_POINTS} paradas en una ruta`);
+      return;
+    }
+
+    // Evitar múltiples clicks mientras se procesa
+    if (isProcessingClick) return;
+
+    const geoPoint = latLngToGeoPoint(lat, lng);
+
+    // Verificar si la ubicación ya existe
+    if (isDuplicateLocation(geoPoint)) {
+      alert("Esta ubicación ya está añadida a tu ruta");
+      return;
+    }
+
+    setIsProcessingClick(true);
 
     try {
-      const res = await fetch(
-        `https://places.googleapis.com/v1/places/${prediction.placeId}?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&languageCode=es&regionCode=ES`,
-        {
-          method: "GET",
-          headers: {
-            "X-Goog-FieldMask": "id,formattedAddress,location",
-          },
-        }
-      );
-
-      const place = await res.json();
-
-      if (!place?.location) {
-        console.error("No se pudo obtener la ubicación del lugar");
-        return;
-      }
-
-      // Verificar límite máximo de paradas
-      if (postDraft.routePoints.length >= MAX_ROUTE_POINTS) {
-        alert(`No puedes añadir más de ${MAX_ROUTE_POINTS} paradas en una ruta`);
-        setPostField("address", "");
-        setShowSuggestions(false);
-        setPredictions([]);
-        return;
-      }
-
-      const geoPoint = new GeoPoint(place.location.latitude, place.location.longitude);
-
-      // Verificar si la ubicación ya existe
-      if (isDuplicateLocation(geoPoint)) {
-        alert("Esta ubicación ya está añadida a tu ruta");
-        setPostField("address", "");
-        setShowSuggestions(false);
-        setPredictions([]);
-        return;
-      }
-
-      const address = prediction.mainText;
-
-      // Si ya hay puntos, centra el mapa en el último punto añadido
-      const latLng = geoPointToLatLng(geoPoint);
-      mapRef.current?.panTo(latLng);
-      setMapCenter(latLng);
-
-      // Añade el nuevo punto
+      // Obtener la dirección usando geocodificación inversa
+      const address = await reverseGeocode(lat, lng);
+      
+      // Añadir el nuevo punto con la dirección obtenida
       setPostField("routePoints", [
         ...postDraft.routePoints,
         {
-          address,
+          address: address,
           geoPoint,
           images: []
         },
       ]);
 
-
-      // Vacía el input después de añadir el punto
-      setPostField("address", "");
-      setShowSuggestions(false);
-      setPredictions([]);
-
+      // Actualizar centro del mapa
+      setMapCenter([lat, lng]);
     } catch (error) {
-      console.error("Error al obtener detalles del lugar:", error);
+      console.error("Error al obtener la dirección:", error);
+      // Fallback: usar coordenadas si falla la geocodificación
+      setPostField("routePoints", [
+        ...postDraft.routePoints,
+        {
+          address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+          geoPoint,
+          images: []
+        },
+      ]);
+      setMapCenter([lat, lng]);
     } finally {
-      setTimeout(() => setIsSelecting(false), 50);
+      setIsProcessingClick(false);
     }
-  };
+  }, [postDraft.routePoints, setPostField, isProcessingClick, isDuplicateLocation]);
 
   // Eliminar un punto concreto
   const handleDeletePoint = (index: number) => {
@@ -278,100 +181,103 @@ const ForgeMap = ( {onRemoveWaypoint} : Props ) => {
     return `Busca tu parada ${postDraft.routePoints.length + 1}...`;
   })();
 
-  if (!isLoaded) return <p>Cargando mapa...</p>;
+  // Obtener coordenadas de waypoints para el mapa (memorizado para no recalcular en cada tecla)
+  const waypoints = useMemo(() => postDraft.routePoints.map(point => point.geoPoint), [postDraft.routePoints]);
+  const addresses = useMemo(() => postDraft.routePoints.map(point => point.address), [postDraft.routePoints]);
 
   return (
-    <>
-      <div className="relative rounded-lg overflow-hidden">
-        {/* Input + sugerencias sobre el mapa */}
-        <div className="flex flex-col top-3 absolute items-center justify-center w-full z-10">
-          <ForgeInput
-            name="address"
-            placeholder={placeholderText}
-            value={postDraft.address}
-            onChange={handleChange}
-            className="w-[95%]"
-            autoComplete="off"
-            disabled={postDraft.routePoints.length >= MAX_ROUTE_POINTS}
-          />
-          {showSuggestions && predictions.length > 0 && (
-            <ul className="w-[90%] z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-md max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-accent/50 scrollbar-track-transparent">
-              {predictions.map((p) => (
-                <li
-                  key={p.placeId}
-                  className="px-4 py-2 cursor-pointer hover:bg-accent"
-                  onMouseDown={() => handleSelectSuggestion(p)}
-                >
-                  {p.mainText}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+    <div className="space-y-4">
+      {/* Búsqueda de lugares */}
+      <LeafletSearch
+        onPlaceSelect={handlePlaceSelect}
+        placeholder={placeholderText}
+        disabled={postDraft.routePoints.length >= MAX_ROUTE_POINTS}
+        className="w-full"
+      />
 
-        {/* Mapa con markers y overlays */}
-        <GoogleMap
-          mapContainerStyle={containerStyle}
+      {/* Mapa */}
+      <div className="relative rounded-lg overflow-hidden border border-gray-200">
+        <LeafletMap
+          waypoints={waypoints}
+          addresses={addresses}
+          onMarkerClick={handleMarkerClick}
+          onMapClick={handleMapClick}
           center={mapCenter}
           zoom={postDraft.routePoints.length ? 8 : 5}
-          onLoad={(map: google.maps.Map) => {
-            mapRef.current = map;
-          }}
-          options={{
-            disableDefaultUI: true,
-            clickableIcons: false,
-          }}
-        >
-          {postDraft.routePoints.map((point, index) => {
-            const position = geoPointToLatLng(point.geoPoint);
-            const markerIcon = markerIcons[index] || markerIcons[markerIcons.length - 1]; // Fallback al último si se pasa del límite
+          height="250px"
+          showMarkers={true}
+          className="rounded-lg"
+        />
 
-            return (
-              <div key={`${point.geoPoint.latitude}-${point.geoPoint.longitude}-${index}`}>
-                {/* Marcador personalizado numerado */}
-                <Marker
-                  position={position}
-                  icon={{
-                    url: markerIcon,
-                    scaledSize: new window.google.maps.Size(40, 40),
-                  }}
-                  onClick={() => {
-                    setActiveMarkerIndex((prev) => (prev === index ? null : index));
-                    mapRef.current?.panTo(position);
-                    setMapCenter(position);
-                  }}
-                />
+        
 
-                {/* Overlay tipo badge con botón de eliminar */}
-                {activeMarkerIndex === index && (
-                  <OverlayView
-                    position={position}
-                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                  >
-                    <div className="relative left-1/2 -translate-x-1/2 -translate-y-16 bg-white w-max px-3 py-1 rounded-full shadow-md flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600">{index + 1}</span>
-                      <p className="text-sm font-medium max-w-[160px] truncate">
-                        {point.address}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onRemoveWaypoint(index);
-                          handleDeletePoint(index);
-                        }}
-                        className="text-red-500 hover:text-red-700 text-sm font-medium"
-                      >
-                        <X size={16}/>
-                      </button>
-                    </div>
-                  </OverlayView>
-                )}
+        {/* Instrucciones */}
+        {postDraft.routePoints.length === 0 && (
+          <div className="absolute bottom-3 left-3 right-3 z-10">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+              <p className="text-sm text-gray-600 text-center">
+                Busca una ubicación o haz clic en el mapa para añadir puntos a tu ruta
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Indicador de procesamiento */}
+        {isProcessingClick && (
+          <div className="absolute top-3 left-3 right-3 z-10">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <p className="text-sm text-gray-600">
+                  Obteniendo dirección...
+                </p>
               </div>
-            );
-          })}
-        </GoogleMap>
+            </div>
+          </div>
+        )}
       </div>
-    </>
+
+      {/* Lista de puntos añadidos */}
+      {postDraft.routePoints.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium text-gray-700">
+            Puntos de la ruta ({postDraft.routePoints.length}/{MAX_ROUTE_POINTS})
+          </h4>
+          <div className="space-y-1 max-h-32 overflow-y-auto">
+            {postDraft.routePoints.map((point, index) => (
+              <div
+                key={`${point.geoPoint.latitude}-${point.geoPoint.longitude}-${index}`}
+                className={`flex items-center justify-between p-2 rounded border ${
+                  activeMarkerIndex === index 
+                    ? "border-blue-500 bg-blue-50" 
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="text-xs font-bold text-gray-600 bg-white rounded-full w-5 h-5 flex items-center justify-center">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm text-gray-900 truncate">
+                    {point.address}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onRemoveWaypoint(index);
+                    handleDeletePoint(index);
+                  }}
+                  className="text-red-500 hover:text-red-700 p-1 ml-2"
+                  title="Eliminar punto"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

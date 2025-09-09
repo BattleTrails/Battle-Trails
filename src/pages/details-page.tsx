@@ -6,15 +6,13 @@ import Comments from "@pages/details-page/comments/comments";
 import Carouselcards from "@pages/details-page/carouselcards/carouselcards";
 import { LocateFixed, Timer, ChevronDown } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
-import MapBaseDirections from "@components/ui/map-base/map-base-directions.tsx";
+
+import LeafletMapDirections from "@components/ui/leaflet-map/leaflet-map-directions";
 import { getFormattedRouteMetaData } from "@/utils/route-data.ts";
-import { useJsApiLoader } from "@react-google-maps/api";
 import RouteTimeline from "@pages/route-timeline.tsx";
 import LoginModal from "@/components/ui/login-modal/login-modal";
 import SocialInteractions from "@/components/ui/social-interactions/social-interactions";
 import { useAuthHandler } from "@/hooks/useAuthHandler";
-
-const libraries: ("places")[] = ["places"];
 
 const DetailsPage = () => {
     const { postId } = useParams();
@@ -32,10 +30,6 @@ const DetailsPage = () => {
         message: "Necesitas iniciar sesión para continuar con esta acción."
     });
     const imagesContainerRef = useRef<HTMLDivElement>(null);
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries,
-    });
     const { user: authUser, loading: authLoading } = useAuthHandler();
 
     useEffect(() => {
@@ -99,9 +93,6 @@ const DetailsPage = () => {
         return <p className="text-center translate-y-20 text-gray-700">Cargando publicación...</p>;
     }
 
-    if (!isLoaded) {
-        return <p className="text-center translate-y-20 text-gray-700">Cargando mapa...</p>;
-    }
     if (!post) {
         return <p className="text-center translate-y-20 text-red-500">No se encontró la publicación.</p>;
     }
@@ -171,8 +162,21 @@ const DetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="rounded overflow-hidden mb-5 h-[250px] lg:h-screen">
-                        {route && <MapBaseDirections waypoints={route.waypoints.map(wp => wp.geoPoint)}  />}
+                    <div className="rounded-lg overflow-hidden mb-5 h-[250px] lg:h-screen">
+                        {route ? (
+                            <>
+                                {console.log("DetailsPage - route:", route)}
+                                {console.log("DetailsPage - waypoints:", route.waypoints.map(wp => wp.geoPoint))}
+                                <LeafletMapDirections 
+                                    waypoints={route.waypoints.map(wp => wp.geoPoint)} 
+                                    addresses={route.waypoints.map(wp => wp.address)}
+                                />
+                            </>
+                        ) : (
+                            <div className="flex items-center justify-center h-full bg-gray-100 rounded">
+                                <p className="text-gray-500">Cargando mapa...</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
