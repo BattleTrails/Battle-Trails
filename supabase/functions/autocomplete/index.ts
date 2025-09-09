@@ -1,8 +1,11 @@
 
+// COMENTADO: Ya no usamos Google Maps API
 // @ts-ignore
-const VITE_GOOGLE_API_KEY = Deno.env.get("VITE_GOOGLE_MAPS_API_KEY") ?? "API_KEY_NO_ENCONTRADA";
+// const VITE_GOOGLE_API_KEY = Deno.env.get("VITE_GOOGLE_MAPS_API_KEY") ?? "API_KEY_NO_ENCONTRADA";
 
+// COMENTADO: Función deshabilitada ya que no usamos Google Maps API
 // @ts-ignore
+/*
 Deno.serve(async (req: Request): Promise<Response> => {
   // CORS preflight
   if (req.method === "OPTIONS") {
@@ -73,4 +76,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
       },
     });
   }
+});
+*/
+
+// Función temporal que devuelve error para indicar que el servicio no está disponible
+// @ts-ignore
+Deno.serve(async (req: Request): Promise<Response> => {
+  return new Response(JSON.stringify({ 
+    error: "Servicio de autocomplete deshabilitado. Usando OpenStreetMap Nominatim." 
+  }), {
+    status: 503,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 });

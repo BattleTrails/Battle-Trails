@@ -99,7 +99,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
       <div ref={containerRef} className="py-16 bg-gray-100 min-h-[100vh]">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Descubre cada parada de esta ruta</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Descubre cada etapa de esta ruta</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Explora todos los puntos de interés y conoce la historia detrás de cada ubicación
             </p>
@@ -120,8 +120,12 @@ const RouteTimeline = ({ waypoints }: Props) => {
                     <div className="bg-secondary text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold">
                       {activeIndex + 1}
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">{currentWaypoint?.address}</h3>
+                    <div className="flex flex-col items-start ">
+                    <h3 className="text-2xl font-bold text-gray-900">{currentWaypoint?.address}</h3>  
+                    <p className="text-gray-500 text-sm">Latitud: {currentWaypoint?.geoPoint.latitude}, Longitud: {currentWaypoint?.geoPoint.longitude}</p>
+                    </div>
                   </div>
+                  
                   <p className="text-gray-700 text-lg text-justify leading-relaxed mb-6">{currentDescription}</p>
 
                   {/* Grid de imágenes */}
@@ -146,7 +150,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
 
                 <div className="flex items-center gap-4 pt-4">
                   <button
-                    aria-label="Anterior parada"
+                    aria-label="Anterior etapa"
                     onClick={handlePrevious}
                     className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow duration-200 hover:bg-gray-50"
                     disabled={waypoints.length <= 1}
@@ -159,7 +163,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                   </span>
 
                   <button
-                    aria-label="Siguiente parada"
+                    aria-label="Siguiente etapa"
                     onClick={handleNext}
                     className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow duration-200 hover:bg-gray-50"
                     disabled={waypoints.length <= 1}
@@ -218,7 +222,7 @@ const RouteTimeline = ({ waypoints }: Props) => {
                             }`}
                           />
                           <div className="min-w-0">
-                            <h4 className="font-semibold text-gray-900 mb-1 text-sm">{waypoint.address} <span className="text-xs text-gray-600 line-clamp-2">Parada {index + 1}</span></h4>
+                            <h4 className="font-semibold text-gray-900 mb-1 text-sm">{waypoint.address} <span className="text-xs text-gray-600 line-clamp-2">Etapa {index + 1}</span></h4>
 
                           </div>
                         </div>

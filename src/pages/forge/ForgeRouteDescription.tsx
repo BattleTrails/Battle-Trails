@@ -197,7 +197,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
                       <span className="badge badge-primary badge-sm">
                         {index + 1}
                       </span>
-                      <span className="font-medium truncate">
+                      <span className="font-medium line-clamp-2">
                         {waypoint.address || "Dirección no disponible"}
                       </span>
                     </div>
