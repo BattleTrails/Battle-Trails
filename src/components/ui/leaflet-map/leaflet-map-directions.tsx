@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Icon, LatLngBounds, LatLngTuple } from "leaflet";
 import { GeoPoint } from "firebase/firestore";
 import { markerIcons } from "@assets/markers";
-import { fetchDrivingRoute } from "@/services/routing-service";
+// Eliminado: fetch de OSRM. Solo mostramos marcadores.
 
 // Configuración de iconos personalizados
 const createCustomIcon = (iconUrl: string, size: [number, number] = [40, 40]) => {
@@ -80,62 +80,15 @@ const LeafletMapDirections = ({
 		return [waypoints[0].latitude, waypoints[0].longitude] as LatLngTuple;
 	}, [center, waypoints]);
 
-	// Estado y efecto para solicitar y pintar la ruta OSRM
-	const [routeCoords, setRouteCoords] = useState<LatLngTuple[] | null>(null);
-	const [routeError, setRouteError] = useState<string | null>(null);
-	const [legSummaries, setLegSummaries] = useState<Array<{ distanceMeters: number; durationSeconds: number }> | null>(null);
-
-	useEffect(() => {
-		let aborted = false;
-		const run = async () => {
-			setRouteError(null);
-			setRouteCoords(null);
-			setLegSummaries(null);
-			if (waypoints.length < 2) return;
-			try {
-				const res = await fetchDrivingRoute(waypoints);
-				if (aborted) return;
-				const coords = res.coordinates.map((c) => [c[0], c[1]] as LatLngTuple);
-				setRouteCoords(coords);
-				setLegSummaries(res.legs);
-			} catch {
-				if (aborted) return;
-				setRouteError("No se pudo calcular la ruta");
-			}
-		};
-		run();
-		return () => {
-			aborted = true;
-		};
-	}, [waypoints]);
+// Eliminado: efecto que pedía ruta a OSRM
 
 	const handleMarkerClick = (index: number) => {
 		setActiveMarker(activeMarker === index ? null : index);
 		onMarkerClick?.(index);
 	};
 
-	// Calcular distancia total de la ruta con fallback
-	const calculateTotalDistance = (): string => {
-		if (legSummaries && legSummaries.length > 0) {
-			const totalMeters = legSummaries.reduce((acc, l) => acc + l.distanceMeters, 0);
-			return totalMeters < 1000 ? `${Math.round(totalMeters)} m` : `${(totalMeters / 1000).toFixed(1)} km`;
-		}
-		if (waypoints.length < 2) return "0 km";
-		let totalDistance = 0;
-		for (let i = 0; i < waypoints.length - 1; i++) {
-			const distance = haversineDistance(
-				waypoints[i].latitude,
-				waypoints[i].longitude,
-				waypoints[i + 1].latitude,
-				waypoints[i + 1].longitude
-			);
-			totalDistance += distance;
-		}
-		return totalDistance < 1000 ? `${Math.round(totalDistance)} m` : `${(totalDistance / 1000).toFixed(1)} km`;
-	};
-
-	// Calcular distancia entre dos puntos en metros (Haversine)
-	const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    // Calcular distancia entre dos puntos en metros (Haversine)
+    const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
 		const R = 6371e3; // Radio de la Tierra en metros
 		const φ1 = lat1 * Math.PI/180;
 		const φ2 = lat2 * Math.PI/180;
@@ -145,6 +98,22 @@ const LeafletMapDirections = ({
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 		return R * c;
 	};
+
+    // Distancia total basada en Haversine únicamente
+    const calculateTotalDistance = (): string => {
+        if (waypoints.length < 2) return "0 km";
+        let totalDistance = 0;
+        for (let i = 0; i < waypoints.length - 1; i++) {
+            const distance = haversineDistance(
+                waypoints[i].latitude,
+                waypoints[i].longitude,
+                waypoints[i + 1].latitude,
+                waypoints[i + 1].longitude
+            );
+            totalDistance += distance;
+        }
+        return totalDistance < 1000 ? `${Math.round(totalDistance)} m` : `${(totalDistance / 1000).toFixed(1)} km`;
+    };
 
 	// Si no hay waypoints, mostrar un mensaje
 	if (waypoints.length === 0) {
@@ -176,10 +145,7 @@ const LeafletMapDirections = ({
 				{/* Ajustar límites del mapa */}
 				<MapBounds waypoints={waypoints} />
 
-				{/* Línea de ruta si está disponible */}
-				{routeCoords && (
-					<Polyline positions={routeCoords} pathOptions={{ color: "#2563eb", weight: 5, opacity: 0.8 }} />
-				)}
+                {/* Eliminado: polyline basada en OSRM */}
 
 				{/* Marcadores personalizados */}
 				{showMarkers && waypoints.map((waypoint, index) => {
@@ -236,23 +202,17 @@ const LeafletMapDirections = ({
 									{/* Distancia desde el punto anterior */}
 									{index > 0 && (
 										<div className="mt-2 pt-2 border-t border-gray-200">
-											<div className="text-xs text-gray-500">
-												Distancia desde punto anterior: {(() => {
-													// Preferir OSRM leg distance si está disponible
-													const osrmMeters = legSummaries?.[index - 1]?.distanceMeters;
-													if (typeof osrmMeters === "number" && osrmMeters >= 0) {
-														return osrmMeters < 1000 ? `${Math.round(osrmMeters)} m` : `${(osrmMeters / 1000).toFixed(1)} km`;
-													}
-													// Fallback a Haversine
-													const distance = haversineDistance(
-														waypoints[index - 1].latitude,
-														waypoints[index - 1].longitude,
-														waypoint.latitude,
-														waypoint.longitude
-													);
-													return distance < 1000 ? `${Math.round(distance)} m` : `${(distance / 1000).toFixed(1)} km`;
-												})()}
-											</div>
+                                            <div className="text-xs text-gray-500">
+                                                Distancia desde punto anterior: {(() => {
+                                                    const distance = haversineDistance(
+                                                        waypoints[index - 1].latitude,
+                                                        waypoints[index - 1].longitude,
+                                                        waypoint.latitude,
+                                                        waypoint.longitude
+                                                    );
+                                                    return distance < 1000 ? `${Math.round(distance)} m` : `${(distance / 1000).toFixed(1)} km`;
+                                                })()}
+                                            </div>
 										</div>
 									)}
 								</div>
@@ -272,7 +232,6 @@ const LeafletMapDirections = ({
 						<div>Puntos: {waypoints.length}</div>
 						<div>
 							Distancia total: {calculateTotalDistance()}
-							{routeError && <span className="ml-2 text-red-500">({routeError})</span>}
 						</div>
 					</div>
 				</div>
