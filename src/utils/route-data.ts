@@ -1,5 +1,5 @@
 import { GeoPoint } from "firebase/firestore";
-import { fetchDrivingRoute } from "@/services/routing-service";
+// Eliminado: cálculo vía OSRM
 
 // Calcular distancia entre dos puntos en metros usando la fórmula de Haversine
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -17,12 +17,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 };
 
-// Calcular duración estimada basada en distancia (asumiendo velocidad promedio de 5 km/h para senderismo)
-const calculateDuration = (distanceInMeters: number): number => {
-  const speedKmh = 5; // km/h
-  const speedMs = speedKmh * 1000 / 3600; // m/s
-  return distanceInMeters / speedMs; // segundos
-};
+// Eliminado: cálculo de duración (no se usa sin OSRM)
 
 export const getFormattedRouteMetaData = async (
   waypoints: GeoPoint[]
@@ -31,30 +26,18 @@ export const getFormattedRouteMetaData = async (
     throw new Error("Se necesitan al menos 2 puntos para calcular la ruta.");
   }
 
-  // Intentar obtener distancia/tiempo por ruta de conducción (OSRM)
+  // Distancia por Haversine; duración no disponible (sin OSRM)
   let totalDistance = 0;
-  let totalDuration = 0;
-  let hasDrivingDuration = true; // si falla OSRM, marcaremos la duración como no disponible
-  try {
-    const routing = await fetchDrivingRoute(waypoints);
-    totalDistance = routing.total.distanceMeters; // metros
-    totalDuration = routing.total.durationSeconds; // segundos
-  } catch (e) {
-    // Fallback solo para distancia geodésica si OSRM falla; duración no disponible
-    let fallbackDistance = 0;
-    for (let i = 0; i < waypoints.length - 1; i++) {
-      const distance = calculateDistance(
-        waypoints[i].latitude,
-        waypoints[i].longitude,
-        waypoints[i + 1].latitude,
-        waypoints[i + 1].longitude
-      );
-      fallbackDistance += distance;
-    }
-    totalDistance = fallbackDistance;
-    totalDuration = 0;
-    hasDrivingDuration = false;
+  for (let i = 0; i < waypoints.length - 1; i++) {
+    const distance = calculateDistance(
+      waypoints[i].latitude,
+      waypoints[i].longitude,
+      waypoints[i + 1].latitude,
+      waypoints[i + 1].longitude
+    );
+    totalDistance += distance;
   }
+  const hasDrivingDuration = false;
 
   // Formatear distancia
   const distance = totalDistance < 1000
@@ -62,13 +45,7 @@ export const getFormattedRouteMetaData = async (
     : `${(totalDistance / 1000).toFixed(1)} km`;
 
   // Formatear duración (siempre como conducción; si no disponible, mostrar texto)
-  const duration = hasDrivingDuration
-    ? (() => {
-        const hours = Math.floor(totalDuration / 3600);
-        const minutes = Math.round((totalDuration % 3600) / 60);
-        return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
-      })()
-    : "No disponible";
+  const duration = hasDrivingDuration ? "" : "No disponible";
 
   return { distance, duration };
 };
