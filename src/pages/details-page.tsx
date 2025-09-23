@@ -33,31 +33,51 @@ const DetailsPage = () => {
     const { user: authUser, loading: authLoading } = useAuthHandler();
 
     useEffect(() => {
-        const fetchPost = async (): Promise<void> => {
-            if (!postId) return;
+        if (!postId) return;
+        setLoading(true);
 
+        (async () => {
             try {
-                const fetchedPost = await getPostById(postId);
-                setPost(fetchedPost);
-                const fetchedRoute = await getRouteByPostId(postId);
-                setRoute(fetchedRoute);
-                setPost(fetchedPost);
-                const fetchedAuthor = await getUserById(fetchedPost.userId);
-                setAuthor({ username: fetchedAuthor.username });
-                if (!fetchedRoute) throw new Error("No se encontró la ruta.");
-                const meta = await getFormattedRouteMetaData(
-                    fetchedRoute.waypoints.map((point) => point.geoPoint)
-                );
-                setRouteInfo(meta);
+                // Cargar post y ruta en paralelo
+                const [fetchedPost, fetchedRoute] = await Promise.all([
+                    getPostById(postId),
+                    getRouteByPostId(postId)
+                ]);
 
+                setPost(fetchedPost);
+                setRoute(fetchedRoute);
+
+                // UI disponible ya
+                setLoading(false);
+
+                // Autor en segundo plano
+                (async () => {
+                    try {
+                        const fetchedAuthor = await getUserById(fetchedPost.userId);
+                        setAuthor({ username: fetchedAuthor.username });
+                    } catch (e) {
+                        console.error("Error cargando autor:", e);
+                    }
+                })();
+
+                // Métricas de ruta en segundo plano
+                if (fetchedRoute && fetchedRoute.waypoints?.length >= 2) {
+                    (async () => {
+                        try {
+                            const meta = await getFormattedRouteMetaData(
+                                fetchedRoute.waypoints.map((p) => p.geoPoint)
+                            );
+                            setRouteInfo(meta);
+                        } catch (e) {
+                            console.error("Error calculando meta de ruta:", e);
+                        }
+                    })();
+                }
             } catch (error) {
                 console.error("Error al cargar el post:", error);
-            } finally {
                 setLoading(false);
             }
-        };
-
-        fetchPost();
+        })();
     }, [postId]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
