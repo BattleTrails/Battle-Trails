@@ -1,9 +1,12 @@
-import { describe, it, expect, vi, afterAll } from 'vitest';
-import { fetchDrivingRoute } from './routing-service';
+import { describe, it, expect, vi, afterAll, beforeEach } from 'vitest';
+import { fetchDrivingRoute, __clearRoutingCache } from './routing-service';
 
 const originalFetch = global.fetch;
 
 describe('routing-service', () => {
+  beforeEach(() => {
+    __clearRoutingCache();
+  });
   it('lanza error si hay menos de dos waypoints', async () => {
     await expect(fetchDrivingRoute([] as any)).rejects.toThrow(/al menos 2 puntos/);
   });
