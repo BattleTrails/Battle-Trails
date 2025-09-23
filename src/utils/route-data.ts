@@ -34,12 +34,13 @@ export const getFormattedRouteMetaData = async (
   // Intentar obtener distancia/tiempo por ruta de conducción (OSRM)
   let totalDistance = 0;
   let totalDuration = 0;
+  let hasDrivingDuration = true; // si falla OSRM, marcaremos la duración como no disponible
   try {
     const routing = await fetchDrivingRoute(waypoints);
     totalDistance = routing.total.distanceMeters; // metros
     totalDuration = routing.total.durationSeconds; // segundos
   } catch (e) {
-    // Fallback a cálculo geodésico + velocidad de senderismo si OSRM falla
+    // Fallback solo para distancia geodésica si OSRM falla; duración no disponible
     let fallbackDistance = 0;
     for (let i = 0; i < waypoints.length - 1; i++) {
       const distance = calculateDistance(
@@ -51,7 +52,8 @@ export const getFormattedRouteMetaData = async (
       fallbackDistance += distance;
     }
     totalDistance = fallbackDistance;
-    totalDuration = calculateDuration(totalDistance);
+    totalDuration = 0;
+    hasDrivingDuration = false;
   }
 
   // Formatear distancia
@@ -59,10 +61,14 @@ export const getFormattedRouteMetaData = async (
     ? `${Math.round(totalDistance)} m`
     : `${(totalDistance / 1000).toFixed(1)} km`;
 
-  // Formatear duración
-  const hours = Math.floor(totalDuration / 3600);
-  const minutes = Math.round((totalDuration % 3600) / 60);
-  const duration = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+  // Formatear duración (siempre como conducción; si no disponible, mostrar texto)
+  const duration = hasDrivingDuration
+    ? (() => {
+        const hours = Math.floor(totalDuration / 3600);
+        const minutes = Math.round((totalDuration % 3600) / 60);
+        return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+      })()
+    : "No disponible";
 
   return { distance, duration };
 };
