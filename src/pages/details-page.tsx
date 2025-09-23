@@ -4,7 +4,7 @@ import { getPostById, getRouteByPostId, getUserById } from "@/services/db-servic
 import { Post, Route } from "@/types";
 import Comments from "@pages/details-page/comments/comments";
 import Carouselcards from "@pages/details-page/carouselcards/carouselcards";
-import { LocateFixed, Timer, ChevronDown } from "lucide-react";
+import { LocateFixed, ChevronDown, Navigation } from "lucide-react";
 import IconDistance from "@/assets/distance.svg";
 
 import LeafletMapDirections from "@components/ui/leaflet-map/leaflet-map-directions";
@@ -13,6 +13,7 @@ import RouteTimeline from "@pages/route-timeline.tsx";
 import LoginModal from "@/components/ui/login-modal/login-modal";
 import SocialInteractions from "@/components/ui/social-interactions/social-interactions";
 import { useAuthHandler } from "@/hooks/useAuthHandler";
+import buildGoogleMapsDirectionsUrl from "@/utils/buildGoogleMapsDirectionsUrl";
 
 const DetailsPage = () => {
     const { postId } = useParams();
@@ -33,31 +34,51 @@ const DetailsPage = () => {
     const { user: authUser, loading: authLoading } = useAuthHandler();
 
     useEffect(() => {
-        const fetchPost = async (): Promise<void> => {
-            if (!postId) return;
+        if (!postId) return;
+        setLoading(true);
 
+        (async () => {
             try {
-                const fetchedPost = await getPostById(postId);
-                setPost(fetchedPost);
-                const fetchedRoute = await getRouteByPostId(postId);
-                setRoute(fetchedRoute);
-                setPost(fetchedPost);
-                const fetchedAuthor = await getUserById(fetchedPost.userId);
-                setAuthor({ username: fetchedAuthor.username });
-                if (!fetchedRoute) throw new Error("No se encontró la ruta.");
-                const meta = await getFormattedRouteMetaData(
-                    fetchedRoute.waypoints.map((point) => point.geoPoint)
-                );
-                setRouteInfo(meta);
+                // Cargar post y ruta en paralelo
+                const [fetchedPost, fetchedRoute] = await Promise.all([
+                    getPostById(postId),
+                    getRouteByPostId(postId)
+                ]);
 
+                setPost(fetchedPost);
+                setRoute(fetchedRoute);
+
+                // UI disponible ya
+                setLoading(false);
+
+                // Autor en segundo plano
+                (async () => {
+                    try {
+                        const fetchedAuthor = await getUserById(fetchedPost.userId);
+                        setAuthor({ username: fetchedAuthor.username });
+                    } catch (e) {
+                        console.error("Error cargando autor:", e);
+                    }
+                })();
+
+                // Métricas de ruta en segundo plano
+                if (fetchedRoute && fetchedRoute.waypoints?.length >= 2) {
+                    (async () => {
+                        try {
+                            const meta = await getFormattedRouteMetaData(
+                                fetchedRoute.waypoints.map((p) => p.geoPoint)
+                            );
+                            setRouteInfo(meta);
+                        } catch (e) {
+                            console.error("Error calculando meta de ruta:", e);
+                        }
+                    })();
+                }
             } catch (error) {
                 console.error("Error al cargar el post:", error);
-            } finally {
                 setLoading(false);
             }
-        };
-
-        fetchPost();
+        })();
     }, [postId]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -155,11 +176,34 @@ const DetailsPage = () => {
                                 <img src={IconDistance} alt="Distancia" className="w-6 h-6" />
                                 <span>{routeInfo?.distance ?? "—"}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Timer />
-                                <span>{routeInfo?.duration ?? "—"}</span>
+                            <div className="flex items-center  gap-2">
+                           
+            <button
+                                type="button"
+                className=" cursor-pointer inline-flex items-center gap-1 md:gap-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs md:text-sm md:px-4 md:py-2 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                aria-label="Abrir ruta en Google Maps"
+                                tabIndex={0}
+                                disabled={!route || !route.waypoints || route.waypoints.length < 2}
+                                onClick={() => {
+                                    if (!route) return;
+                                    const url = buildGoogleMapsDirectionsUrl(route.waypoints.map(wp => wp.geoPoint), "driving");
+                                    window.open(url, "_blank", "noopener,noreferrer");
+                                }}
+                                onKeyDown={(e) => {
+                                    if ((e.key === "Enter" || e.key === " ") && route && route.waypoints?.length >= 2) {
+                                        const url = buildGoogleMapsDirectionsUrl(route.waypoints.map(wp => wp.geoPoint), "driving");
+                                        window.open(url, "_blank", "noopener,noreferrer");
+                                    }
+                                }}
+                            >
+                <Navigation className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
+                <span className="hidden md:inline">Google Maps</span>
+                            </button>
+                        
                             </div>
                         </div>
+
+                        
                     </div>
 
                     <div className="rounded-lg overflow-hidden mb-5 h-[250px] lg:h-screen">
