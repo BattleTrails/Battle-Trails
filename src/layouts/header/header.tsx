@@ -5,6 +5,7 @@ import HeaderSearchBarWrapper from "@layouts/header/header-search-bar-wrapper/he
 import HeaderUserActions from "@layouts/header/header-user-actions/header-user-actions.tsx";
 import FilterBar from "@components/ui/filter-bar/filter-bar.tsx";
 import clsx from "clsx";
+import { Capacitor } from '@capacitor/core';
 
 
 
@@ -14,6 +15,7 @@ const Header = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileApp, setIsMobileApp] = useState(false);
 
 
   const isHome = currentPath === "/";
@@ -24,6 +26,11 @@ const Header = () => {
   const headerClass = isHome
     ? ""
     : isForge ? "!h-[75px] " : isDetails || isProfile ? "!h-[75px] !md:-[75px] " : "";
+
+  useEffect(() => {
+    // Detectar si estamos en una app móvil
+    setIsMobileApp(Capacitor.isNativePlatform());
+  }, []);
 
   useEffect(() => {
     if (isDetails) {
@@ -45,10 +52,16 @@ const Header = () => {
     <div
       className={clsx(
         "fixed flex-col gap-5 transition-all duration-300 flex items-center top-0 left-0 w-full z-50 h-[140px] md:h-[140px] lg:h-[140px] px-4 py-4",
+        // Ajuste para móviles: agregar padding-top para evitar la barra de estado
+        isMobileApp && "pt-15", // 60px de padding-top para la barra de estado
+        // Ajustar altura total en móviles para incluir el espacio de la barra de estado
+        isMobileApp && "h-[200px]", // Aumentar altura total en móviles
         isScrolled && !isDetails && !isProfile && !isForge && "backdrop-blur-md bg-[rgba(30,30,30,0.4)] border-b border-white/10",
         isScrolled && (isProfile || isForge) && "backdrop-blur-md bg-[rgba(30,30,30,0.1)]",
         headerClass,
-        isScrolled && "min-[1250px]:!h-[75px]"
+        isScrolled && "min-[1250px]:!h-[75px]",
+        // Ajustar altura cuando está scrolled en móviles
+        isScrolled && isMobileApp && "h-[135px]" // Altura reducida pero con espacio para barra de estado
       )
       }
     >

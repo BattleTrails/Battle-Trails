@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Battle Trails</string>
+    <string name="title_activity_main">Battle Trails</string>
+    <string name="package_name">com.battletrails.app</string>
+    <string name="custom_url_scheme">com.battletrails.app</string>
+</resources>
