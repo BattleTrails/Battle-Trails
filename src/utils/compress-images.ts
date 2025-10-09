@@ -41,8 +41,6 @@ export const compressImages = async (files: File[]): Promise<File[]> => {
       });
 
       compressedFiles.push(newFile);
-
-      console.log("✅ Compressed:", newFile.name, newFile.type, newFile.size);
     } catch (error) {
       console.warn("Error al comprimir imagen:", error);
       compressedFiles.push(file);

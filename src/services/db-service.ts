@@ -74,11 +74,6 @@ export const incrementPostViewsUnique = async (
   userId: string
 ): Promise<{ views: number; incremented: boolean }> => {
   try {
-    console.log('👀 incrementPostViewsUnique llamada:', { 
-      postId, 
-      userId: userId.substring(0, 12) + '...' 
-    });
-    
     const postRef = doc(db, 'posts', postId);
     const viewDocId = `${postId}_${userId}`;
     const postViewRef = doc(db, 'post_views', viewDocId);
@@ -89,7 +84,6 @@ export const incrementPostViewsUnique = async (
       const viewDoc = await transaction.get(postViewRef);
       
       if (viewDoc.exists()) {
-        console.log('👀 Usuario ya ha visto este post anteriormente');
         const postDoc = await transaction.get(postRef);
         const currentViews = postDoc.exists() ? (postDoc.data().views || 0) : 0;
         return { views: currentViews, incremented: false };
@@ -116,7 +110,6 @@ export const incrementPostViewsUnique = async (
         views: currentViews + 1
       });
       
-      console.log('✅ Nueva vista única registrada, total:', currentViews + 1);
       return { views: currentViews + 1, incremented: true };
     });
     
@@ -131,14 +124,12 @@ export const incrementPostViewsUnique = async (
  */
 export const saveRoute = async (userId: string, postId: string): Promise<boolean> => {
   try {
-    console.log('Guardando ruta en Firestore:', { userId, postId }); // Debug
     const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
     await setDoc(savedRouteRef, {
       userId,
       postId,
       savedAt: new Date().toISOString(),
     });
-    console.log('Ruta guardada exitosamente'); // Debug
     return true;
   } catch (error) {
     console.error('Error al guardar la ruta:', error);
@@ -294,8 +285,6 @@ export const getPostViewStats = async (postId: string) => {
  */
 export const cleanupDuplicateViews = async (postId?: string): Promise<void> => {
   try {
-    console.log('🧹 Iniciando limpieza de vistas duplicadas...');
-    
     let viewsQuery;
     if (postId) {
       viewsQuery = query(
@@ -333,9 +322,6 @@ export const cleanupDuplicateViews = async (postId?: string): Promise<void> => {
     );
     
     await Promise.all(deletePromises);
-    
-    console.log(`🧹 Limpieza completada. Eliminados ${duplicatesToDelete.length} duplicados.`);
-    
   } catch (error) {
     console.error('Error en cleanupDuplicateViews:', error);
     throw error;
@@ -375,8 +361,6 @@ export const deletePostById = async (postId: string): Promise<void> => {
     // 0. Eliminar imágenes de Supabase si existen
     if (postData.images && Array.isArray(postData.images)) {
       const imagePaths = extractSupabasePaths(postData.images);
-      console.log("🔍 Imagenes en post:", postData.images);
-      console.log("🧼 Paths extraídos:", imagePaths);
       await deleteImagesFromSupabase(imagePaths);
     }
 
@@ -388,7 +372,6 @@ export const deletePostById = async (postId: string): Promise<void> => {
         if (waypoint.images && Array.isArray(waypoint.images)) {
           const waypointImagePaths = extractSupabasePaths(waypoint.images);
           if (waypointImagePaths.length) {
-            console.log("🧼 Eliminando imágenes de parada:", waypointImagePaths);
             await deleteImagesFromSupabase(waypointImagePaths);
           }
         }
@@ -410,8 +393,6 @@ export const deletePostById = async (postId: string): Promise<void> => {
     // const commentsSnap = await getDocs(commentsRef);
     // const deleteComments = commentsSnap.docs.map((doc) => deleteDoc(doc.ref));
     // await Promise.all(deleteComments);
-
-    console.log(`✅ Post ${postId} y ruta asociada eliminados correctamente`);
   } catch (error) {
     console.error("❌ Error al eliminar el post y ruta:", error);
     throw error;
@@ -450,7 +431,6 @@ export const updateRoute = async (routeId: string, updateData: Partial<{
     const snapshot = await getDocs(userPostsQuery);
 
     if (snapshot.empty) {
-      console.log(`ℹ️ No se encontraron publicaciones del usuario ${userId}`);
       return;
     }
 
@@ -461,8 +441,6 @@ export const updateRoute = async (routeId: string, updateData: Partial<{
       // 0. Eliminar imágenes si las hay
       if (postData.images && Array.isArray(postData.images)) {
         const imagePaths = extractSupabasePaths(postData.images);
-        console.log("🔍 Imagenes en post:", postData.images);
-        console.log("🧼 Paths extraídos:", imagePaths);
         await deleteImagesFromSupabase(imagePaths);
       }
 
@@ -483,7 +461,6 @@ export const updateRoute = async (routeId: string, updateData: Partial<{
     });
 
     await Promise.all(deletePromises);
-    console.log(`✅ Publicaciones y rutas del usuario ${userId} eliminadas correctamente`);
   } catch (error) {
     console.error("❌ Error al eliminar publicaciones del usuario:", error);
     throw error;
@@ -493,15 +470,12 @@ export const updateRoute = async (routeId: string, updateData: Partial<{
 // Dar like a un post
 export const likePost = async (postId: string, userId: string): Promise<void> => {
   try {
-    console.log('🔥 likePost llamada:', { postId, userId });
     const postRef = doc(db, 'posts', postId);
     
     await updateDoc(postRef, {
       likes: increment(1),
       likedBy: arrayUnion(userId)
     });
-    
-    console.log('✅ likePost exitoso');
   } catch (error) {
     console.error('❌ Error in likePost:', error);
     throw error;
@@ -511,15 +485,12 @@ export const likePost = async (postId: string, userId: string): Promise<void> =>
 // Quitar like de un post
 export const unlikePost = async (postId: string, userId: string): Promise<void> => {
   try {
-    console.log('🔥 unlikePost llamada:', { postId, userId });
     const postRef = doc(db, 'posts', postId);
     
     await updateDoc(postRef, {
       likes: increment(-1),
       likedBy: arrayRemove(userId)
     });
-    
-    console.log('✅ unlikePost exitoso');
   } catch (error) {
     console.error('❌ Error in unlikePost:', error);
     throw error;
@@ -568,10 +539,8 @@ export const hasUserLikedPost = async (postId: string, userId: string): Promise<
  */
 export const unsaveRoute = async (userId: string, postId: string): Promise<boolean> => {
   try {
-    console.log('Quitando ruta guardada de Firestore:', { userId, postId }); // Debug
     const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
     await deleteDoc(savedRouteRef);
-    console.log('Ruta eliminada de guardados exitosamente'); // Debug
     return true;
   } catch (error) {
     console.error('Error al quitar la ruta guardada:', error);
@@ -584,12 +553,9 @@ export const unsaveRoute = async (userId: string, postId: string): Promise<boole
  */
 export const isRouteSaved = async (userId: string, postId: string): Promise<boolean> => {
   try {
-    console.log('Verificando si ruta está guardada:', { userId, postId }); // Debug
     const savedRouteRef = doc(db, 'saved_routes', `${userId}_${postId}`);
     const docSnap = await getDoc(savedRouteRef);
-    const exists = docSnap.exists();
-    console.log('Resultado verificación:', exists); // Debug
-    return exists;
+    return docSnap.exists();
   } catch (error) {
     console.error('Error al verificar si la ruta está guardada:', error);
     return false;
@@ -601,36 +567,24 @@ export const isRouteSaved = async (userId: string, postId: string): Promise<bool
  */
 export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> => {
   try {
-    console.log('Buscando rutas guardadas para usuario:', userId); // Debug
-    
     const savedRoutesQuery = query(
       collection(db, 'saved_routes'),
       where('userId', '==', userId)
     );
     
     const querySnapshot = await getDocs(savedRoutesQuery);
-    console.log('Documentos de rutas guardadas encontrados:', querySnapshot.docs.length); // Debug
     
     if (querySnapshot.empty) {
-      console.log('No hay rutas guardadas para este usuario');
       return [];
     }
     
-    const savedRouteIds = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      console.log('Documento de ruta guardada:', data); // Debug
-      return data.postId;
-    });
-    
-    console.log('IDs de posts guardados:', savedRouteIds); // Debug
+    const savedRouteIds = querySnapshot.docs.map(doc => doc.data().postId);
     
     // Obtener los posts completos de las rutas guardadas
     const savedPosts = await Promise.allSettled(
       savedRouteIds.map(async (postId) => {
         try {
-          console.log('Obteniendo post:', postId); // Debug
           const post = await getPostById(postId);
-          console.log('Post obtenido exitosamente:', post.title); // Debug
           return post;
         } catch (error) {
           console.error(`Error al obtener post ${postId}:`, error);
@@ -645,9 +599,6 @@ export const getSavedRoutesByUserId = async (userId: string): Promise<Post[]> =>
         result.status === 'fulfilled' && result.value !== null
       )
       .map(result => result.value);
-    
-    console.log('Posts válidos obtenidos:', validPosts.length); // Debug
-    console.log('Títulos de posts obtenidos:', validPosts.map(p => p.title)); // Debug
     
     return validPosts;
     

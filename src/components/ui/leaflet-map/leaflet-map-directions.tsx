@@ -69,10 +69,6 @@ const LeafletMapDirections = ({
 }: LeafletMapDirectionsProps) => {
 	const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
-	// Debug: verificar que los waypoints se reciban correctamente
-	console.log("LeafletMapDirections - waypoints:", waypoints);
-	console.log("LeafletMapDirections - addresses:", addresses);
-
 	// Calcular centro del mapa si no se proporciona
 	const mapCenter = useMemo(() => {
 		if (center) return center;

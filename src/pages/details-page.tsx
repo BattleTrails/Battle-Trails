@@ -208,14 +208,10 @@ const DetailsPage = () => {
 
                     <div className="rounded-lg overflow-hidden mb-5 h-[250px] lg:h-screen">
                         {route ? (
-                            <>
-                                {console.log("DetailsPage - route:", route)}
-                                {console.log("DetailsPage - waypoints:", route.waypoints.map(wp => wp.geoPoint))}
-                                <LeafletMapDirections 
-                                    waypoints={route.waypoints.map(wp => wp.geoPoint)} 
-                                    addresses={route.waypoints.map(wp => wp.address)}
-                                />
-                            </>
+                            <LeafletMapDirections 
+                                waypoints={route.waypoints.map(wp => wp.geoPoint)} 
+                                addresses={route.waypoints.map(wp => wp.address)}
+                            />
                         ) : (
                             <div className="flex items-center justify-center h-full bg-gray-100 rounded">
                                 <p className="text-gray-500">Cargando mapa...</p>

@@ -9,11 +9,7 @@ const OAuthButton = () => {
   const handleGoogleLogin = async () => {
     const success = await loginWithGoogle();
     if (success) {
-      console.log("✅ Login con Google correcto");
       navigate("/");
-    } else {
-      console.log("❌ Login con Google fallido");
-      // el mensaje ya se gestiona en errorMessage y se muestra en AuthPage
     }
   };
 

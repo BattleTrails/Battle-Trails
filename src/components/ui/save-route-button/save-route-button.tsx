@@ -27,7 +27,6 @@ const SaveRouteButton = ({ postId, onShowLoginModal }: SaveRouteButtonProps) => 
       return;
     }
     
-    console.log('Botón clickeado:', { isSaved, postId, canSave }); // Debug
     await toggleSave();
   };
 

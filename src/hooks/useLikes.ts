@@ -49,16 +49,10 @@ const useLikes = (postId: string, initialLikes: number = 0): UseLikesReturn => {
   }, [postId, user]); // Agregar user como dependencia
 
   const toggleLike = async () => {
-    console.log("=== VERIFICANDO USUARIO EN HOOK ===");
-    console.log("auth.currentUser:", auth.currentUser);
-    console.log("Usuario UID:", auth.currentUser?.uid);
-
     if (!canLike || isLoading) {
-      console.log('🚫 No se puede dar like:', { canLike, isLoading });
       return;
     }
 
-    console.log('👆 Intentando dar like/unlike:', { postId, userId: user?.uid, isLiked });
     setIsLoading(true);
     
     try {
@@ -69,18 +63,14 @@ const useLikes = (postId: string, initialLikes: number = 0): UseLikesReturn => {
 
       if (isLiked) {
         // Unlike
-        console.log('👎 Quitando like...');
         await unlikePost(postId, user.uid);
         setLikes(prev => Math.max(0, prev - 1));
         setIsLiked(false);
-        console.log('✅ Like quitado exitosamente');
       } else {
         // Like
-        console.log('👍 Dando like...');
         await likePost(postId, user.uid);
         setLikes(prev => prev + 1);
         setIsLiked(true);
-        console.log('✅ Like dado exitosamente');
       }
     } catch (error) {
       console.error('❌ Error toggling like:', error);

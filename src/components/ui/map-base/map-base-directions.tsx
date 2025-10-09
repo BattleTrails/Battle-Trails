@@ -13,10 +13,6 @@ interface Props {
 const MapBaseDirections = ({ waypoints, addresses = [] }: Props) => {
   const [activeMarker, setActiveMarker] = useState<number | null>(null);
 
-  // Debug: verificar que los waypoints se reciban correctamente
-  console.log("MapBaseDirections - waypoints:", waypoints);
-  console.log("MapBaseDirections - addresses:", addresses);
-
   const handleMarkerClick = (index: number) => {
     setActiveMarker(activeMarker === index ? null : index);
   };
