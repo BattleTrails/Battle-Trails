@@ -248,7 +248,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loadUserProfile(user.uid);
 
       // Escuchar cambios en tiempo real en el documento del usuario
-      const unsubscribe = onSnapshot(doc(db, 'users', user.uid), doc => {
+      const unsubscribeFirestore = onSnapshot(doc(db, 'users', user.uid), doc => {
         if (doc.exists()) {
           const data = doc.data();
           setUserProfile({
@@ -260,7 +260,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       });
 
-      return () => unsubscribe();
+      // Escuchar evento personalizado para forzar actualización del perfil
+      const handleProfileUpdate = () => {
+        if (user?.uid) {
+          loadUserProfile(user.uid);
+        }
+      };
+
+      window.addEventListener('profileUpdated', handleProfileUpdate);
+
+      return () => {
+        unsubscribeFirestore();
+        window.removeEventListener('profileUpdated', handleProfileUpdate);
+      };
     } else {
       setUserProfile(null);
     }

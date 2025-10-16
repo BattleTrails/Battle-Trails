@@ -3,6 +3,16 @@ import { db } from '@/config/firebaseConfig';
 import { supabase } from '@/config/supabaseClient';
 import { compressImages } from '@/utils/compress-images';
 
+// Función para refrescar el contexto de autenticación después de actualizar el perfil
+const refreshAuthContext = async () => {
+  try {
+    // Forzar una actualización del contexto emitiendo un evento personalizado
+    window.dispatchEvent(new CustomEvent('profileUpdated'));
+  } catch (error) {
+    console.warn('Error al refrescar contexto:', error);
+  }
+};
+
 interface UpdateUserData {
   name?: string;
   username?: string;
@@ -107,6 +117,9 @@ export const updateUserProfile = async (userId: string, data: UpdateUserData) =>
         // No lanzar error aquí, ya que la actualización fue exitosa
       }
     }
+
+    // Refrescar el contexto de autenticación para actualizar la UI
+    await refreshAuthContext();
 
     return { success: true };
   } catch (error) {
