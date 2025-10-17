@@ -193,7 +193,6 @@ export const useAuthHandler = () => {
       await deletePostsByUserId(uid); // ⬅ incluye imágenes y rutas asociadas
       await deleteDoc(doc(db, "users", uid));
       await deleteUser(user);
-      console.log("✅ Cuenta eliminada correctamente");
       setUser(null);
       return true;
     } catch (error: any) {

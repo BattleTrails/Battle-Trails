@@ -43,7 +43,6 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
   const handleDeleteRoute = async (postId: string) => {
     try {
       await deletePostById(postId);
-      console.log("Publicación eliminada correctamente");
       onDeleted?.(postId);
     } catch (error) {
       console.error("Error al eliminar publicación:", error);
@@ -55,16 +54,11 @@ const Card = ({ post, variant = "default", isEditable, onDeleted }: CardProps) =
     e.preventDefault();
     e.stopPropagation();
 
-    console.log('🖱️ Botón de like clickeado en Card');
-
     if (canLike && !isLikeLoading) {
       await toggleLike();
     } else if (!canLike) {
       // Mostrar modal de login si el usuario no está autenticado
       setShowLoginModal(true);
-      console.log('🚫 Usuario no autenticado, mostrando modal de login');
-    } else {
-      console.log('🚫 No se puede dar like:', { canLike, isLikeLoading });
     }
   };
 

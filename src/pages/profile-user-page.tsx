@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Share2, Bell, Ellipsis } from "lucide-react";
-import Card from "@components/ui/card/card.tsx";
-import { Post } from "@/types";
-import { getPostsByUserId, getUserById } from "@/services/db-service.ts";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Share2, Bell, Ellipsis } from 'lucide-react';
+import Card from '@components/ui/card/card.tsx';
+import { Post } from '@/types';
+import { getPostsByUserId, getUserById } from '@/services/db-service.ts';
 
 const ProfileUserPage = () => {
   const { userId } = useParams();
@@ -12,6 +12,7 @@ const ProfileUserPage = () => {
     name: string;
     username: string;
     profilePicture: string;
+    bio?: string;
   }>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,10 +32,11 @@ const ProfileUserPage = () => {
           name: userData.name,
           username: userData.username,
           profilePicture: userData.profilePicture!,
+          bio: userData.bio || undefined,
         });
         setPosts(userPosts);
       } catch (error) {
-        console.error("Error al cargar perfil del usuario:", error);
+        console.error('Error al cargar perfil del usuario:', error);
       } finally {
         setLoading(false);
       }
@@ -80,6 +82,11 @@ const ProfileUserPage = () => {
           <div className="flex-1 min-w-[150px] text-center lg:text-start">
             <h2 className="text-2xl sm:text-4xl mb-1">{profile.name}</h2>
             <span className="text-lg sm:text-xl font-light">@{profile.username}</span>
+            {profile.bio && (
+              <div className="mt-3 bg-gray-50 rounded-lg p-3 border-l-4 border-secondary max-w-md">
+                <p className="text-sm text-gray-700 italic">"{profile.bio}"</p>
+              </div>
+            )}
             <div className="mt-2">
               <span className="text-xl font-light">{`${posts.length} rutas`}</span>
             </div>
@@ -108,7 +115,7 @@ const ProfileUserPage = () => {
               <button
                 onClick={() => {
                   setShowOptions(false);
-                  alert("Usuario bloqueado");
+                  alert('Usuario bloqueado');
                 }}
                 className="w-full px-4 py-2 text-left hover:bg-gray-100 text-red-600"
               >
@@ -117,7 +124,7 @@ const ProfileUserPage = () => {
               <button
                 onClick={() => {
                   setShowOptions(false);
-                  alert("Usuario reportado");
+                  alert('Usuario reportado');
                 }}
                 className="w-full px-4 py-2 text-left hover:bg-gray-100 text-red-600"
               >
@@ -133,7 +140,7 @@ const ProfileUserPage = () => {
       </div>
 
       <div className="grid grid-cols-1 pt-5 lg:pt-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-20 justify-items-center">
-        {posts.map((post) => (
+        {posts.map(post => (
           <Card key={post.id} post={post} isEditable={false} />
         ))}
       </div>

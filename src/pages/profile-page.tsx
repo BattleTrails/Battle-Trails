@@ -3,7 +3,7 @@ import { Settings, Share2, CircleFadingPlus } from "lucide-react";
 import {Link, useNavigate} from "react-router-dom";
 import { motion } from "framer-motion"
 import ModalSettings from "@pages/profile-page/modal-settings/modal-settings";
-import { useAuthHandler } from "@hooks/useAuthHandler.ts";
+import { useAuth } from "@/context/auth-context";
 import { getPostsByUserId, getUserById, getSavedRoutesByUserId } from "@/services/db-service.ts";
 import Card from "@components/ui/card/card.tsx";
 import { Post } from "@/types";
@@ -11,7 +11,7 @@ import { Post } from "@/types";
 const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState<"guardados" | "publicaciones">("publicaciones");
     const [showModal, setShowModal] = useState(false);
-    const { user } = useAuthHandler();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<null | {
@@ -63,9 +63,7 @@ const ProfilePage = () => {
 
             setSavedRoutesLoading(true);
             try {
-                console.log('Cargando rutas guardadas para usuario:', user.uid); // Debug
                 const routes = await getSavedRoutesByUserId(user.uid);
-                console.log('Rutas guardadas obtenidas:', routes); // Debug
                 setSavedRoutes(routes);
                 setSavedRoutesLoaded(true);
             } catch (error) {
@@ -227,7 +225,12 @@ const ProfilePage = () => {
                       <h2 className="text-2xl sm:text-4xl mb-1">{profile.name}</h2>
                       <span className="text-lg font-light sm:text-xl">@{profile.username}</span>
                       <div className="flex flex-wrap gap-3 mt-3 justify-center lg:justify-start w-full lg:w-fit">
-                          <button className="border border-b-neutral text-neutral px-3 py-1 rounded-md text-sm sm:text-base">Editar perfil</button>
+                          <button 
+                            onClick={() => navigate("/edit-profile")}
+                            className="border border-b-neutral text-neutral px-3 py-1 rounded-md text-sm sm:text-base hover:bg-neutral hover:text-white transition-colors"
+                          >
+                            Editar perfil
+                          </button>
                           <button onClick={() => setShowModal(true)} className="bg-neutral p-1.5 rounded-md">
                               <Settings color="white" strokeWidth={1} className="size-5" />
                           </button>
