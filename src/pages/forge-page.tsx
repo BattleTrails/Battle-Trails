@@ -1,20 +1,28 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import ForgeImages from "@pages/forge/forge-images/forge-images.tsx";
-import ForgeForm from "@pages/forge/forge-form/forge-form.tsx";
-import ForgeButtonSave from "@pages/forge/forge-button-save/forge-button-save.tsx";
-import { useAuth } from "@context/auth-context.tsx";
-import { usePostStore } from "@/store/usePostStore.ts";
-import { createPost, createRoute, getPostById, getRouteByPostId, updatePost, updateRoute } from "@/services/db-service.ts";
-import { uploadImagesToSupabase } from "@/services/supabase-storage-service.ts";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@config/firebaseConfig.ts";
-import ForgeRouteEditor from "@pages/forge/ForgeRouteDescription.tsx";
-import clsx from "clsx";
-import {Post, Route} from "@/types";
-import { deleteImagesFromSupabase } from "@/services/supabase-storage-service";
-import {extractSupabasePaths} from "@/utils/extract-supabase-paths.ts";
-import Alert from "@components/ui/alert/alert.tsx";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import ForgeImages from '@pages/forge/forge-images/forge-images.tsx';
+import ForgeForm from '@pages/forge/forge-form/forge-form.tsx';
+import ForgeButtonSave from '@pages/forge/forge-button-save/forge-button-save.tsx';
+import { useAuth } from '@context/auth-context.tsx';
+import { usePostStore } from '@/store/usePostStore.ts';
+import {
+  createPost,
+  createRoute,
+  getPostById,
+  getRouteByPostId,
+  updatePost,
+  updateRoute,
+} from '@/services/db-service.ts';
+import { uploadImagesToSupabase } from '@/services/supabase-storage-service.ts';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@config/firebaseConfig.ts';
+import ForgeRouteEditor from '@pages/forge/ForgeRouteDescription.tsx';
+import clsx from 'clsx';
+import { Post, Route } from '@/types';
+import { deleteImagesFromSupabase } from '@/services/supabase-storage-service';
+import { extractSupabasePaths } from '@/utils/extract-supabase-paths.ts';
+import Alert from '@components/ui/alert/alert.tsx';
+import { useContentModeration } from '@/hooks/useContentModeration.ts';
 
 const ForgePage = () => {
   const { user } = useAuth();
@@ -29,6 +37,15 @@ const ForgePage = () => {
     loadPostForEdit,
     setPostField,
   } = usePostStore();
+  const {
+    isValidating,
+    hasInappropriateContent,
+    moderationErrors,
+    moderationFlags,
+    validateContent,
+    clearErrors,
+    getErrorMessage,
+  } = useContentModeration();
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [existingWaypointImages, setExistingWaypointImages] = useState<string[][]>([]);
   const [currentStep, setCurrentStep] = useState(1);
@@ -37,14 +54,14 @@ const ForgePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
   const [deletedWaypointImageUrls, setDeletedWaypointImageUrls] = useState<string[][]>([]);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertType, setAlertType] = useState<"error" | "success" | "info">("error");
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [alertType, setAlertType] = useState<'error' | 'success' | 'info'>('error');
 
-  const locationName = postDraft.routePoints[0]?.address || "Ubicación desconocida";
+  const locationName = postDraft.routePoints[0]?.address || 'Ubicación desconocida';
 
   const showError = (msg: string) => {
     setAlertMessage(msg);
-    setAlertType("error");
+    setAlertType('error');
   };
 
   const uploadWaypointImages = async (waypoints: typeof postDraft.routePoints, userId: string) => {
@@ -54,7 +71,6 @@ const ForgePage = () => {
         const existingImages = existingWaypointImages[index] || [];
         const deletedImages = deletedWaypointImageUrls[index] || [];
         const existingForThisWaypoint = existingImages.filter(img => !deletedImages.includes(img));
-
 
         if (!point.images?.length) {
           // Si no hay imágenes nuevas, mantener solo las existentes
@@ -86,11 +102,10 @@ const ForgePage = () => {
     return route.waypoints.map(wp => ({
       geoPoint: wp.geoPoint,
       address: wp.address,
-      description: wp.description || "",
+      description: wp.description || '',
       images: [],
     }));
   };
-
 
   useEffect(() => {
     const loadPostData = async () => {
@@ -99,8 +114,8 @@ const ForgePage = () => {
         try {
           const post = await getPostById(postId);
           if (post.userId !== user?.uid) {
-            showError("No tienes permisos para editar este post");
-            navigate("/");
+            showError('No tienes permisos para editar este post');
+            navigate('/');
             return;
           }
 
@@ -112,17 +127,17 @@ const ForgePage = () => {
             title: post.title,
             description: post.description,
             images: [],
-            address: "",
+            address: '',
             routePoints: mapRouteToPostDraft(route),
-            distance: "",
+            distance: '',
           };
 
           setEditMode(true, postId);
           loadPostForEdit(postData);
         } catch (error) {
-          console.error("Error al cargar el post para editar:", error);
-          showError("Error al cargar los datos del post");
-          navigate("/");
+          console.error('Error al cargar el post para editar:', error);
+          showError('Error al cargar los datos del post');
+          navigate('/');
         } finally {
           setIsLoading(false);
         }
@@ -138,36 +153,54 @@ const ForgePage = () => {
 
   const validateStep1 = () => {
     if (!user) {
-      showError("Usuario no autenticado.");
+      showError('Usuario no autenticado.');
       return false;
     }
-    if (!postDraft.title.trim() || !postDraft.description.trim() || postDraft.routePoints.length < 2) {
-      showError("Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.");
+    if (
+      !postDraft.title.trim() ||
+      !postDraft.description.trim() ||
+      postDraft.routePoints.length < 2
+    ) {
+      showError('Por favor, completa todos los campos obligatorios y al menos dos ubicaciones.');
       return false;
     }
     const totalMainImages = [
       ...existingImages.filter(img => !deletedImageUrls.includes(img)),
-      ...postDraft.images
+      ...postDraft.images,
     ];
 
     if (totalMainImages.length === 0) {
-      showError("Debes mantener al menos una imagen principal.");
+      showError('Debes mantener al menos una imagen principal.');
       return false;
     }
 
     return true;
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (!validateStep1()) return;
+
+    // Validar contenido antes de continuar
+    const waypointDescriptions = postDraft.routePoints.map(point => point.description || '');
+    const isValid = await validateContent(
+      postDraft.title,
+      postDraft.description,
+      waypointDescriptions
+    );
+
+    if (!isValid) {
+      showError(getErrorMessage());
+      return;
+    }
+
     // Guardar el estado actual antes de cambiar de paso
     if (postDraft.routePoints?.length > 0) {
       postDraft.routePoints.forEach((point, index) => {
         if (point.description) {
-          setPostField("routePoints", [
+          setPostField('routePoints', [
             ...postDraft.routePoints.slice(0, index),
             { ...point, description: point.description },
-            ...postDraft.routePoints.slice(index + 1)
+            ...postDraft.routePoints.slice(index + 1),
           ]);
         }
       });
@@ -184,10 +217,10 @@ const ForgePage = () => {
     if (postDraft.routePoints?.length > 0) {
       postDraft.routePoints.forEach((point, index) => {
         if (point.description) {
-          setPostField("routePoints", [
+          setPostField('routePoints', [
             ...postDraft.routePoints.slice(0, index),
             { ...point, description: point.description },
-            ...postDraft.routePoints.slice(index + 1)
+            ...postDraft.routePoints.slice(index + 1),
           ]);
         }
       });
@@ -235,7 +268,7 @@ const ForgePage = () => {
       waypoints: postDraft.routePoints.map((p, i) => ({
         geoPoint: p.geoPoint,
         address: p.address,
-        description: p.description || "",
+        description: p.description || '',
         images: waypointImageUrls[i] || [],
       })),
     });
@@ -244,7 +277,7 @@ const ForgePage = () => {
   const handleRemoveWaypoint = (index: number) => {
     // 1. Marcar imágenes existentes para borrado
     const imagesToDelete = existingWaypointImages[index] || [];
-    setDeletedWaypointImageUrls((prev) => {
+    setDeletedWaypointImageUrls(prev => {
       const copy = [...prev];
       copy.splice(index, 1, imagesToDelete);
       return copy;
@@ -253,20 +286,17 @@ const ForgePage = () => {
     // 2. Eliminar parada del draft usando setPostField
     const newRoutePoints = [
       ...postDraft.routePoints.slice(0, index),
-      ...postDraft.routePoints.slice(index + 1)
+      ...postDraft.routePoints.slice(index + 1),
     ];
-    setPostField("routePoints", newRoutePoints);
+    setPostField('routePoints', newRoutePoints);
 
     // 3. Eliminar imágenes existentes asociadas a esa parada
-    setExistingWaypointImages((prev) => {
+    setExistingWaypointImages(prev => {
       const copy = [...prev];
       copy.splice(index, 1);
       return copy;
     });
   };
-
-
-
 
   const handleCreateNewPost = async () => {
     const imageUrls = await uploadImagesToSupabase(postDraft.images, user!.uid);
@@ -278,25 +308,44 @@ const ForgePage = () => {
       locationName,
       likes: 0,
       likedBy: [],
+      moderationFlags: moderationFlags || undefined,
     });
     const waypointImageUrls = await uploadWaypointImages(postDraft.routePoints, user!.uid);
-    await createRoute({
-      postId,
-      waypoints: postDraft.routePoints.map((p, i) => ({
-        geoPoint: p.geoPoint,
-        address: p.address,
-        description: p.description || "",
-        images: waypointImageUrls[i] || [],
-      })),
-    }, postId);
-    await updateDoc(doc(db, "posts", postId), { routeId: postId });
+    await createRoute(
+      {
+        postId,
+        waypoints: postDraft.routePoints.map((p, i) => ({
+          geoPoint: p.geoPoint,
+          address: p.address,
+          description: p.description || '',
+          images: waypointImageUrls[i] || [],
+        })),
+      },
+      postId
+    );
+    await updateDoc(doc(db, 'posts', postId), { routeId: postId });
   };
 
   const handleCreateOrUpdatePost = async () => {
-    if (!user) return console.warn("Usuario no autenticado.");
+    if (!user) return console.warn('Usuario no autenticado.');
     if (isSubmitting) return;
     if (postDraft.routePoints.some(p => !p.description?.trim())) {
-      return showError("Por favor, añade una descripción a todas las paradas antes de crear la ruta.");
+      return showError(
+        'Por favor, añade una descripción a todas las paradas antes de crear la ruta.'
+      );
+    }
+
+    // Validar contenido antes de crear/actualizar
+    const waypointDescriptions = postDraft.routePoints.map(point => point.description || '');
+    const isValid = await validateContent(
+      postDraft.title,
+      postDraft.description,
+      waypointDescriptions
+    );
+
+    if (!isValid) {
+      showError(getErrorMessage());
+      return;
     }
 
     setIsSubmitting(true);
@@ -307,10 +356,10 @@ const ForgePage = () => {
         await handleCreateNewPost();
       }
       resetPostDraft();
-      navigate("/");
+      navigate('/');
     } catch (error) {
-      console.error("Error al crear/actualizar la publicación:", error);
-      showError("Ha ocurrido un error. Intenta de nuevo.");
+      console.error('Error al crear/actualizar la publicación:', error);
+      showError('Ha ocurrido un error. Intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
@@ -334,17 +383,13 @@ const ForgePage = () => {
   return (
     <div className="max-w-6xl mx-auto p-3 rounded-xl bg-base-100 relative">
       {alertMessage && (
-        <Alert 
-          message={alertMessage} 
-          onClose={() => setAlertMessage("")} 
-          type={alertType}
-        />
+        <Alert message={alertMessage} onClose={() => setAlertMessage('')} type={alertType} />
       )}
-      
+
       <div
-        className={clsx("transition-all duration-500 ease-in-out", {
-          "opacity-100 pointer-events-auto translate-y-0": step1Visible,
-          "opacity-0 pointer-events-none -translate-y-4": !step1Visible
+        className={clsx('transition-all duration-500 ease-in-out', {
+          'opacity-100 pointer-events-auto translate-y-0': step1Visible,
+          'opacity-0 pointer-events-none -translate-y-4': !step1Visible,
         })}
       >
         <div className="flex flex-row justify-between">
@@ -353,7 +398,9 @@ const ForgePage = () => {
           </h1>
           <ForgeButtonSave
             onClick={handleNextStep}
-            text={isEditMode ? "Continuar editando" : "Describe tu ruta"}
+            text={isEditMode ? 'Continuar editando' : 'Describe tu ruta'}
+            loading={isValidating}
+            disabled={hasInappropriateContent}
           />
         </div>
 
@@ -362,9 +409,10 @@ const ForgePage = () => {
             <ForgeImages
               images={postDraft.images}
               setImages={setImages}
-              label={isEditMode
-                ? "Edita las imágenes principales de la ruta"
-                : "Añade imágenes generales de la ruta"
+              label={
+                isEditMode
+                  ? 'Edita las imágenes principales de la ruta'
+                  : 'Añade imágenes generales de la ruta'
               }
               mode="main"
               existingImages={isEditMode ? existingImages : []}
@@ -374,7 +422,14 @@ const ForgePage = () => {
           </div>
 
           <div className="flex-1">
-            <ForgeForm onRemoveWaypoint={handleRemoveWaypoint} />
+            <ForgeForm
+              onRemoveWaypoint={handleRemoveWaypoint}
+              onChangeAny={clearErrors}
+              titleErrorMessage={moderationErrors.find(e => e.field === 'title')?.message}
+              descriptionErrorMessage={
+                moderationErrors.find(e => e.field === 'description')?.message
+              }
+            />
           </div>
         </div>
       </div>

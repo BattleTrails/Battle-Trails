@@ -17,6 +17,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { Post, Route, User } from '@/types';
+import { ModerationFlags } from '@/types/moderation';
 import { deleteImagesFromSupabase } from '@/services/supabase-storage-service.ts';
 import { Comment } from '@/types/comment';
 import { Timestamp } from 'firebase/firestore';
@@ -46,6 +47,7 @@ export const createPost = async (postData: {
   locationName: string;
   likes: number;
   likedBy: string[];
+  moderationFlags?: ModerationFlags;
 }): Promise<string> => {
   const docRef = await addDoc(collection(db, 'posts'), {
     ...postData,
