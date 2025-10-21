@@ -345,6 +345,10 @@ const ForgeRouteEditor = ({
                   onRemoveExistingImage={imageIndex =>
                     handleRemoveExistingImage(selectedWaypointIndex, imageIndex)
                   }
+                  onValidationError={message => {
+                    // Mostrar error en la interfaz, pero no bloquear completamente
+                    console.warn('Error de validación de imagen:', message);
+                  }}
                 />
               </div>
             </div>

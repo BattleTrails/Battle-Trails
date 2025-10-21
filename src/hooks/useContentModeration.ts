@@ -1,10 +1,18 @@
 import { useState, useCallback } from 'react';
 import {
   moderateText,
-  moderateMultipleTexts,
   createModerationFlags,
 } from '@/services/moderation-service';
-import { ModerationResult, ModerationFlags } from '@/types/moderation';
+import {
+  moderateMultipleImages,
+  createImageModerationErrors,
+  createImageModerationFlags,
+} from '@/services/image-moderation-service';
+import {
+  ModerationResult,
+  ModerationFlags,
+  ImageModerationError,
+} from '@/types/moderation';
 
 interface ModerationError {
   field: 'title' | 'description' | 'waypoint';
@@ -18,11 +26,13 @@ interface UseContentModerationReturn {
   hasInappropriateContent: boolean;
   moderationErrors: ModerationError[];
   moderationFlags: ModerationFlags | null;
+  imageErrors: ImageModerationError[];
   validateContent: (
     title: string,
     description: string,
     waypointDescriptions: string[]
   ) => Promise<boolean>;
+  validateImages: (images: File[]) => Promise<boolean>;
   clearErrors: () => void;
   getErrorMessage: () => string;
 }
@@ -32,25 +42,33 @@ export const useContentModeration = (): UseContentModerationReturn => {
   const [hasInappropriateContent, setHasInappropriateContent] = useState(false);
   const [moderationErrors, setModerationErrors] = useState<ModerationError[]>([]);
   const [moderationFlags, setModerationFlags] = useState<ModerationFlags | null>(null);
+  const [imageErrors, setImageErrors] = useState<ImageModerationError[]>([]);
 
   const clearErrors = useCallback(() => {
     setModerationErrors([]);
     setHasInappropriateContent(false);
     setModerationFlags(null);
+    setImageErrors([]);
   }, []);
 
   const getErrorMessage = useCallback((): string => {
-    if (moderationErrors.length === 0) return '';
-
-    const errorMessages = moderationErrors.map(error => {
+    const textErrors = moderationErrors.map(error => {
       if (error.field === 'waypoint' && error.waypointIndex !== undefined) {
         return `Parada ${error.waypointIndex + 1}: ${error.message}`;
       }
       return `${error.field === 'title' ? 'Título' : 'Descripción'}: ${error.message}`;
     });
 
-    return `Contenido inapropiado detectado:\n${errorMessages.join('\n')}`;
-  }, [moderationErrors]);
+    const imageErrorMessages = imageErrors.map(
+      error => `Imagen "${error.imageName}": ${error.message}`
+    );
+
+    const allErrors = [...textErrors, ...imageErrorMessages];
+
+    if (allErrors.length === 0) return '';
+
+    return `Contenido inapropiado detectado:\n${allErrors.join('\n')}`;
+  }, [moderationErrors, imageErrors]);
 
   const validateContent = useCallback(
     async (
@@ -146,6 +164,48 @@ export const useContentModeration = (): UseContentModerationReturn => {
     [clearErrors]
   );
 
+  const validateImages = useCallback(async (images: File[]): Promise<boolean> => {
+    if (!images || images.length === 0) {
+      return true;
+    }
+
+    setIsValidating(true);
+    setImageErrors([]);
+
+    try {
+      const result = await moderateMultipleImages(images);
+
+      if (result.hasInappropriateContent) {
+        const errors = createImageModerationErrors(
+          images
+            .map((file) => ({
+              ...result,
+              imageName: file.name,
+            }))
+            .filter(r => r.hasInappropriateContent)
+        );
+
+        setImageErrors(errors);
+        setHasInappropriateContent(true);
+
+        // Crear flags de moderación para imágenes
+        const imageFlags = createImageModerationFlags(result);
+        if (imageFlags) {
+          setModerationFlags(imageFlags);
+        }
+      }
+
+      setIsValidating(false);
+      return !result.hasInappropriateContent;
+    } catch (error) {
+      console.error('Error en validación de imágenes:', error);
+      setIsValidating(false);
+
+      // En caso de error, permitir continuar para no bloquear la funcionalidad
+      return true;
+    }
+  }, []);
+
   const getCategoryDisplayNames = (categories: string[]): string[] => {
     const categoryMap: Record<string, string> = {
       S: 'Contenido sexual',
@@ -167,7 +227,9 @@ export const useContentModeration = (): UseContentModerationReturn => {
     hasInappropriateContent,
     moderationErrors,
     moderationFlags,
+    imageErrors,
     validateContent,
+    validateImages,
     clearErrors,
     getErrorMessage,
   };
