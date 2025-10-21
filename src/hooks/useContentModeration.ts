@@ -1,11 +1,16 @@
 import { useState, useCallback } from 'react';
 import { moderateText, createModerationFlags } from '@/services/moderation-service';
+
 import {
   moderateMultipleImages,
   createImageModerationErrors,
   createImageModerationFlags,
 } from '@/services/image-moderation-service';
-import { ModerationResult, ModerationFlags, ImageModerationError } from '@/types/moderation';
+import {
+  ModerationResult,
+  ModerationFlags,
+  ImageModerationError,
+} from '@/types/moderation';
 
 interface ModerationError {
   field: 'title' | 'description' | 'waypoint';
@@ -171,7 +176,7 @@ export const useContentModeration = (): UseContentModerationReturn => {
       if (result.hasInappropriateContent) {
         const errors = createImageModerationErrors(
           images
-            .map(file => ({
+            .map((file) => ({
               ...result,
               imageName: file.name,
             }))
