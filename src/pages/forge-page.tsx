@@ -43,6 +43,7 @@ const ForgePage = () => {
     moderationErrors,
     moderationFlags,
     validateContent,
+    validateImages,
     clearErrors,
     getErrorMessage,
   } = useContentModeration();
@@ -335,17 +336,38 @@ const ForgePage = () => {
       );
     }
 
-    // Validar contenido antes de crear/actualizar
+    // Validar contenido de texto antes de crear/actualizar
     const waypointDescriptions = postDraft.routePoints.map(point => point.description || '');
-    const isValid = await validateContent(
+    const isTextValid = await validateContent(
       postDraft.title,
       postDraft.description,
       waypointDescriptions
     );
 
-    if (!isValid) {
+    if (!isTextValid) {
       showError(getErrorMessage());
       return;
+    }
+
+    // Validar imágenes del post principal
+    if (postDraft.images && postDraft.images.length > 0) {
+      const areMainImagesValid = await validateImages(postDraft.images);
+      if (!areMainImagesValid) {
+        showError(getErrorMessage());
+        return;
+      }
+    }
+
+    // Validar imágenes de waypoints
+    for (let i = 0; i < postDraft.routePoints.length; i++) {
+      const waypoint = postDraft.routePoints[i];
+      if (waypoint.images && waypoint.images.length > 0) {
+        const areWaypointImagesValid = await validateImages(waypoint.images);
+        if (!areWaypointImagesValid) {
+          showError(`Imágenes inapropiadas detectadas en la parada ${i + 1}. ${getErrorMessage()}`);
+          return;
+        }
+      }
     }
 
     setIsSubmitting(true);
@@ -418,6 +440,7 @@ const ForgePage = () => {
               existingImages={isEditMode ? existingImages : []}
               deletedImageUrls={deletedImageUrls}
               setDeletedImageUrls={setDeletedImageUrls}
+              onValidationError={showError}
             />
           </div>
 

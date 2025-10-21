@@ -1,34 +1,36 @@
-import { useRef } from "react";
-import { compressImages } from "@/utils/compress-images";
-import { ImagePlus, X } from "lucide-react";
+import { useRef } from 'react';
+import { compressImages } from '@/utils/compress-images';
+import { ImagePlus, X } from 'lucide-react';
+import { useContentModeration } from '@/hooks/useContentModeration';
 
 type Props = {
   images: File[];
   setImages: (files: File[]) => void;
   label?: string;
-  mode?: "main" | "waypoint";
+  mode?: 'main' | 'waypoint';
   existingImages?: string[];
   onRemoveExistingImage?: (index: number) => void;
   setDeletedImageUrls?: React.Dispatch<React.SetStateAction<string[]>>;
   deletedImageUrls?: string[];
+  onValidationError?: (message: string) => void;
 };
 
 const ForgeImages = ({
-                       mode,
-                       images,
-                       setImages,
-                       label = "Añade algunas imágenes",
-                       existingImages = [],
-                       onRemoveExistingImage,
-                       setDeletedImageUrls,
-                       deletedImageUrls = [],
-                     }: Props) => {
+  mode,
+  images,
+  setImages,
+  label = 'Añade algunas imágenes',
+  existingImages = [],
+  onRemoveExistingImage,
+  setDeletedImageUrls,
+  deletedImageUrls = [],
+  onValidationError,
+}: Props) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { validateImages } = useContentModeration();
 
   const filteredExisting = existingImages.filter(img => !deletedImageUrls.includes(img));
   const allImages: (string | File)[] = [...filteredExisting, ...images];
-
-
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -37,6 +39,19 @@ const ForgeImages = ({
   const handleFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawFiles = Array.from(e.target.files || []);
     const compressed = await compressImages(rawFiles);
+
+    // Validar imágenes antes de agregarlas
+    const isValid = await validateImages(compressed);
+
+    if (!isValid) {
+      if (onValidationError) {
+        onValidationError(
+          'Algunas imágenes contienen contenido inapropiado y no se pueden agregar.'
+        );
+      }
+      return;
+    }
+
     setImages([...images, ...compressed]);
   };
 
@@ -60,15 +75,15 @@ const ForgeImages = ({
     try {
       return typeof img === 'string' ? img : URL.createObjectURL(img);
     } catch (e) {
-      console.warn("Error al generar preview", img, e);
-      return "";
+      console.warn('Error al generar preview', img, e);
+      return '';
     }
   };
 
   return (
     <div className="w-full max-w-[400px] md:max-w-[500px] lg:max-w-full mx-auto bg-neutral/5 rounded-lg border border-dashed border-neutral/30 p-4">
       {allImages.length === 0 ? (
-        mode === "waypoint" ? (
+        mode === 'waypoint' ? (
           <div className="flex items-center gap-2">
             <button
               className="w-20 h-20 flex items-center justify-center border border-neutral/30 rounded-md hover:bg-neutral/10 transition"
@@ -114,7 +129,7 @@ const ForgeImages = ({
       ) : (
         <>
           {/* Imagen destacada SOLO en modo "main" */}
-          {mode === "main" && allImages[0] && (
+          {mode === 'main' && allImages[0] && (
             <div className="relative w-full aspect-[4/3] overflow-hidden rounded-lg mb-4">
               <img
                 src={getImageSrc(allImages[0])}
