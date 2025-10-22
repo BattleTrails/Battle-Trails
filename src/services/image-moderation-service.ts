@@ -127,7 +127,7 @@ export const moderateImage = async (file: File): Promise<ImageModerationResult> 
       hasInappropriateContent: false,
       flaggedCategories: [],
       maxProbability: 0,
-      imageName: file.name,
+      imageName: undefined,
     };
   }
 
