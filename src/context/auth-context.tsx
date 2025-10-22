@@ -71,8 +71,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const ERROR_MESSAGES: Record<string, string> = {
-    'auth/user-not-found': 'No hay ninguna cuenta registrada con ese correo.',
-    'auth/invalid-credential': 'La contraseña introducida no es correcta.',
+    'auth/user-not-found': 'Email o contraseña incorrectos.',
+    'auth/invalid-credential': 'Email o contraseña incorrectos.',
     'auth/email-already-in-use': 'Ese correo ya está registrado.',
     'auth/invalid-email': 'El formato del correo no es válido.',
     'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',

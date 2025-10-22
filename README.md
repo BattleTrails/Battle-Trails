@@ -88,19 +88,19 @@ diferenciándose de otras redes sociales de viajes por su enfoque específico en
 
 - TripAdvisor
 - Lonely Planet
-  *Ofrecen información general sin enfoque histórico específico*
+  _Ofrecen información general sin enfoque histórico específico_
 
 ### Plataformas de Turismo Histórico
 
 - Atlas Obscura
 - HistoryNet
-  *Proveen información pero carecen de interactividad social*
+  _Proveen información pero carecen de interactividad social_
 
 ### Otras Plataformas
 
 - Google Maps
 - Blogs de viajes
-  *Herramientas útiles sin comunidad especializada*
+  _Herramientas útiles sin comunidad especializada_
 
 ## Requisitos y User Stories
 

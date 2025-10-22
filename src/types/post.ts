@@ -1,3 +1,5 @@
+import { ModerationFlags } from './moderation';
+
 export interface Post {
   id: string;
   userId: string;
@@ -7,8 +9,9 @@ export interface Post {
   locationName: string;
   routeId: string;
   /*createdAt: Timestamp ;*/
-  
+
   likes: number;
   likedBy: string[];
   views: number;
+  moderationFlags?: ModerationFlags;
 }

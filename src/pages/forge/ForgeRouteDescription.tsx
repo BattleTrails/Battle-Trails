@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { usePostStore } from "@/store/usePostStore";
-import { ChevronLeft, MapPin, Edit3 } from "lucide-react";
-import ForgeImages from "@pages/forge/forge-images/forge-images.tsx";
+import { useState, useEffect } from 'react';
+import { usePostStore } from '@/store/usePostStore';
+import { ChevronLeft, MapPin, Edit3 } from 'lucide-react';
+import ForgeImages from '@pages/forge/forge-images/forge-images.tsx';
+import { useContentModeration } from '@/hooks/useContentModeration.ts';
 
 type Props = {
   onBack: () => void;
@@ -12,18 +13,33 @@ type Props = {
   setDeletedWaypointImageUrls?: React.Dispatch<React.SetStateAction<string[][]>>;
 };
 
-const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingWaypointImages = [], setDeletedWaypointImageUrls  }: Props) => {
+const ForgeRouteEditor = ({
+  onBack,
+  onCreateRoute,
+  isEditMode = false,
+  existingWaypointImages = [],
+  setDeletedWaypointImageUrls,
+}: Props) => {
   const { postDraft, setWaypointDescription, setWaypointImages } = usePostStore();
   const [selectedWaypointIndex, setSelectedWaypointIndex] = useState(0);
-  const [currentDescription, setCurrentDescription] = useState("");
+  const [currentDescription, setCurrentDescription] = useState('');
+  const {
+    isValidating,
+    hasInappropriateContent,
+    moderationErrors,
+    validateContent,
+    clearErrors,
+    getErrorMessage,
+  } = useContentModeration();
 
   // Estado para manejar las imágenes existentes de cada waypoint
-  const [waypointExistingImages, setWaypointExistingImages] = useState<string[][]>(existingWaypointImages);
+  const [waypointExistingImages, setWaypointExistingImages] =
+    useState<string[][]>(existingWaypointImages);
 
   // Función helper para obtener descripción segura
   const getWaypointDescription = (index: number): string => {
     const waypoint = postDraft.routePoints?.[index];
-    return waypoint?.description ?? "";
+    return waypoint?.description ?? '';
   };
 
   // Effect para inicializar y sincronizar la descripción cuando cambian los routePoints o el índice
@@ -37,7 +53,6 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
       setSelectedWaypointIndex(Math.max(0, postDraft.routePoints.length - 1));
     }
   }, [selectedWaypointIndex, postDraft.routePoints.length]);
-
 
   const handleWaypointClick = (index: number) => {
     // Guardar descripción actual antes de cambiar
@@ -59,6 +74,9 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
     if (postDraft.routePoints?.length > 0) {
       setWaypointDescription(selectedWaypointIndex, value);
     }
+
+    // Limpiar errores de moderación al editar
+    clearErrors();
   };
 
   // Función para manejar la eliminación de imágenes existentes
@@ -83,32 +101,44 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
     });
   };
 
-  const handleCreateRoute = () => {
+  const handleCreateRoute = async () => {
     // Guardar la descripción actual antes de crear la ruta
     if (postDraft.routePoints?.length > 0) {
       setWaypointDescription(selectedWaypointIndex, currentDescription);
     }
+
+    // Validar contenido de waypoints antes de crear la ruta
+    const waypointDescriptions = postDraft.routePoints.map(point => point.description || '');
+    const isValid = await validateContent('', '', waypointDescriptions);
+
+    if (!isValid) {
+      // Mostrar error específico para waypoints
+      const waypointErrors = moderationErrors.filter(error => error.field === 'waypoint');
+      if (waypointErrors.length > 0) {
+        const errorMessage = waypointErrors
+          .map(error => `Parada ${error.waypointIndex! + 1}: ${error.message}`)
+          .join('\n');
+        alert(`Contenido inapropiado detectado en las descripciones:\n${errorMessage}`);
+      }
+      return;
+    }
+
     onCreateRoute();
   };
 
   const getDescriptionProgress = () => {
-    if (!postDraft.routePoints?.length) return "0/0";
+    if (!postDraft.routePoints?.length) return '0/0';
     const withDescription = postDraft.routePoints.filter(point => point.description?.trim()).length;
     return `${withDescription}/${postDraft.routePoints.length}`;
   };
-// Verificación extra: ¿tenemos imágenes cargadas para la parada actual?
-  if (
-    isEditMode &&
-    selectedWaypointIndex >= postDraft.routePoints.length
-  ) {
+  // Verificación extra: ¿tenemos imágenes cargadas para la parada actual?
+  if (isEditMode && selectedWaypointIndex >= postDraft.routePoints.length) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-gray-500">Cargando imágenes de la parada...</p>
       </div>
     );
   }
-
-
 
   // Verificación de seguridad
   if (!postDraft.routePoints?.length) {
@@ -117,10 +147,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
         <div className="text-center">
           <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500">No hay paradas definidas en la ruta</p>
-          <button
-            onClick={onBack}
-            className="btn btn-outline mt-4"
-          >
+          <button onClick={onBack} className="btn btn-outline mt-4">
             Volver al formulario
           </button>
         </div>
@@ -145,10 +172,7 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <button
-            onClick={onBack}
-            className="btn btn-ghost btn-circle"
-          >
+          <button onClick={onBack} className="btn btn-ghost btn-circle">
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div>
@@ -163,9 +187,31 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
 
         <button
           onClick={handleCreateRoute}
-          className="btn btn-neutral hover:bg-gray-300 hover:text-neutral rounded-full px-6"
+          disabled={isValidating || hasInappropriateContent}
+          className={`
+            btn rounded-full px-6 transition-all duration-200
+            ${
+              isValidating || hasInappropriateContent
+                ? 'btn-disabled opacity-50 cursor-not-allowed'
+                : 'btn-neutral hover:bg-gray-300 hover:text-neutral'
+            }
+          `}
+          title={
+            hasInappropriateContent
+              ? 'Contenido inapropiado detectado en las descripciones'
+              : undefined
+          }
         >
-          {isEditMode ? 'Guardar cambios' : 'Crear ruta'}
+          {isValidating ? (
+            <>
+              <span className="loading loading-spinner loading-sm"></span>
+              Validando...
+            </>
+          ) : isEditMode ? (
+            'Guardar cambios'
+          ) : (
+            'Crear ruta'
+          )}
         </button>
       </div>
 
@@ -185,28 +231,37 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
                 onClick={() => handleWaypointClick(index)}
                 className={`
                   w-full text-left p-4 rounded-lg border-2 transition-all duration-200
-                  ${selectedWaypointIndex === index
-                  ? 'border-primary bg-primary/10 shadow-md'
-                  : 'border-transparent bg-base-100 hover:border-primary/30 hover:bg-base-300'
-                }
+                  ${
+                    selectedWaypointIndex === index
+                      ? 'border-primary bg-primary/10 shadow-md'
+                      : 'border-transparent bg-base-100 hover:border-primary/30 hover:bg-base-300'
+                  }
                 `}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="badge badge-primary badge-sm">
-                        {index + 1}
-                      </span>
+                      <span className="badge badge-primary badge-sm">{index + 1}</span>
                       <span className="font-medium line-clamp-2">
-                        {waypoint.address || "Dirección no disponible"}
+                        {waypoint.address || 'Dirección no disponible'}
                       </span>
                     </div>
 
                     <p className="text-sm text-gray-500 line-clamp-2">
                       {waypoint.description && waypoint.description.trim()
                         ? waypoint.description
-                        : "Sin descripción"}
+                        : 'Sin descripción'}
                     </p>
+
+                    {/* Indicador de contenido inapropiado */}
+                    {moderationErrors.some(
+                      error => error.field === 'waypoint' && error.waypointIndex === index
+                    ) && (
+                      <div className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                        Contenido inapropiado
+                      </div>
+                    )}
                   </div>
 
                   <div className="ml-2">
@@ -227,7 +282,8 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
           <div className="h-full flex flex-col">
             <div className="mb-4">
               <h3 className="font-semibold text-lg mb-2">
-                Parada {selectedWaypointIndex + 1}: {selectedWaypoint.address || "Dirección no disponible"}
+                Parada {selectedWaypointIndex + 1}:{' '}
+                {selectedWaypoint.address || 'Dirección no disponible'}
               </h3>
               <p className="text-sm text-gray-500">
                 Describe qué pueden encontrar los visitantes en esta parada
@@ -239,18 +295,37 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
                 value={currentDescription}
                 onChange={handleDescriptionChange}
                 placeholder="Describe esta parada: historia, puntos de interés, recomendaciones..."
-                className="textarea textarea-bordered flex-1 w-full resize-none text-base leading-relaxed"
+                className={`
+                  textarea textarea-bordered flex-1 w-full resize-none text-base leading-relaxed
+                  ${
+                    moderationErrors.some(
+                      error =>
+                        error.field === 'waypoint' && error.waypointIndex === selectedWaypointIndex
+                    )
+                      ? 'border-red-500 focus:border-red-500'
+                      : ''
+                  }
+                `}
                 maxLength={800}
                 style={{ minHeight: '200px' }}
               />
 
               <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
-                <span>
-                  {currentDescription.length}/800 caracteres
-                </span>
-                <span className="text-xs">
-                  {currentDescription.trim() ? '✓ Descripción añadida' : '⚠ Sin descripción'}
-                </span>
+                <span>{currentDescription.length}/800 caracteres</span>
+                <div className="flex items-center gap-2">
+                  {moderationErrors.some(
+                    error =>
+                      error.field === 'waypoint' && error.waypointIndex === selectedWaypointIndex
+                  ) && (
+                    <span className="text-xs text-red-500 flex items-center gap-1">
+                      <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                      Contenido inapropiado
+                    </span>
+                  )}
+                  <span className="text-xs">
+                    {currentDescription.trim() ? '✓ Descripción añadida' : '⚠ Sin descripción'}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-6">
@@ -259,17 +334,21 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
                 </h4>
                 <ForgeImages
                   images={selectedWaypoint.images || []}
-                  setImages={(newImages) => setWaypointImages(selectedWaypointIndex, newImages)}
-                  label={isEditMode
-                    ? "Añadir más imágenes para esta parada"
-                    : "Añade imágenes específicas para esta parada"
+                  setImages={newImages => setWaypointImages(selectedWaypointIndex, newImages)}
+                  label={
+                    isEditMode
+                      ? 'Añadir más imágenes para esta parada'
+                      : 'Añade imágenes específicas para esta parada'
                   }
                   mode="waypoint"
                   existingImages={waypointExistingImages[selectedWaypointIndex] || []}
-                  onRemoveExistingImage={(imageIndex) =>
+                  onRemoveExistingImage={imageIndex =>
                     handleRemoveExistingImage(selectedWaypointIndex, imageIndex)
                   }
-
+                  onValidationError={message => {
+                    // Mostrar error en la interfaz, pero no bloquear completamente
+                    console.warn('Error de validación de imagen:', message);
+                  }}
                 />
               </div>
             </div>
@@ -284,7 +363,11 @@ const ForgeRouteEditor = ({ onBack, onCreateRoute, isEditMode = false, existingW
                 ← Anterior
               </button>
               <button
-                onClick={() => handleWaypointClick(Math.min(postDraft.routePoints.length - 1, selectedWaypointIndex + 1))}
+                onClick={() =>
+                  handleWaypointClick(
+                    Math.min(postDraft.routePoints.length - 1, selectedWaypointIndex + 1)
+                  )
+                }
                 disabled={selectedWaypointIndex === postDraft.routePoints.length - 1}
                 className="btn btn-outline btn-sm flex-1"
               >

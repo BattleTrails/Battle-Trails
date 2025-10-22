@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import React, { forwardRef } from "react";
+import clsx from 'clsx';
+import React, { forwardRef } from 'react';
 
 interface Props {
   label?: string;
@@ -7,13 +7,14 @@ interface Props {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  type?: "text" | "number" | "email";
+  type?: 'text' | 'number' | 'email';
   disabled?: boolean;
   textarea?: boolean;
   rows?: number;
   maxLength?: number;
   className?: string;
   autoComplete?: string;
+  errorMessage?: string;
 }
 
 // Usamos forwardRef para que Autocomplete pueda acceder al <input>
@@ -25,13 +26,14 @@ const ForgeInput = forwardRef<HTMLInputElement, Props>(
       name,
       value,
       onChange,
-      type = "text",
+      type = 'text',
       disabled = false,
       textarea = false,
       rows = 3,
       maxLength,
       autoComplete,
-      className = "",
+      className = '',
+      errorMessage,
     },
     ref
   ) => {
@@ -49,13 +51,17 @@ const ForgeInput = forwardRef<HTMLInputElement, Props>(
               id={name}
               name={name}
               placeholder={placeholder}
-              className="textarea textarea-bordered w-full resize-none focus:border-secondary focus:outline-none"
+              className={clsx(
+                'textarea textarea-bordered w-full resize-none focus:outline-none',
+                errorMessage ? 'border-error focus:border-error' : 'focus:border-secondary'
+              )}
               rows={rows}
               maxLength={maxLength}
               value={value}
               onChange={onChange}
               disabled={disabled}
             />
+            {errorMessage && <div className="mt-1 text-xs text-error">{errorMessage}</div>}
             {maxLength && (
               <div className="text-right text-xs text-neutral/60 mt-1">
                 {value.length}/{maxLength}
@@ -69,13 +75,17 @@ const ForgeInput = forwardRef<HTMLInputElement, Props>(
             name={name}
             type={type}
             placeholder={placeholder}
-            className="input input-bordered focus:border-secondary focus:outline-none w-full"
+            className={clsx(
+              'input input-bordered focus:outline-none w-full',
+              errorMessage ? 'border-error focus:border-error' : 'focus:border-secondary'
+            )}
             value={value}
             autoComplete={autoComplete}
             onChange={onChange}
             disabled={disabled}
           />
         )}
+        {!textarea && errorMessage && <div className="mt-1 text-xs text-error">{errorMessage}</div>}
       </div>
     );
   }

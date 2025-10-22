@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { X } from "lucide-react";
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 interface Props {
   message: string;
   onClose: () => void;
-  type?: "error" | "success" | "info";
+  type?: 'error' | 'success' | 'info';
 }
 
-const Alert = ({ message, onClose, type = "error" }: Props) => {
+const Alert = ({ message, onClose, type = 'error' }: Props) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -19,13 +19,16 @@ const Alert = ({ message, onClose, type = "error" }: Props) => {
   if (!message) return null;
 
   const alertClasses = {
-    error: "alert-error",
-    success: "alert-success",
-    info: "alert-info"
+    error: 'alert-error',
+    success: 'alert-success',
+    info: 'alert-info',
   };
 
   return (
-    <div role="alert" className={`alert ${alertClasses[type]} shadow-lg fixed top-4 right-0 mx-2 z-50 max-w-md`}>
+    <div
+      role="alert"
+      className={`alert ${alertClasses[type]} shadow-lg fixed top-4 right-0 mx-2 z-50 max-w-md`}
+    >
       <div className="flex items-center gap-2">
         <span>{message}</span>
         <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
@@ -36,4 +39,4 @@ const Alert = ({ message, onClose, type = "error" }: Props) => {
   );
 };
 
-export default Alert; 
+export default Alert;
