@@ -2,15 +2,12 @@ import { useState, useCallback } from 'react';
 import { moderateText, createModerationFlags } from '@/services/moderation-service';
 
 import {
+  moderateImage,
   moderateMultipleImages,
   createImageModerationErrors,
   createImageModerationFlags,
 } from '@/services/image-moderation-service';
-import {
-  ModerationResult,
-  ModerationFlags,
-  ImageModerationError,
-} from '@/types/moderation';
+import { ModerationResult, ModerationFlags, ImageModerationError } from '@/types/moderation';
 
 interface ModerationError {
   field: 'title' | 'description' | 'waypoint';
@@ -171,30 +168,27 @@ export const useContentModeration = (): UseContentModerationReturn => {
     setImageErrors([]);
 
     try {
-      const result = await moderateMultipleImages(images);
+      // Moderar cada imagen individualmente para errores precisos
+      const perImageResults = await Promise.all(images.map(img => moderateImage(img)));
 
-      if (result.hasInappropriateContent) {
+      const anyInappropriate = perImageResults.some(r => r.hasInappropriateContent);
+      if (anyInappropriate) {
         const errors = createImageModerationErrors(
-          images
-            .map((file) => ({
-              ...result,
-              imageName: file.name,
-            }))
-            .filter(r => r.hasInappropriateContent)
+          perImageResults.filter(r => r.hasInappropriateContent)
         );
-
         setImageErrors(errors);
         setHasInappropriateContent(true);
 
-        // Crear flags de moderación para imágenes
-        const imageFlags = createImageModerationFlags(result);
+        // Construir un resultado combinado para banderas agregadas
+        const combined = await moderateMultipleImages(images);
+        const imageFlags = createImageModerationFlags(combined);
         if (imageFlags) {
           setModerationFlags(imageFlags);
         }
       }
 
       setIsValidating(false);
-      return !result.hasInappropriateContent;
+      return !anyInappropriate;
     } catch (error) {
       console.error('Error en validación de imágenes:', error);
       setIsValidating(false);

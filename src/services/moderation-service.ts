@@ -144,13 +144,7 @@ const heuristicModeration = (text: string): ModerationResult | null => {
       'te voy a golpear',
       'burn you',
       'apuñalar',
-      'knife',
-      'pistola',
-      'arma',
-      'bomba',
-      'explosión',
-      'viol*ncia',
-      'ataque',
+      // Nota: se excluyen términos neutros del contexto histórico (p. ej., 'arma', 'pistola', 'bomba', 'explosión')
     ],
     harassment_bullying: [
       'nobody likes you',

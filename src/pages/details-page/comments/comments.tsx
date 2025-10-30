@@ -6,6 +6,7 @@ import { collection, query, where, orderBy, onSnapshot } from "firebase/firestor
 import { useAuthHandler } from "@/hooks/useAuthHandler";
 import { Trash2, MoreVertical, Send } from "lucide-react";
 import { User } from "@/types/user";
+import { moderateText } from "@/services/moderation-service";
 
 interface CommentsProps {
     postId: string;
@@ -16,6 +17,7 @@ const Comments = ({ postId }: CommentsProps) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(false);
     const [sending, setSending] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string>("");
     const { user } = useAuthHandler();
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const [userProfile, setUserProfile] = useState<User | null>(null);
@@ -70,6 +72,14 @@ const Comments = ({ postId }: CommentsProps) => {
         if (!comment.trim() || !user || !userProfile) return;
         setSending(true);
         try {
+            // Moderación del comentario antes de enviar
+            const moderation = await moderateText(comment);
+            if (moderation.hasInappropriateContent) {
+                setErrorMsg("Tu comentario contiene contenido inapropiado. Por favor, edítalo.");
+                setSending(false);
+                return;
+            }
+
             await addCommentToPost(
                 postId,
                 user.uid,
@@ -78,6 +88,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 userProfile.profilePicture || "/avatars/avatar-1.webp"
             );
             setComment("");
+            setErrorMsg("");
         } catch (e) {
             console.error("Error al enviar comentario:", e);
         } finally {
@@ -128,6 +139,11 @@ const Comments = ({ postId }: CommentsProps) => {
                 </div>
             ) : (
                 <div className="text-neutral-400 text-center mb-6">Inicia sesión para dejar un comentario.</div>
+            )}
+            {errorMsg && (
+                <div className="text-red-500 text-sm mb-4" role="alert" aria-live="polite">
+                    {errorMsg}
+                </div>
             )}
             {/* Lista de comentarios */}
             <div className="grid grid-cols-1 gap-6">
